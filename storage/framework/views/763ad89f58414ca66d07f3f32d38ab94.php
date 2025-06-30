@@ -1,11 +1,9 @@
-@extends('layout', ['title' => $title])
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="report-page">
     <!-- 报告头部信息 -->
     <div class="report-header" style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #e2e8f0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h1 style="margin: 0; color: var(--primary-color);">{{ $title }}</h1>
+            <h1 style="margin: 0; color: var(--primary-color);"><?php echo e($title); ?></h1>
             <div class="no-print">
                 <button onclick="window.print()" style="margin-right: 0.5rem;" title="打印报告">🖨️</button>
                 <button onclick="toggleFullscreen()" title="全屏模式">🔍</button>
@@ -13,9 +11,9 @@
         </div>
         
         <div class="report-meta">
-            📅 更新时间: {{ date('Y年m月d日 H:i', $mtime) }} | 
-            📄 大小: {{ number_format($size / 1024, 1) }} KB | 
-            🔗 <a href="{{ url('/') }}">返回列表</a>
+            📅 更新时间: <?php echo e(date('Y年m月d日 H:i', $mtime)); ?> | 
+            📄 大小: <?php echo e(number_format($size / 1024, 1)); ?> KB | 
+            🔗 <a href="<?php echo e(url('/')); ?>">返回列表</a>
         </div>
     </div>
 
@@ -24,7 +22,8 @@
 
     <!-- 报告内容 -->
     <article class="report-content">
-        {!! $html !!}
+        <?php echo $html; ?>
+
     </article>
 
     <!-- 返回顶部按钮 -->
@@ -37,7 +36,7 @@
     </div>
 </div>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
 /* 目录样式 */
 .toc-list {
@@ -127,9 +126,9 @@
     margin: 0.5rem 0;
 }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 // 为标题添加锚点链接
 document.addEventListener('DOMContentLoaded', function() {
@@ -153,6 +152,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
 
+
+<?php echo $__env->make('layout', ['title' => $title], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/wither-birth/projects/laravel_report_system/resources/views/report.blade.php ENDPATH**/ ?>

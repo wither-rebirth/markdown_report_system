@@ -1,0 +1,108 @@
+/* Laravel Report System Styles */
+
+/* 导入Pico.css基础样式 */
+@import url('https://unpkg.com/@picocss/pico@latest/css/pico.min.css');
+
+/* 自定义样式 */
+:root {
+    --primary-color: #3b82f6;
+    --secondary-color: #64748b;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --error-color: #ef4444;
+}
+
+/* 导航栏样式 */
+.navbar {
+    background-color: var(--primary-color);
+    padding: 1rem;
+    margin-bottom: 2rem;
+}
+
+.navbar h1 {
+    color: white;
+    margin: 0;
+}
+
+/* 报告列表样式 */
+.report-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.report-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    transition: box-shadow 0.2s;
+}
+
+.report-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.report-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--primary-color);
+}
+
+.report-meta {
+    color: var(--secondary-color);
+    font-size: 0.875rem;
+}
+
+/* 报告内容样式 */
+.report-content {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+.report-content h1,
+.report-content h2,
+.report-content h3,
+.report-content h4,
+.report-content h5,
+.report-content h6 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.report-content pre {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+.report-content code {
+    background-color: #f1f5f9;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.report-content pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+}
+
+/* 打印样式 */
+@media print {
+    .navbar,
+    .no-print {
+        display: none;
+    }
+    
+    .report-content {
+        max-width: none;
+    }
+} 
