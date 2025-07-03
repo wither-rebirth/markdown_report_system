@@ -633,7 +633,35 @@ class ReportController extends Controller
      */
     private function extractModificationTime($content, $filePath)
     {
-        // 尝试从内容中提取各种日期格式
+        $dates = [];
+        
+        // 首先查找图片文件名中的时间戳格式 (YYYYMMDDHHMMSS)
+        if (preg_match_all('/Pasted%20image%20(\d{14})/', $content, $matches)) {
+            foreach ($matches[1] as $timestamp) {
+                // 解析 YYYYMMDDHHMMSS 格式
+                $year = substr($timestamp, 0, 4);
+                $month = substr($timestamp, 4, 2);
+                $day = substr($timestamp, 6, 2);
+                $hour = substr($timestamp, 8, 2);
+                $minute = substr($timestamp, 10, 2);
+                $second = substr($timestamp, 12, 2);
+                
+                // 验证日期有效性
+                if (checkdate($month, $day, $year)) {
+                    $dateTime = mktime($hour, $minute, $second, $month, $day, $year);
+                    if ($dateTime !== false) {
+                        $dates[] = $dateTime;
+                    }
+                }
+            }
+        }
+        
+        // 如果找到了图片时间戳，返回最新的一个（这是最准确的时间）
+        if (!empty($dates)) {
+            return max($dates);
+        }
+        
+        // 备选方案：尝试其他日期格式
         $patterns = [
             // YYYY-MM-DD 格式
             '/(\d{4}-\d{1,2}-\d{1,2})/',
@@ -641,13 +669,11 @@ class ReportController extends Controller
             '/(\d{1,2}\/\d{1,2}\/\d{4})/',
             // Mon May 14 2018 格式
             '/([A-Za-z]{3}\s+[A-Za-z]{3}\s+\d{1,2}\s+\d{4})/',
-            // 2018-11-20 或类似格式
-            '/(\d{4}-\d{1,2}-\d{1,2})/',
             // Nov 20, 2018 格式
             '/([A-Za-z]{3}\s+\d{1,2},?\s+\d{4})/',
+            // 2018-11-20 11:57 格式
+            '/(\d{4}-\d{1,2}-\d{1,2}\s+\d{1,2}:\d{2})/',
         ];
-        
-        $dates = [];
         
         foreach ($patterns as $pattern) {
             if (preg_match_all($pattern, $content, $matches)) {
@@ -664,16 +690,13 @@ class ReportController extends Controller
             }
         }
         
-        // 如果找到了日期，返回最新的日期
+        // 如果找到了其他格式的日期，返回最新的日期
         if (!empty($dates)) {
             return max($dates);
         }
         
-        // 如果没有找到日期，尝试从文件路径中提取信息
-        // 检查文件夹名称中是否包含日期信息
+        // 最后的备选方案：从文件夹名称中提取日期信息
         $folderName = basename(dirname($filePath));
-        
-        // 尝试解析文件夹名中的日期
         if (preg_match('/(\d{4})[_-]?(\d{1,2})[_-]?(\d{1,2})/', $folderName, $matches)) {
             $timestamp = mktime(0, 0, 0, $matches[2], $matches[3], $matches[1]);
             if ($timestamp !== false) {
