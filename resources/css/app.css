@@ -60,7 +60,7 @@ body {
     flex-direction: column;
 }
 
-/* 导航栏样式 */
+/* 增强的导航栏样式 */
 .navbar {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
     padding: 1rem 2rem;
@@ -71,48 +71,190 @@ body {
     backdrop-filter: blur(10px);
 }
 
-.navbar .container {
+.navbar-container {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 2rem;
 }
 
-.navbar h1 {
-    color: white;
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.navbar h1 a {
-    color: white;
-    text-decoration: none;
-    transition: var(--transition);
-}
-
-.navbar h1 a:hover {
-    transform: scale(1.05);
-}
-
-.navbar-nav {
+/* 导航栏左侧 */
+.navbar-left {
     display: flex;
     align-items: center;
     gap: 1rem;
+    flex-shrink: 0;
+}
+
+.navbar-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.navbar-title a {
+    color: white;
+    text-decoration: none;
+    transition: var(--transition);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-title a:hover {
+    transform: scale(1.05);
+    text-decoration: none;
+    color: white;
+}
+
+.navbar-stats {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* 导航栏中间 - 搜索框 */
+.navbar-center {
+    flex: 1;
+    max-width: 400px;
+    position: relative;
+}
+
+.navbar-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    transition: all var(--transition);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.navbar-search:focus-within {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-search .search-icon {
+    position: absolute;
+    left: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    z-index: 2;
+    transition: color var(--transition);
+}
+
+.navbar-search:focus-within .search-icon {
+    color: white;
+}
+
+.navbar-search-input {
+    width: 100%;
+    padding: 0.75rem 5rem 0.75rem 3rem;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all var(--transition);
+}
+
+.navbar-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+}
+
+.navbar-search-shortcut {
+    position: absolute;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-search-shortcut kbd {
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.navbar-search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--background-color);
+    border: 2px solid var(--primary-color);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+/* 导航栏右侧 */
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
 }
 
 .nav-link {
     color: white;
     text-decoration: none;
     padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
+    border-radius: 8px;
     transition: var(--transition);
+    font-weight: 500;
 }
 
 .nav-link:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
+    text-decoration: none;
+    color: white;
+}
+
+.navbar-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all var(--transition);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.navbar-upload-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    color: white;
 }
 
 .nav-btn {
@@ -120,13 +262,17 @@ body {
     border: none;
     color: white;
     padding: 0.5rem;
-    border-radius: 0.375rem;
+    border-radius: 8px;
     cursor: pointer;
     transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .nav-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
 }
 
 /* 主要内容区域 */
@@ -145,137 +291,42 @@ main {
     padding: 0 1rem;
 }
 
-/* 页面头部 */
-.page-header {
-    margin-bottom: 2rem;
-}
 
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
 
-.page-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--text-color);
-    margin: 0;
-}
-
-.stats-info {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.stat-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--text-muted);
-    font-size: 0.875rem;
-}
-
-.stat-item svg {
-    opacity: 0.7;
-}
-
-/* 搜索区域 */
-.search-section {
-    margin-bottom: 2rem;
-}
-
-.search-container {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.search-input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.search-icon {
-    position: absolute;
-    left: 1rem;
-    color: var(--text-muted);
-    z-index: 1;
-}
-
-.search-input {
-    width: 100%;
-    padding: 1rem 1.5rem 1rem 3rem;
-    border: 2px solid var(--border-color);
-    border-radius: var(--border-radius);
-    font-size: 1rem;
-    transition: var(--transition);
-    background: var(--surface-color);
-    color: var(--text-color);
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px var(--primary-light);
-    transform: translateY(-2px);
-}
-
-.search-input::placeholder {
-    color: var(--text-muted);
-}
-
-.search-shortcut {
-    position: absolute;
-    right: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    color: var(--text-muted);
-    font-size: 0.75rem;
-}
-
-.search-shortcut kbd {
-    background: var(--border-color);
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-family: monospace;
-    font-size: 0.625rem;
-}
-
-.search-results {
-    text-align: center;
-    margin-top: 0.5rem;
-    color: var(--text-muted);
-    font-size: 0.875rem;
-}
-
-.highlight {
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-/* 报告列表样式 */
+/* 简洁的报告列表样式 */
 .report-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
     margin-top: 2rem;
 }
 
+/* 卡片链接样式 */
+.report-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: all var(--transition);
+}
+
+.report-card-link:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* 简洁优雅的卡片设计 */
 .report-card {
-    background: var(--surface-color);
+    background: var(--background-color);
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 0;
-    transition: var(--transition);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all var(--transition);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
     position: relative;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
 }
 
 .report-card::before {
@@ -284,164 +335,121 @@ main {
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary-color), var(--success-color));
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+    opacity: 0;
+    transition: opacity var(--transition);
 }
 
-.report-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-lg);
+.report-card-link:hover .report-card {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
     border-color: var(--primary-color);
 }
 
-.report-card:hover::before {
-    transform: scaleX(1);
+.report-card-link:hover .report-card::before {
+    opacity: 1;
 }
 
-.card-header {
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--background-color);
-    border-bottom: 1px solid var(--border-color);
-}
-
-.card-icon {
-    color: var(--primary-color);
-}
-
-.card-status {
+/* 卡片主要内容区域 */
+.card-main-content {
     display: flex;
     align-items: center;
-}
-
-.status-badge {
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.375rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    text-transform: uppercase;
-}
-
-.status-active {
-    background: var(--primary-light);
-    color: var(--primary-color);
-}
-
-.card-content {
-    padding: 1rem;
+    gap: 1.5rem;
     flex: 1;
+}
+
+/* 卡片图标 */
+.card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    border-radius: 12px;
+    color: white;
+    flex-shrink: 0;
+    transition: all var(--transition);
+}
+
+.report-card-link:hover .card-icon {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+/* 卡片内容 */
+.card-content {
+    flex: 1;
+    min-width: 0; /* 允许内容收缩 */
 }
 
 .report-title {
     margin: 0 0 0.5rem 0;
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 1.4rem;
+    font-weight: 700;
     color: var(--text-color);
+    line-height: 1.3;
+    transition: color var(--transition);
 }
 
-.report-title a {
+.report-card-link:hover .report-title {
     color: var(--primary-color);
-    text-decoration: none;
-    transition: var(--transition);
-}
-
-.report-title a:hover {
-    color: var(--primary-hover);
-    text-decoration: underline;
 }
 
 .report-excerpt {
     color: var(--text-muted);
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
     line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .report-meta {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
     flex-wrap: wrap;
 }
 
 .meta-item {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.5rem;
     color: var(--text-muted);
-    font-size: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
 }
 
 .meta-item svg {
     opacity: 0.7;
+    flex-shrink: 0;
 }
 
-/* 重新设计的卡片操作区域 */
-.card-actions {
-    padding: 1.5rem;
-    background: linear-gradient(135deg, var(--surface-color) 0%, rgba(248, 250, 252, 0.8) 100%);
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+/* 卡片箭头指示器 */
+.card-arrow {
+    color: var(--text-muted);
+    transition: all var(--transition);
+    flex-shrink: 0;
 }
 
-/* 主要操作按钮 */
-.card-actions .btn-primary {
-    width: 100%;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 1rem;
-    padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    color: white;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    position: relative;
-    overflow: hidden;
+.report-card-link:hover .card-arrow {
+    color: var(--primary-color);
+    transform: translateX(4px);
 }
 
-.card-actions .btn-primary::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
-}
-
-.card-actions .btn-primary:hover::before {
-    left: 100%;
-}
-
-.card-actions .btn-primary:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-}
-
-/* 次要操作按钮组 */
-.secondary-actions {
-    display: flex;
-    gap: 0.75rem;
-}
-
-.secondary-actions .btn {
-    flex: 1;
-    justify-content: center;
-    font-size: 0.875rem;
-    padding: 0.875rem 1rem;
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    position: relative;
-    overflow: hidden;
+/* 页面加载动画 */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* 基础按钮样式 */
@@ -549,6 +557,11 @@ main {
 
 .text-muted {
     color: var(--text-muted);
+}
+
+.highlight {
+    color: var(--primary-color);
+    font-weight: 600;
 }
 
 /* 加载覆盖层 */
@@ -754,37 +767,79 @@ footer a:hover {
         padding: 1rem;
     }
     
-    .navbar-nav {
+    .navbar-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .navbar-left {
+        order: 1;
+        text-align: center;
+    }
+    
+    .navbar-center {
+        order: 2;
+        max-width: 100%;
+    }
+    
+    .navbar-right {
+        order: 3;
+        justify-content: center;
         gap: 0.5rem;
+    }
+    
+    .navbar-search-shortcut {
+        display: none;
     }
     
     main {
         padding: 1rem;
     }
     
-    .header-content {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .stats-info {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
+
     
     .report-list {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+        gap: 0.75rem;
     }
     
     .report-card {
-        padding: 0;
+        padding: 1rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
     }
     
-    .card-header,
-    .card-content,
-    .card-actions {
-        padding: 1rem;
+    .card-main-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .card-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .report-title {
+        font-size: 1.2rem;
+    }
+    
+    .report-excerpt {
+        font-size: 0.85rem;
+    }
+    
+    .report-meta {
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .card-arrow {
+        transform: rotate(90deg);
+    }
+    
+    .report-card-link:hover .card-arrow {
+        transform: rotate(90deg) translateX(4px);
     }
     
     .report-content h1 {
@@ -815,54 +870,55 @@ footer a:hover {
 }
 
 @media (max-width: 480px) {
-    .navbar h1 {
+    .navbar-title {
         font-size: 1.25rem;
     }
     
-    .page-title {
-        font-size: 1.5rem;
+    .navbar-stats {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.6rem;
     }
     
-    .search-shortcut {
-        display: none;
+    .navbar-upload-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
     }
+    
+    .nav-btn {
+        padding: 0.375rem;
+    }
+    
+
     
     .report-card {
-        padding: 0;
-    }
-    
-    .card-header,
-    .card-content,
-    .card-actions {
         padding: 0.75rem;
     }
     
-    .report-content {
-        padding: 0 0.5rem;
+    .card-main-content {
+        text-align: center;
     }
     
-    .card-actions {
-        flex-direction: column;
-        gap: 0.75rem;
+    .card-icon {
+        width: 45px;
+        height: 45px;
     }
     
-    .card-actions .btn-primary {
-        padding: 0.875rem 1rem;
-        font-size: 0.875rem;
+    .report-title {
+        font-size: 1.1rem;
     }
     
-    .secondary-actions {
+    .report-excerpt {
+        font-size: 0.8rem;
+        -webkit-line-clamp: 3;
+    }
+    
+    .report-meta {
         flex-direction: column;
         gap: 0.5rem;
     }
     
-    .secondary-actions .btn {
-        padding: 0.75rem 1rem;
-        font-size: 0.8rem;
-    }
-    
-    .btn {
-        justify-content: center;
+    .meta-item {
+        font-size: 0.75rem;
     }
 }
 
