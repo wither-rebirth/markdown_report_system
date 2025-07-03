@@ -33,32 +33,10 @@
                     @endif
                 </div>
                 
-                <!-- 中间：搜索框（仅在报告列表页显示） -->
-                @if(isset($reports) && count($reports) > 0 && Route::currentRouteName() === 'reports.index')
-                <div class="navbar-center">
-                    <div class="navbar-search">
-                        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                        </svg>
-                        <input 
-                            type="text" 
-                            id="report-search" 
-                            placeholder="搜索报告..."
-                            class="navbar-search-input"
-                        >
-                        <div class="navbar-search-shortcut">
-                            <kbd>⌘K</kbd>
-                        </div>
-                    </div>
-                    <div id="search-results" class="navbar-search-results" style="display: none;">
-                        找到 <span class="highlight" id="results-count">0</span> 个结果
-                    </div>
-                </div>
-                @endif
+
                 
                 <!-- 右侧：导航链接和操作按钮 -->
                 <nav class="navbar-right">
-                    <a href="{{ url('/') }}" class="nav-link">首页</a>
                     @if(Route::currentRouteName() === 'reports.index')
                     <a href="{{ route('reports.create') }}" class="navbar-upload-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -104,7 +82,7 @@
             style="display: none;"
             onclick="scrollToTop()"
         >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
             </svg>
         </button>
@@ -166,14 +144,7 @@
 
         // 键盘快捷键
         document.addEventListener('keydown', (e) => {
-            // Ctrl/Cmd + K 聚焦搜索框
-            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                e.preventDefault();
-                const searchInput = document.getElementById('report-search');
-                if (searchInput) {
-                    searchInput.focus();
-                }
-            }
+
             
             // F11 全屏
             if (e.key === 'F11') {
