@@ -18,13 +18,6 @@
                 (每页显示 {{ $reports->perPage() }} 个)
             </p>
         </div>
-        <div class="page-actions">
-            <select id="perPageSelect" onchange="changePerPage(this.value)" class="per-page-select">
-                <option value="15" {{ request('per_page', 15) == 15 ? 'selected' : '' }}>每页 15 个</option>
-                <option value="30" {{ request('per_page') == 30 ? 'selected' : '' }}>每页 30 个</option>
-                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>每页 50 个</option>
-            </select>
-        </div>
     </div>
     @endif
 

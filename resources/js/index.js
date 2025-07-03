@@ -215,13 +215,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Index 页面初始化完成');
 });
 
-// 分页功能
-function changePerPage(perPage) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('per_page', perPage);
-    url.searchParams.set('page', 1); // 重置到第一页
-    window.location.href = url.toString();
-}
+// 分页功能已简化为固定每页10个
 
 function jumpToPage() {
     const pageInput = document.getElementById('jumpToPage');
@@ -268,7 +262,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // 导出函数供其他脚本使用（全局函数）
-window.changePerPage = changePerPage;
 window.jumpToPage = jumpToPage;
 
 // 导出函数供其他脚本使用
@@ -278,6 +271,5 @@ window.IndexPage = {
     initLoadAnimation,
     initCardHoverEffects,
     initPagination,
-    changePerPage,
     jumpToPage
 }; 

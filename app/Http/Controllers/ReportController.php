@@ -87,8 +87,8 @@ class ReportController extends Controller
                 ->toArray();
         });
         
-        // 分页设置
-        $perPage = min($request->get('per_page', 15), 50); // 每页显示数量，最多50个
+        // 分页设置 - 固定每页10个
+        $perPage = 10; // 固定每页显示10个
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $currentItems = array_slice($allReports, ($currentPage - 1) * $perPage, $perPage);
         
@@ -129,7 +129,7 @@ class ReportController extends Controller
             if (File::exists($walkthroughFile)) {
                 $content = File::get($walkthroughFile);
                 $excerpt = $this->extractExcerpt($content);
-                $mtime = File::lastModified($walkthroughFile);
+                $mtime = $this->extractModificationTime($content, $walkthroughFile);
                 $size = File::size($walkthroughFile);
                 
                 // 统计图片数量
@@ -626,5 +626,62 @@ class ReportController extends Controller
         } catch (\Exception $e) {
             Log::warning("无法生成HTML预览: " . $e->getMessage());
         }
+    }
+
+    /**
+     * 从文件内容中提取修改时间
+     */
+    private function extractModificationTime($content, $filePath)
+    {
+        // 尝试从内容中提取各种日期格式
+        $patterns = [
+            // YYYY-MM-DD 格式
+            '/(\d{4}-\d{1,2}-\d{1,2})/',
+            // DD/MM/YYYY 或 MM/DD/YYYY 格式
+            '/(\d{1,2}\/\d{1,2}\/\d{4})/',
+            // Mon May 14 2018 格式
+            '/([A-Za-z]{3}\s+[A-Za-z]{3}\s+\d{1,2}\s+\d{4})/',
+            // 2018-11-20 或类似格式
+            '/(\d{4}-\d{1,2}-\d{1,2})/',
+            // Nov 20, 2018 格式
+            '/([A-Za-z]{3}\s+\d{1,2},?\s+\d{4})/',
+        ];
+        
+        $dates = [];
+        
+        foreach ($patterns as $pattern) {
+            if (preg_match_all($pattern, $content, $matches)) {
+                foreach ($matches[1] as $match) {
+                    try {
+                        $timestamp = strtotime($match);
+                        if ($timestamp !== false && $timestamp > 0) {
+                            $dates[] = $timestamp;
+                        }
+                    } catch (\Exception $e) {
+                        // 忽略无效日期
+                    }
+                }
+            }
+        }
+        
+        // 如果找到了日期，返回最新的日期
+        if (!empty($dates)) {
+            return max($dates);
+        }
+        
+        // 如果没有找到日期，尝试从文件路径中提取信息
+        // 检查文件夹名称中是否包含日期信息
+        $folderName = basename(dirname($filePath));
+        
+        // 尝试解析文件夹名中的日期
+        if (preg_match('/(\d{4})[_-]?(\d{1,2})[_-]?(\d{1,2})/', $folderName, $matches)) {
+            $timestamp = mktime(0, 0, 0, $matches[2], $matches[3], $matches[1]);
+            if ($timestamp !== false) {
+                return $timestamp;
+            }
+        }
+        
+        // 如果都没有找到，返回文件的系统修改时间
+        return File::lastModified($filePath);
     }
 } 
