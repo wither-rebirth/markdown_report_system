@@ -11,7 +11,7 @@
     },
     "devDependencies": {
         "laravel-vite-plugin": "^1.0.0",
-        "vite": "^5.0.0"
+        "vite": "^7.0.1"
     },
     "keywords": [
         "laravel",

@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
@@ -30,43 +32,129 @@ class ReportController extends Controller
     }
     
     /**
-     * 显示报告列表
+     * 显示报告列表 - 支持分页
      */
-    public function index()
+    public function index(Request $request)
     {
         $reportsDir = storage_path('reports');
+        $hacktheboxDir = storage_path('reports/Hackthebox-Walkthrough');
         
         if (!File::exists($reportsDir)) {
             File::makeDirectory($reportsDir, 0755, true);
         }
         
-        $reports = collect(File::glob($reportsDir . '/*.md'))
-            ->map(function ($file) {
-                $filename = pathinfo($file, PATHINFO_FILENAME);
-                $content = File::get($file);
-                
-                // 提取标题（第一个 # 标题或文件名）
-                $title = $filename;
-                if (preg_match('/^#\s+(.+)$/m', $content, $matches)) {
-                    $title = trim($matches[1]);
-                }
-                
-                // 提取摘要（第一段文字或前100个字符）
-                $excerpt = $this->extractExcerpt($content);
-                
-                return [
-                    'slug' => $filename,
-                    'title' => $title,
-                    'excerpt' => $excerpt,
-                    'mtime' => File::lastModified($file),
-                    'size' => File::size($file),
-                    'status' => 'active'
-                ];
-            })
-            ->sortByDesc('mtime')
-            ->values();
+        // 使用缓存来提高性能
+        $cacheKey = 'all_reports_' . filemtime($hacktheboxDir);
+        $allReports = Cache::remember($cacheKey, 600, function () use ($reportsDir, $hacktheboxDir) {
+            $reports = collect();
+            
+            // 处理传统的单个 .md 文件
+            $mdFiles = collect(File::glob($reportsDir . '/*.md'))
+                ->map(function ($file) {
+                    $filename = pathinfo($file, PATHINFO_FILENAME);
+                    $content = File::get($file);
+                    
+                    // 提取标题（第一个 # 标题或文件名）
+                    $title = $filename;
+                    if (preg_match('/^#\s+(.+)$/m', $content, $matches)) {
+                        $title = trim($matches[1]);
+                    }
+                    
+                    // 提取摘要（第一段文字或前100个字符）
+                    $excerpt = $this->extractExcerpt($content);
+                    
+                    return [
+                        'slug' => $filename,
+                        'title' => $title,
+                        'excerpt' => $excerpt,
+                        'mtime' => File::lastModified($file),
+                        'size' => File::size($file),
+                        'status' => 'active',
+                        'type' => 'file'
+                    ];
+                });
+            
+            // 处理 Hackthebox-Walkthrough 文件夹
+            if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
+                $hacktheboxReports = $this->getHacktheboxReports($hacktheboxDir);
+                $reports = $reports->merge($hacktheboxReports);
+            }
+            
+            // 合并并排序
+            return $reports->merge($mdFiles)
+                ->sortByDesc('mtime')
+                ->values()
+                ->toArray();
+        });
+        
+        // 分页设置
+        $perPage = min($request->get('per_page', 15), 50); // 每页显示数量，最多50个
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $currentItems = array_slice($allReports, ($currentPage - 1) * $perPage, $perPage);
+        
+        // 创建分页器
+        $reports = new LengthAwarePaginator(
+            $currentItems,
+            count($allReports),
+            $perPage,
+            $currentPage,
+            [
+                'path' => $request->url(),
+                'pageName' => 'page',
+            ]
+        );
+        
+        // 保留查询参数
+        $reports->appends($request->query());
         
         return view('index', compact('reports'));
+    }
+    
+    /**
+     * 获取 Hackthebox-Walkthrough 文件夹中的报告
+     */
+    private function getHacktheboxReports($hacktheboxDir)
+    {
+        $reports = collect();
+        
+        // 读取所有子文件夹
+        $directories = File::directories($hacktheboxDir);
+        
+        foreach ($directories as $dir) {
+            $dirName = basename($dir);
+            $walkthroughFile = $dir . '/Walkthrough.md';
+            $imagesDir = $dir . '/images';
+            
+            // 检查是否存在 Walkthrough.md 文件
+            if (File::exists($walkthroughFile)) {
+                $content = File::get($walkthroughFile);
+                $excerpt = $this->extractExcerpt($content);
+                $mtime = File::lastModified($walkthroughFile);
+                $size = File::size($walkthroughFile);
+                
+                // 统计图片数量
+                $imageCount = 0;
+                if (File::exists($imagesDir) && File::isDirectory($imagesDir)) {
+                    $imageFiles = File::glob($imagesDir . '/*.{jpg,jpeg,png,gif,bmp,webp}', GLOB_BRACE);
+                    $imageCount = count($imageFiles);
+                }
+                
+                $reports->push([
+                    'slug' => 'htb-' . $dirName,
+                    'title' => $dirName,
+                    'excerpt' => $excerpt,
+                    'mtime' => $mtime,
+                    'size' => $size,
+                    'status' => 'active',
+                    'type' => 'hackthebox',
+                    'folder_name' => $dirName,
+                    'image_count' => $imageCount,
+                    'has_images' => $imageCount > 0
+                ]);
+            }
+        }
+        
+        return $reports;
     }
     
     /**
@@ -167,6 +255,11 @@ class ReportController extends Controller
      */
     public function show($slug)
     {
+        // 检查是否是 Hackthebox 报告
+        if (str_starts_with($slug, 'htb-')) {
+            return $this->showHacktheboxReport($slug);
+        }
+        
         $filePath = storage_path("reports/{$slug}.md");
         
         if (!File::exists($filePath)) {
@@ -201,6 +294,110 @@ class ReportController extends Controller
         });
         
         return view('report', $data);
+    }
+    
+    /**
+     * 显示 Hackthebox 报告
+     */
+    private function showHacktheboxReport($slug)
+    {
+        // 提取文件夹名（去掉 htb- 前缀）
+        $folderName = substr($slug, 4);
+        $reportDir = storage_path("reports/Hackthebox-Walkthrough/{$folderName}");
+        $walkthroughFile = $reportDir . '/Walkthrough.md';
+        
+        if (!File::exists($walkthroughFile)) {
+            abort(404, '报告不存在');
+        }
+        
+        // 使用缓存提高性能
+        $cacheKey = "htb.report.{$slug}." . File::lastModified($walkthroughFile);
+        
+        $data = Cache::remember($cacheKey, 3600, function () use ($walkthroughFile, $slug, $folderName, $reportDir) {
+            $content = File::get($walkthroughFile);
+            
+            // 处理图片链接 - 将相对路径转换为可访问的URL
+            $content = $this->processHacktheboxImages($content, $folderName);
+            
+            // 转换 Markdown 为 HTML
+            $html = $this->markdownConverter->convert($content);
+            
+            // 统计图片数量
+            $imagesDir = $reportDir . '/images';
+            $imageCount = 0;
+            if (File::exists($imagesDir) && File::isDirectory($imagesDir)) {
+                $imageFiles = File::glob($imagesDir . '/*.{jpg,jpeg,png,gif,bmp,webp}', GLOB_BRACE);
+                $imageCount = count($imageFiles);
+            }
+            
+            return [
+                'title' => $folderName,
+                'html' => $html,
+                'slug' => $slug,
+                'mtime' => File::lastModified($walkthroughFile),
+                'size' => File::size($walkthroughFile),
+                'type' => 'hackthebox',
+                'folder_name' => $folderName,
+                'image_count' => $imageCount
+            ];
+        });
+        
+        return view('report', $data);
+    }
+    
+    /**
+     * 处理 Hackthebox 报告中的图片链接
+     */
+    private function processHacktheboxImages($content, $folderName)
+    {
+        // 处理 Markdown 图片语法 ![alt](images/filename.ext)
+        $content = preg_replace_callback(
+            '/!\[([^\]]*)\]\(images\/([^)]+)\)/',
+            function ($matches) use ($folderName) {
+                $alt = $matches[1];
+                $filename = $matches[2];
+                $url = route('reports.htb-image', ['folder' => $folderName, 'filename' => $filename]);
+                return "![{$alt}]({$url})";
+            },
+            $content
+        );
+        
+        // 处理 HTML img 标签 <img src="images/filename.ext">
+        $content = preg_replace_callback(
+            '/<img([^>]*?)src=["\']images\/([^"\']+)["\']([^>]*?)>/i',
+            function ($matches) use ($folderName) {
+                $before = $matches[1];
+                $filename = $matches[2];
+                $after = $matches[3];
+                $url = route('reports.htb-image', ['folder' => $folderName, 'filename' => $filename]);
+                return "<img{$before}src=\"{$url}\"{$after}>";
+            },
+            $content
+        );
+        
+        return $content;
+    }
+    
+    /**
+     * 提供 Hackthebox 报告图片
+     */
+    public function getHacktheboxImage($folder, $filename)
+    {
+        // URL解码文件名
+        $decodedFilename = urldecode($filename);
+        $imagePath = storage_path("reports/Hackthebox-Walkthrough/{$folder}/images/{$decodedFilename}");
+        
+        if (!File::exists($imagePath)) {
+            abort(404, '图片不存在');
+        }
+        
+        // 检查文件类型
+        $mimeType = mime_content_type($imagePath);
+        if (!str_starts_with($mimeType, 'image/')) {
+            abort(403, '文件类型不支持');
+        }
+        
+        return response()->file($imagePath);
     }
     
     /**

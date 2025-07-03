@@ -21,6 +21,11 @@ Route::post('/upload', [ReportController::class, 'store'])->name('reports.store'
 // 显示单个报告
 Route::get('/reports/{slug}', [ReportController::class, 'show'])->name('reports.show');
 
+// Hackthebox 报告图片访问
+Route::get('/htb-images/{folder}/{filename}', [ReportController::class, 'getHacktheboxImage'])
+    ->name('reports.htb-image')
+    ->where(['folder' => '[a-zA-Z0-9\-_]+', 'filename' => '.+']);
+
 // 删除报告
 Route::delete('/reports/{slug}', [ReportController::class, 'destroy'])->name('reports.destroy');
 
@@ -37,4 +42,3 @@ Route::get('/api/stats', [ReportController::class, 'stats'])->name('reports.stat
 Route::get('/{slug}.html', function ($slug) {
     return redirect()->route('reports.show', $slug);
 })->where('slug', '[a-zA-Z0-9\-_]+');
-

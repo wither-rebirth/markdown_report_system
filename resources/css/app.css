@@ -3,7 +3,7 @@
 /* 导入Pico.css基础样式 */
 /* @import url('https://unpkg.com/@picocss/pico@latest/css/pico.min.css'); */
 
-/* 自定义CSS变量 */
+/* 自定义CSS变量 - 亮色模式 */
 :root {
     --primary-color: #3b82f6;
     --primary-hover: #2563eb;
@@ -21,21 +21,65 @@
     --border-medium: #d1d5db;
     --text-color: #1f2937;
     --text-muted: #6b7280;
+    --text-strong: #111827;
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --border-radius: 0.75rem;
     --radius-lg: 1rem;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --code-bg: #f3f4f6;
+    --code-border: #d1d5db;
 }
 
-/* 深色模式支持 */
+/* 手动暗黑模式类 */
+[data-theme="dark"] {
+    --primary-color: #60a5fa;
+    --primary-hover: #3b82f6;
+    --primary-light: #1e3a8a;
+    --secondary-color: #94a3b8;
+    --success-color: #34d399;
+    --warning-color: #fbbf24;
+    --error-color: #f87171;
+    --background-color: #0c0c0c;
+    --surface-color: #111111;
+    --bg-surface: #1a1a1a;
+    --bg-secondary: #0f0f0f;
+    --border-color: #404040;
+    --border-light: #333333;
+    --border-medium: #525252;
+    --text-color: #f5f5f5;
+    --text-muted: #a3a3a3;
+    --text-strong: #ffffff;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+    --code-bg: #262626;
+    --code-border: #525252;
+}
+
+/* 系统偏好暗黑模式支持 */
 @media (prefers-color-scheme: dark) {
-    :root {
-        --background-color: #0f172a;
-        --surface-color: #1e293b;
-        --border-color: #334155;
-        --text-color: #f1f5f9;
-        --text-muted: #94a3b8;
+    :root:not([data-theme]) {
+        --primary-color: #60a5fa;
+        --primary-hover: #3b82f6;
+        --primary-light: #1e3a8a;
+        --secondary-color: #94a3b8;
+        --success-color: #34d399;
+        --warning-color: #fbbf24;
+        --error-color: #f87171;
+        --background-color: #0c0c0c;
+        --surface-color: #111111;
+        --bg-surface: #1a1a1a;
+        --bg-secondary: #0f0f0f;
+        --border-color: #404040;
+        --border-light: #333333;
+        --border-medium: #525252;
+        --text-color: #f5f5f5;
+        --text-muted: #a3a3a3;
+        --text-strong: #ffffff;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+        --code-bg: #262626;
+        --code-border: #525252;
     }
 }
 
@@ -52,10 +96,17 @@ body {
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-smooth: always;
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-feature-settings: "kern" 1;
+    font-feature-settings: "kern" 1;
+    font-kerning: normal;
     background-color: var(--background-color);
     color: var(--text-color);
-    line-height: 1.6;
+    line-height: 1.65;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* 主容器 */

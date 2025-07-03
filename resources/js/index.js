@@ -51,6 +51,45 @@ function initKeyboardShortcuts() {
                 searchInput.focus();
             }
         }
+        
+        // 分页快捷键支持
+        // 仅在没有焦点在输入框时才响应
+        if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+            const url = new URL(window.location.href);
+            const currentPage = parseInt(url.searchParams.get('page') || 1);
+            
+            // 左箭头或 A 键 - 上一页
+            if ((e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') && currentPage > 1) {
+                e.preventDefault();
+                url.searchParams.set('page', currentPage - 1);
+                window.location.href = url.toString();
+            }
+            
+            // 右箭头或 D 键 - 下一页
+            if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+                e.preventDefault();
+                url.searchParams.set('page', currentPage + 1);
+                window.location.href = url.toString();
+            }
+            
+            // Home 键 - 第一页
+            if (e.key === 'Home') {
+                e.preventDefault();
+                url.searchParams.set('page', 1);
+                window.location.href = url.toString();
+            }
+            
+            // End 键 - 最后一页
+            if (e.key === 'End') {
+                const jumpInput = document.getElementById('jumpToPage');
+                if (jumpInput) {
+                    e.preventDefault();
+                    const maxPage = parseInt(jumpInput.getAttribute('max'));
+                    url.searchParams.set('page', maxPage);
+                    window.location.href = url.toString();
+                }
+            }
+        }
     });
 }
 
@@ -176,10 +215,69 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Index 页面初始化完成');
 });
 
+// 分页功能
+function changePerPage(perPage) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('per_page', perPage);
+    url.searchParams.set('page', 1); // 重置到第一页
+    window.location.href = url.toString();
+}
+
+function jumpToPage() {
+    const pageInput = document.getElementById('jumpToPage');
+    const page = parseInt(pageInput.value);
+    const maxPage = parseInt(pageInput.getAttribute('max'));
+    
+    if (page >= 1 && page <= maxPage) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', page);
+        window.location.href = url.toString();
+    } else {
+        alert(`请输入 1 到 ${maxPage} 之间的页码`);
+        pageInput.focus();
+    }
+}
+
+// 初始化分页功能
+function initPagination() {
+    // 快速跳转 - 支持回车键
+    const pageInput = document.getElementById('jumpToPage');
+    if (pageInput) {
+        pageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                jumpToPage();
+            }
+        });
+    }
+}
+
+// 页面初始化
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化各种功能
+    initSearch();
+    initKeyboardShortcuts();
+    initLoadAnimation();
+    initCardHoverEffects();
+    initLazyLoading();
+    initVisibilityAPI();
+    initSearchHistory();
+    initPagination(); // 新增分页初始化
+    
+    // 页面加载完成提示
+    console.log('Index 页面初始化完成');
+});
+
+// 导出函数供其他脚本使用（全局函数）
+window.changePerPage = changePerPage;
+window.jumpToPage = jumpToPage;
+
 // 导出函数供其他脚本使用
 window.IndexPage = {
     initSearch,
     initKeyboardShortcuts,
     initLoadAnimation,
-    initCardHoverEffects
+    initCardHoverEffects,
+    initPagination,
+    changePerPage,
+    jumpToPage
 }; 
