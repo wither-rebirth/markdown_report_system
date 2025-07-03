@@ -15,6 +15,7 @@
     
     <!-- 引入样式文件 -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/layout.css', 'resources/js/layout.js'])
     
     @stack('styles')
 </head>
@@ -94,80 +95,6 @@
     </div>
 
     @stack('scripts')
-    
-    <script>
-        // 全屏切换函数
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            } else {
-                document.exitFullscreen();
-            }
-        }
-
-        // 暗黑模式切换
-        function toggleDarkMode() {
-            const html = document.documentElement;
-            const isDark = html.classList.toggle('dark');
-            localStorage.setItem('dark-mode', isDark);
-        }
-
-        // 回到顶部功能
-        function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-
-        // 初始化暗黑模式
-        if (localStorage.getItem('dark-mode') === 'true') {
-            document.documentElement.classList.add('dark');
-        }
-
-        // 监听系统主题变化
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (!localStorage.getItem('dark-mode')) {
-                document.documentElement.classList.toggle('dark', e.matches);
-            }
-        });
-
-        // 滚动时显示/隐藏回到顶部按钮
-        window.addEventListener('scroll', () => {
-            const scrollTopBtn = document.getElementById('scroll-top-btn');
-            if (window.scrollY > 100) {
-                scrollTopBtn.style.display = 'flex';
-            } else {
-                scrollTopBtn.style.display = 'none';
-            }
-        });
-
-        // 键盘快捷键
-        document.addEventListener('keydown', (e) => {
-
-            
-            // F11 全屏
-            if (e.key === 'F11') {
-                e.preventDefault();
-                toggleFullscreen();
-            }
-            
-            // Escape 退出全屏
-            if (e.key === 'Escape' && document.fullscreenElement) {
-                document.exitFullscreen();
-            }
-        });
-
-        // 性能监控
-        window.addEventListener('load', () => {
-            if ('performance' in window) {
-                setTimeout(() => {
-                    const perfData = performance.getEntriesByType('navigation')[0];
-                    console.log('页面加载时间:', perfData.loadEventEnd - perfData.navigationStart, 'ms');
-                }, 0);
-            }
-        });
-    </script>
 </body>
 </html>
 

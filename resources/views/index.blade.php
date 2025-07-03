@@ -1,5 +1,9 @@
 @extends('layout')
 
+@push('styles')
+    @vite(['resources/css/index.css'])
+@endpush
+
 @section('content')
 <div class="report-index">
 
@@ -88,60 +92,7 @@
 
 
 @push('scripts')
-<script>
-// 简化的搜索功能
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('report-search');
-    const searchResults = document.getElementById('search-results');
-    const reportCards = document.querySelectorAll('.report-card-link');
-    
-    if (searchInput && reportCards.length > 0) {
-        // 搜索功能
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase().trim();
-            let visibleCount = 0;
-            
-            reportCards.forEach(card => {
-                const title = card.querySelector('.report-title').textContent.toLowerCase();
-                const excerpt = card.querySelector('.report-excerpt').textContent.toLowerCase();
-                
-                if (searchTerm === '' || title.includes(searchTerm) || excerpt.includes(searchTerm)) {
-                    card.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-            
-            // 更新搜索结果显示
-            if (searchResults) {
-                if (searchTerm === '') {
-                    searchResults.style.display = 'none';
-                } else {
-                    searchResults.style.display = 'block';
-                    document.getElementById('results-count').textContent = visibleCount;
-                }
-            }
-        });
-        
-        // 快捷键支持
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'k') {
-                e.preventDefault();
-                searchInput.focus();
-            }
-        });
-    }
-    
-    // 页面加载动画
-    const cards = document.querySelectorAll('.report-card');
-    cards.forEach((card, index) => {
-        setTimeout(() => {
-            card.style.animation = 'slideInUp 0.6s ease forwards';
-        }, index * 100);
-    });
-});
-</script>
+    @vite(['resources/js/index.js'])
 @endpush
 @endsection
 

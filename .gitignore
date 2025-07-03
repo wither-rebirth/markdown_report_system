@@ -17,3 +17,54 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode 
+
+# 新增需要忽略的文件
+# 日志文件
+storage/logs/*.log
+storage/logs/laravel.log
+
+# 缓存文件
+storage/framework/cache/data/*
+storage/framework/cache/packages.php
+storage/framework/cache/services.php
+
+# 编译后的视图文件
+storage/framework/views/*.php
+!storage/framework/views/.gitkeep
+
+# 会话文件
+storage/framework/sessions/*
+!storage/framework/sessions/.gitkeep
+
+# 临时文件
+storage/framework/testing/*
+!storage/framework/testing/.gitkeep
+
+# 数据库文件
+database/database.sqlite
+database.sqlite
+*.db
+*.sqlite
+
+# 构建文件
+public/hot
+public/css/app.css
+public/js/app.js
+public/mix-manifest.json
+public/build/
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器文件
+*.swp
+*.swo
+*.tmp
+*~
+
+# 调试文件
+*.log
+*.out
+*.pid
+*.gz 
