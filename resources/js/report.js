@@ -4,10 +4,41 @@
 function generateTableOfContents() {
     const headings = document.querySelectorAll('.report-content h1, .report-content h2, .report-content h3, .report-content h4, .report-content h5, .report-content h6');
     
-    if (headings.length === 0) return;
+    // 如果标题数量少于3个，不生成目录
+    if (headings.length < 3) {
+        const tocContainer = document.getElementById('table-of-contents');
+        if (tocContainer) {
+            tocContainer.style.display = 'none';
+        }
+        return;
+    }
     
     const tocContainer = document.getElementById('table-of-contents');
     if (!tocContainer) return;
+    
+    // 检查报告内容中是否已经包含目录
+    // 如果已经有目录相关的内容，就不生成新的目录
+    const reportContent = document.querySelector('.report-content');
+    if (reportContent) {
+        const existingToc = reportContent.querySelector('ul, ol');
+        const tocKeywords = ['目录', '目次', 'table of contents', 'toc', 'contents'];
+        
+        if (existingToc) {
+            const tocText = existingToc.textContent.toLowerCase();
+            const parentText = existingToc.parentElement ? existingToc.parentElement.textContent.toLowerCase() : '';
+            
+            // 如果找到了可能的目录，检查是否包含目录关键词
+            const hasKeywords = tocKeywords.some(keyword => 
+                tocText.includes(keyword) || parentText.includes(keyword)
+            );
+            
+            if (hasKeywords) {
+                console.log('检测到现有目录，跳过自动生成');
+                tocContainer.style.display = 'none';
+                return;
+            }
+        }
+    }
     
     // 创建目录标题
     const tocTitle = document.createElement('h3');
@@ -173,26 +204,74 @@ function initScrollToTop() {
     });
 }
 
-// 代码块复制功能
+// 代码块复制功能和样式增强
 function initCodeCopy() {
     const codeBlocks = document.querySelectorAll('.report-content pre');
     
     codeBlocks.forEach(block => {
+        // 智能检测代码块类型
+        const codeElement = block.querySelector('code');
+        if (codeElement) {
+            const content = codeElement.textContent.toLowerCase();
+            
+            // 检测不同类型的命令行
+            if (content.includes('sudo') || content.includes('root@') || content.includes('#')) {
+                block.classList.add('terminal-root');
+            } else if (content.includes('c:\\') || content.includes('cmd') || content.includes('powershell')) {
+                block.classList.add('terminal-windows');
+            } else if (content.includes('>>>') || content.includes('python') || content.includes('pip')) {
+                block.classList.add('terminal-python');
+            }
+        }
+        
+        // 创建 Kali Linux 标题栏
+        const titleBar = document.createElement('div');
+        titleBar.style.cssText = `
+            position: absolute;
+            top: 12px;
+            right: 60px;
+            color: #00ff41;
+            font-size: 10px;
+            font-family: 'Ubuntu Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+        `;
+        
+        if (block.classList.contains('terminal-root')) {
+            titleBar.textContent = 'ROOT@KALI';
+        } else if (block.classList.contains('terminal-windows')) {
+            titleBar.textContent = 'CMD.EXE';
+        } else if (block.classList.contains('terminal-python')) {
+            titleBar.textContent = 'PYTHON3';
+        } else {
+            titleBar.textContent = 'KALI@LINUX';
+        }
+        
+        block.appendChild(titleBar);
+        
+        // 创建 Kali Linux 风格复制按钮
         const copyButton = document.createElement('button');
-        copyButton.textContent = '复制';
+        copyButton.innerHTML = '⚡';
+        copyButton.title = '复制命令';
         copyButton.style.cssText = `
             position: absolute;
-            top: 8px;
-            right: 8px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
+            top: 5px;
+            right: 16px;
+            background: transparent;
+            color: #00ff41;
+            border: 1px solid #00ff41;
             padding: 4px 8px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 12px;
             cursor: pointer;
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+            box-shadow: 0 0 5px rgba(0, 255, 65, 0.2);
         `;
         
         // 设置代码块为相对定位
@@ -201,25 +280,63 @@ function initCodeCopy() {
         // 添加复制按钮
         block.appendChild(copyButton);
         
-        // 悬停显示按钮
+        // Kali Linux 风格悬停效果
         block.addEventListener('mouseenter', () => {
             copyButton.style.opacity = '1';
+            copyButton.style.background = 'rgba(0, 255, 65, 0.1)';
+            copyButton.style.borderColor = '#39ff14';
+            titleBar.style.opacity = '1';
         });
         
         block.addEventListener('mouseleave', () => {
             copyButton.style.opacity = '0';
+            copyButton.style.background = 'transparent';
+            copyButton.style.borderColor = '#00ff41';
+            titleBar.style.opacity = '0.8';
+        });
+        
+        // Kali Linux 复制按钮悬停效果
+        copyButton.addEventListener('mouseenter', () => {
+            copyButton.style.background = 'rgba(57, 255, 20, 0.2)';
+            copyButton.style.color = '#39ff14';
+            copyButton.style.transform = 'scale(1.1)';
+            copyButton.style.boxShadow = '0 0 15px rgba(57, 255, 20, 0.5)';
+        });
+        
+        copyButton.addEventListener('mouseleave', () => {
+            copyButton.style.background = 'rgba(0, 255, 65, 0.1)';
+            copyButton.style.color = '#00ff41';
+            copyButton.style.transform = 'scale(1)';
+            copyButton.style.boxShadow = '0 0 5px rgba(0, 255, 65, 0.2)';
         });
         
         // 复制功能
         copyButton.addEventListener('click', () => {
             const code = block.querySelector('code') || block;
-            const text = code.textContent;
+            let text = code.textContent;
+            
+            // 移除 Kali Linux 提示符，只复制实际命令
+            if (block.classList.contains('terminal-root')) {
+                text = text.replace(/^┌──\(root㉿kali\)-\[~\/Documents\]\n└─# /gm, '');
+            } else if (block.classList.contains('terminal-windows')) {
+                text = text.replace(/^┌──\(kali㉿kali\)-\[~\/Documents\]\n└─\$ cmd\.exe /gm, '');
+            } else if (block.classList.contains('terminal-python')) {
+                text = text.replace(/^┌──\(kali㉿kali\)-\[~\/Documents\]\n└─\$ python3\n>>> /gm, '');
+            } else {
+                text = text.replace(/^┌──\(kali㉿kali\)-\[~\/Documents\]\n└─\$ /gm, '');
+            }
             
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(text).then(() => {
-                    copyButton.textContent = '已复制';
+                    copyButton.innerHTML = '💀';
+                    copyButton.style.color = '#39ff14';
+                    copyButton.style.textShadow = '0 0 10px rgba(57, 255, 20, 0.8)';
+                    copyButton.style.boxShadow = '0 0 20px rgba(57, 255, 20, 0.6)';
                     setTimeout(() => {
-                        copyButton.textContent = '复制';
+                        copyButton.innerHTML = '⚡';
+                        copyButton.style.color = '#00ff41';
+                        copyButton.style.textShadow = '0 0 5px rgba(0, 255, 65, 0.5)';
+                        copyButton.style.boxShadow = '0 0 5px rgba(0, 255, 65, 0.2)';
                     }, 2000);
                 });
             } else {
@@ -230,9 +347,15 @@ function initCodeCopy() {
                 textArea.select();
                 try {
                     document.execCommand('copy');
-                    copyButton.textContent = '已复制';
+                    copyButton.innerHTML = '💀';
+                    copyButton.style.color = '#39ff14';
+                    copyButton.style.textShadow = '0 0 10px rgba(57, 255, 20, 0.8)';
+                    copyButton.style.boxShadow = '0 0 20px rgba(57, 255, 20, 0.6)';
                     setTimeout(() => {
-                        copyButton.textContent = '复制';
+                        copyButton.innerHTML = '⚡';
+                        copyButton.style.color = '#00ff41';
+                        copyButton.style.textShadow = '0 0 5px rgba(0, 255, 65, 0.5)';
+                        copyButton.style.boxShadow = '0 0 5px rgba(0, 255, 65, 0.2)';
                     }, 2000);
                 } catch (err) {
                     console.log('无法复制代码');

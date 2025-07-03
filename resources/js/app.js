@@ -156,50 +156,9 @@ const app = createApp({
             });
         },
         
-        initCodeHighlight() {
-    const codeBlocks = document.querySelectorAll('pre code');
-    
-    codeBlocks.forEach(block => {
-        const pre = block.parentElement;
-        const button = document.createElement('button');
-        button.textContent = '复制';
-        button.className = 'copy-btn';
-                button.onclick = () => this.copyCode(block, button);
-        
-        pre.style.position = 'relative';
-        pre.appendChild(button);
-        
-                // 添加动画
-                gsap.fromTo(button, {
-                    opacity: 0,
-                    scale: 0.8
-                }, {
-                    opacity: 1,
-                    scale: 1,
-                    duration: 0.3,
-                    ease: 'back.out(1.7)'
-                });
-            });
-        },
-        
-        copyCode(block, button) {
-            navigator.clipboard.writeText(block.textContent).then(() => {
-                const originalText = button.textContent;
-                button.textContent = '已复制!';
-                
-                // 动画反馈
-                gsap.to(button, {
-                    scale: 1.1,
-                    duration: 0.1,
-                    yoyo: true,
-                    repeat: 1,
-                    ease: 'power2.out'
-                });
-                
-                setTimeout(() => {
-                    button.textContent = originalText;
-                }, 2000);
-            });
+                initCodeHighlight() {
+            // 代码高亮功能已集成到 report.js 中的 initCodeCopy() 函数
+            // 这里不再需要额外的复制按钮
         },
 
         initTableOfContents() {
