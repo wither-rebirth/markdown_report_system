@@ -29,9 +29,6 @@
                     <h1 class="navbar-title">
                         <a href="{{ url('/') }}">🎯 靶场报告系统</a>
                     </h1>
-                    @if(isset($reports) && Route::currentRouteName() === 'reports.index')
-                    <span class="navbar-stats">{{ count($reports) }} 个报告</span>
-                    @endif
                 </div>
                 
 
