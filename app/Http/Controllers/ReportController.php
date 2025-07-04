@@ -32,7 +32,7 @@ class ReportController extends Controller
     }
     
     /**
-     * 显示报告列表 - 支持分页
+     * 显示报告列表 - 支持分页和搜索
      */
     public function index(Request $request)
     {
@@ -42,6 +42,9 @@ class ReportController extends Controller
         if (!File::exists($reportsDir)) {
             File::makeDirectory($reportsDir, 0755, true);
         }
+        
+        // 获取搜索查询参数
+        $searchQuery = $request->input('search');
         
         // 使用缓存来提高性能
         $cacheKey = 'all_reports_' . filemtime($hacktheboxDir);
@@ -67,6 +70,7 @@ class ReportController extends Controller
                         'slug' => $filename,
                         'title' => $title,
                         'excerpt' => $excerpt,
+                        'content' => $content, // 保存完整内容用于搜索
                         'mtime' => File::lastModified($file),
                         'size' => File::size($file),
                         'status' => 'active',
@@ -86,6 +90,11 @@ class ReportController extends Controller
                 ->values()
                 ->toArray();
         });
+        
+        // 应用搜索过滤
+        if (!empty($searchQuery)) {
+            $allReports = $this->filterReportsBySearch($allReports, $searchQuery);
+        }
         
         // 分页设置 - 固定每页10个
         $perPage = 10; // 固定每页显示10个
@@ -110,6 +119,47 @@ class ReportController extends Controller
         return view('index', compact('reports'));
     }
     
+    /**
+     * 根据搜索查询过滤报告
+     */
+    private function filterReportsBySearch($reports, $searchQuery)
+    {
+        $searchQuery = mb_strtolower(trim($searchQuery));
+        if (empty($searchQuery)) {
+            return $reports;
+        }
+        
+        return collect($reports)->filter(function ($report) use ($searchQuery) {
+            // 搜索标题
+            $title = mb_strtolower($report['title']);
+            if (mb_strpos($title, $searchQuery) !== false) {
+                return true;
+            }
+            
+            // 搜索摘要
+            $excerpt = mb_strtolower($report['excerpt'] ?? '');
+            if (mb_strpos($excerpt, $searchQuery) !== false) {
+                return true;
+            }
+            
+            // 搜索内容（如果有）
+            $content = mb_strtolower($report['content'] ?? '');
+            if (mb_strpos($content, $searchQuery) !== false) {
+                return true;
+            }
+            
+            // 搜索文件夹名（用于Hackthebox报告）
+            if (isset($report['folder_name'])) {
+                $folderName = mb_strtolower($report['folder_name']);
+                if (mb_strpos($folderName, $searchQuery) !== false) {
+                    return true;
+                }
+            }
+            
+            return false;
+        })->values()->toArray();
+    }
+
     /**
      * 获取 Hackthebox-Walkthrough 文件夹中的报告
      */
@@ -143,6 +193,7 @@ class ReportController extends Controller
                     'slug' => 'htb-' . $dirName,
                     'title' => $dirName,
                     'excerpt' => $excerpt,
+                    'content' => $content, // 保存完整内容用于搜索
                     'mtime' => $mtime,
                     'size' => $size,
                     'status' => 'active',

@@ -58,30 +58,7 @@
     100% { transform: rotate(360deg); }
 }
 
-/* 页脚样式 */
-footer {
-    margin-top: 3rem;
-    padding: 2rem 0;
-    border-top: 1px solid var(--border-color);
-    background: var(--surface-color);
-    text-align: center;
-}
-
-footer p {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 0.875rem;
-}
-
-footer a {
-    color: var(--primary-color);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-footer a:hover {
-    color: var(--primary-hover);
-}
+/* 页脚样式在 app.css 中已定义，这里移除重复定义 */
 
 /* 响应式设计 */
 @media (max-width: 768px) {

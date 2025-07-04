@@ -111,7 +111,6 @@ body {
 
 /* 主容器 */
 #app {
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
@@ -247,7 +246,7 @@ body {
 
 /* 主要内容区域 */
 main {
-    flex: 1;
+    flex: 0 1 auto;
     padding: 1.5rem 2rem;
     max-width: 1200px;
     margin: 0 auto;
@@ -689,8 +688,8 @@ main {
 footer {
     background: var(--surface-color);
     border-top: 1px solid var(--border-color);
-    padding: 2rem;
-    margin-top: auto;
+    padding: 1rem;
+    margin-top: 2rem;
     text-align: center;
 }
 

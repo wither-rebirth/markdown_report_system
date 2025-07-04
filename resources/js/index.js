@@ -1,42 +1,55 @@
 // Index 页面 JavaScript
 
-// 简化的搜索功能
+// 清除搜索功能
+function clearSearch() {
+    const searchInput = document.getElementById('report-search');
+    if (searchInput) {
+        searchInput.value = '';
+        // 触发表单提交来清除搜索
+        const searchForm = document.querySelector('.search-form');
+        if (searchForm) {
+            searchForm.submit();
+        }
+    }
+}
+
+// 改进的搜索功能
 function initSearch() {
     const searchInput = document.getElementById('report-search');
-    const searchResults = document.getElementById('search-results');
-    const reportCards = document.querySelectorAll('.report-card-link');
+    const searchForm = document.querySelector('.search-form');
     
-    if (searchInput && reportCards.length > 0) {
-        // 搜索功能
+    if (searchInput && searchForm) {
+        // 实时搜索提示（可选）
+        let searchTimeout;
+        
+        // 搜索输入事件
         searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase().trim();
-            let visibleCount = 0;
+            clearTimeout(searchTimeout);
             
-            reportCards.forEach(card => {
-                const title = card.querySelector('.report-title').textContent.toLowerCase();
-                const excerpt = card.querySelector('.report-excerpt').textContent.toLowerCase();
-                
-                if (searchTerm === '' || title.includes(searchTerm) || excerpt.includes(searchTerm)) {
-                    card.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
+            // 防抖处理，避免频繁搜索
+            searchTimeout = setTimeout(() => {
+                const searchTerm = this.value.trim();
+                if (searchTerm.length > 0) {
+                    // 可以在这里添加实时搜索建议功能
+                    console.log('搜索词:', searchTerm);
                 }
-            });
-            
-            // 更新搜索结果显示
-            if (searchResults) {
-                if (searchTerm === '') {
-                    searchResults.style.display = 'none';
-                } else {
-                    searchResults.style.display = 'block';
-                    const resultsCount = document.getElementById('results-count');
-                    if (resultsCount) {
-                        resultsCount.textContent = visibleCount;
-                    }
-                }
+            }, 300);
+        });
+        
+        // 回车键搜索
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchForm.submit();
             }
         });
+        
+        // 自动聚焦搜索框（如果有搜索内容）
+        if (searchInput.value.trim() !== '') {
+            searchInput.focus();
+            // 将光标移到末尾
+            searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+        }
     }
 }
 
@@ -200,21 +213,6 @@ function initSearchHistory() {
     });
 }
 
-// 页面初始化
-document.addEventListener('DOMContentLoaded', function() {
-    // 初始化各种功能
-    initSearch();
-    initKeyboardShortcuts();
-    initLoadAnimation();
-    initCardHoverEffects();
-    initLazyLoading();
-    initVisibilityAPI();
-    initSearchHistory();
-    
-    // 页面加载完成提示
-    console.log('Index 页面初始化完成');
-});
-
 // 分页功能已简化为固定每页10个
 
 function jumpToPage() {
@@ -263,6 +261,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 导出函数供其他脚本使用（全局函数）
 window.jumpToPage = jumpToPage;
+window.clearSearch = clearSearch; // 导出清除搜索函数
 
 // 导出函数供其他脚本使用
 window.IndexPage = {
@@ -271,5 +270,6 @@ window.IndexPage = {
     initLoadAnimation,
     initCardHoverEffects,
     initPagination,
-    jumpToPage
+    jumpToPage,
+    clearSearch
 }; 

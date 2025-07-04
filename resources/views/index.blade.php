@@ -6,20 +6,62 @@
 
 @section('content')
 <div class="report-index">
-    <!-- 分页信息和搜索栏 -->
-    @if($reports->total() > 0)
+    <!-- 页面头部 -->
     <div class="page-header">
         <div class="page-info">
             <h2>📊 报告列表</h2>
+            @if($reports->total() > 0)
             <p class="total-info">
-                共 <strong>{{ $reports->total() }}</strong> 个报告，
-                当前第 <strong>{{ $reports->currentPage() }}</strong> 页，
-                共 <strong>{{ $reports->lastPage() }}</strong> 页
-                (每页显示 {{ $reports->perPage() }} 个)
+                @if(request('search'))
+                    搜索 "{{ request('search') }}" 找到 <strong>{{ $reports->total() }}</strong> 个报告
+                @else
+                    共 <strong>{{ $reports->total() }}</strong> 个报告
+                @endif
+                @if($reports->hasPages())
+                    ，当前第 <strong>{{ $reports->currentPage() }}</strong> 页，
+                    共 <strong>{{ $reports->lastPage() }}</strong> 页
+                    (每页显示 {{ $reports->perPage() }} 个)
+                @endif
             </p>
+            @endif
         </div>
     </div>
-    @endif
+    
+    <!-- 搜索栏 -->
+    <div class="search-container">
+        <form method="GET" action="{{ route('reports.index') }}" class="search-form">
+            <div class="search-input-group">
+                <div class="search-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                </div>
+                <input type="text" 
+                       name="search" 
+                       id="report-search" 
+                       placeholder="搜索报告标题、内容..." 
+                       value="{{ request('search') }}"
+                       class="search-input"
+                       autocomplete="off">
+                @if(request('search'))
+                    <button type="button" class="search-clear" onclick="clearSearch()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                        </svg>
+                    </button>
+                @endif
+            </div>
+            <button type="submit" class="search-btn">搜索</button>
+        </form>
+        
+        <!-- 搜索提示 -->
+        <div class="search-tips">
+            <span class="search-tip">💡 小贴士：按 <kbd>Ctrl</kbd> + <kbd>K</kbd> 快速聚焦搜索框</span>
+            @if(request('search'))
+                <a href="{{ route('reports.index') }}" class="clear-search-link">清除搜索</a>
+            @endif
+        </div>
+    </div>
 
     @if(count($reports) > 0)
     <!-- 报告列表 -->
