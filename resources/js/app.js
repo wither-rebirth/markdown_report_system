@@ -21,7 +21,11 @@ const app = createApp({
             particles: [],
             audioContext: null,
             analyser: null,
-            dataArray: null
+            dataArray: null,
+            animationConfig: {
+                duration: 0.8,
+                ease: 'power2.out'
+            }
         };
     },
     mounted() {
@@ -29,6 +33,7 @@ const app = createApp({
         this.setupScrollObserver();
         this.animateOnLoad();
         this.initAllEffects();
+        this.syncThemeState();
     },
     methods: {
         initializeApp() {
@@ -547,11 +552,22 @@ const app = createApp({
             }
         },
         
+        // 同步主题状态
+        syncThemeState() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            this.darkMode = currentTheme === 'dark';
+        },
+        
         // 切换暗黑模式
         toggleDarkMode() {
             this.darkMode = !this.darkMode;
-            document.documentElement.classList.toggle('dark', this.darkMode);
-            localStorage.setItem('dark-mode', this.darkMode);
+            if (this.darkMode) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme-mode', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme-mode', 'light');
+            }
         },
         
         // 初始化所有特效
@@ -687,17 +703,7 @@ window.toggleFullscreen = function() {
     }
 };
 
-window.toggleDarkMode = function() {
-    const isDark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem('dark-mode', isDark);
-    
-    // 添加切换动画
-    const body = document.body;
-    body.style.transition = 'background-color 0.3s ease';
-    setTimeout(() => {
-        body.style.transition = '';
-    }, 300);
-};
+// toggleDarkMode 函数已在 layout.js 中定义，这里移除重复定义
 
 window.scrollToTop = function() {
     window.scrollTo({

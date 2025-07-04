@@ -31,6 +31,10 @@ function toggleDarkMode() {
     }, 300);
 }
 
+// 将函数暴露给全局作用域
+window.toggleFullscreen = toggleFullscreen;
+window.toggleDarkMode = toggleDarkMode;
+
 // 更新主题图标
 function updateThemeIcon(theme) {
     const themeBtn = document.querySelector('[onclick="toggleDarkMode()"]');
@@ -57,6 +61,9 @@ function scrollToTop() {
         behavior: 'smooth'
     });
 }
+
+// 将 scrollToTop 也暴露给全局作用域
+window.scrollToTop = scrollToTop;
 
 // 初始化主题系统
 function initThemeSystem() {
