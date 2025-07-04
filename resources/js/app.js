@@ -17,7 +17,6 @@ const app = createApp({
             isLoading: false,
             showScrollTop: false,
             darkMode: false,
-            mousePos: { x: 0, y: 0 },
             particles: [],
             audioContext: null,
             analyser: null,
@@ -254,44 +253,6 @@ const app = createApp({
                 particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
                 container.appendChild(particle);
             }
-        },
-        
-        // 初始化鼠标跟随效果
-        initMouseFollower() {
-            const follower = document.createElement('div');
-            follower.className = 'cursor-follower';
-            document.body.appendChild(follower);
-            
-            const glow = document.createElement('div');
-            glow.className = 'cursor-glow';
-            document.body.appendChild(glow);
-            
-            let mouseX = 0;
-            let mouseY = 0;
-            let followerX = 0;
-            let followerY = 0;
-            let glowX = 0;
-            let glowY = 0;
-            
-            document.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                this.mousePos = { x: mouseX, y: mouseY };
-            });
-            
-            // 平滑跟随动画
-            const animate = () => {
-                followerX += (mouseX - followerX) * 0.1;
-                followerY += (mouseY - followerY) * 0.1;
-                glowX += (mouseX - glowX) * 0.05;
-                glowY += (mouseY - glowY) * 0.05;
-                
-                follower.style.transform = `translate(${followerX - 10}px, ${followerY - 10}px)`;
-                glow.style.transform = `translate(${glowX - 20}px, ${glowY - 20}px)`;
-                
-                requestAnimationFrame(animate);
-            };
-            animate();
         },
         
         // 初始化页面加载动画
@@ -580,7 +541,6 @@ const app = createApp({
             // 初始化各种特效
             this.initPageLoader();
             this.initParticles();
-            this.initMouseFollower();
             this.init3DCards();
             this.initTypewriter();
             this.initRainbowText();
