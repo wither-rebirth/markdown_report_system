@@ -250,6 +250,22 @@ window.addEventListener('beforeunload', function() {
     showLoading();
 });
 
+// 处理页面从缓存中恢复的情况（后退按钮）
+window.addEventListener('pageshow', function(event) {
+    // 如果页面是从缓存中恢复的，隐藏加载指示器
+    if (event.persisted) {
+        hideLoading();
+    }
+});
+
+// 处理页面可见性变化（额外的保险措施）
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        // 页面变为可见时，确保加载指示器被隐藏
+        hideLoading();
+    }
+});
+
 
 
 // 主题切换时的背景效果处理
