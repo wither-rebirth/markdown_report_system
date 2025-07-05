@@ -578,7 +578,7 @@ Get-Service | Where-Object {$_.Status -eq "Running"}
 
 ---
 
-*更多渗透测试技术请关注我的博客，也欢迎查看我的[靶场报告系统](/reports)获取更多实战案例。*';
+*更多渗透测试技术请关注wither\'s blog，也欢迎查看我的[靶场报告](/reports)获取更多实战案例。*';
 
         File::put($folderPostDir . '/index.md', $folderPostContent);
         
@@ -605,7 +605,7 @@ Get-Service | Where-Object {$_.Status -eq "Running"}
             [
                 'filename' => 'welcome-to-my-blog.md',
                 'content' => '---
-title: 欢迎来到我的博客
+title: 欢迎来到wither\'s blog
 excerpt: 这是我的第一篇博客文章，介绍了博客的主要内容和方向。
 author: Admin
 category: 公告
@@ -614,7 +614,7 @@ date: ' . date('Y-m-d H:i:s') . '
 image: /images/welcome.jpg
 ---
 
-# 欢迎来到我的博客
+# 欢迎来到wither\'s blog
 
 欢迎来到我的个人博客！这里我将分享关于网络安全、技术学习和日常思考的内容。
 
@@ -632,8 +632,8 @@ image: /images/welcome.jpg
 - 项目开发记录
 - 问题解决方案
 
-### 🎯 靶场报告系统
-特别推荐查看我的[靶场报告系统](/reports)，这里收录了我在各个靶场的详细Writeup：
+### 🎯 靶场报告
+特别推荐查看我的[靶场报告](/reports)，这里收录了我在各个靶场的详细Writeup：
 
 - HackTheBox机器攻略
 - VulnHub挑战解析
@@ -875,7 +875,7 @@ ss -antp
 
 ---
 
-这个模板可以根据具体情况进行调整，关键是要保持结构清晰，便于他人理解和学习。更多完整的Writeup请访问我的[靶场报告系统](/reports)！'
+这个模板可以根据具体情况进行调整，关键是要保持结构清晰，便于他人理解和学习。更多完整的Writeup请访问我的[靶场报告](/reports)！'
             ]
         ];
         

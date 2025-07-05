@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('layout', ['title' => '报告列表'])
 
 @push('styles')
     @vite(['resources/css/index.css'])

@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('layout', ['title' => '技术博客'])
 
 @push('styles')
     @vite(['resources/css/blog.css'])

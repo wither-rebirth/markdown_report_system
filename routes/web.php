@@ -21,7 +21,7 @@ Route::get('/blog-images/{folder}/{filename}', [BlogController::class, 'getBlogI
     ->name('blog.image')
     ->where(['folder' => '[a-zA-Z0-9\-_]+', 'filename' => '.+']);
 
-// 靶场报告系统路由组
+// 靶场报告路由组
 Route::prefix('reports')->group(function () {
     // 报告列表页面
     Route::get('/', [ReportController::class, 'index'])->name('reports.index');

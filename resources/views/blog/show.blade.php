@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('layout', ['title' => $post['title']])
 
 @push('styles')
     @vite(['resources/css/blog.css'])

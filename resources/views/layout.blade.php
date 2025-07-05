@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8">
-    <title>{{ $title ?? 'Laravel 靶场报告系统' }}</title>
+    <title>{{ $title ?? "wither's blog" }}</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="description" content="个人靶场报告展示系统">
+    <meta name="description" content="wither's blog - 个人技术博客与靶场报告展示系统">
     <meta name="theme-color" content="#3b82f6">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -35,7 +35,7 @@
                 <!-- 左侧：系统标题 -->
                 <div class="navbar-left">
                     <h1 class="navbar-title">
-                        <a href="{{ url('/') }}">🌟 我的博客</a>
+                        <a href="{{ url('/') }}">🌟 wither's blog</a>
                     </h1>
                 </div>
                 
@@ -107,7 +107,7 @@
         <footer>
             <div class="container">
                 <p>
-                    © {{ date('Y') }} Laravel 靶场报告系统 | 
+                    © {{ date('Y') }} wither's blog | 
                     <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
                 </p>
             </div>
