@@ -55,6 +55,12 @@
                             </svg>
                             靶场报告
                         </a>
+                        <a href="{{ route('aboutme.index') }}" class="nav-link {{ request()->routeIs('aboutme.*') ? 'active' : '' }}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+                            </svg>
+                            关于我
+                        </a>
                     </div>
                     
                     <!-- 操作按钮 -->
@@ -89,6 +95,12 @@
                                 <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                             </svg>
                             靶场报告
+                        </a>
+                        <a href="{{ route('aboutme.index') }}" class="mobile-nav-link {{ request()->routeIs('aboutme.*') ? 'active' : '' }}">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+                            </svg>
+                            关于我
                         </a>
                     </div>
                 </div>

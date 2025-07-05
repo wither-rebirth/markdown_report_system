@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\AboutMeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,9 @@ Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::get('/blog-images/{folder}/{filename}', [BlogController::class, 'getBlogImage'])
     ->name('blog.image')
     ->where(['folder' => '[a-zA-Z0-9\-_]+', 'filename' => '.+']);
+
+// 关于我页面
+Route::get('/aboutme', [AboutMeController::class, 'index'])->name('aboutme.index');
 
 // 靶场报告路由组
 Route::prefix('reports')->group(function () {
