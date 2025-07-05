@@ -31,9 +31,33 @@ function toggleDarkMode() {
     }, 300);
 }
 
+// 移动端菜单切换
+function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    const overlay = document.getElementById('mobile-menu-overlay');
+    const body = document.body;
+    
+    if (mobileMenu && overlay) {
+        const isActive = mobileMenu.classList.contains('active');
+        
+        if (isActive) {
+            // 关闭菜单
+            mobileMenu.classList.remove('active');
+            overlay.classList.remove('active');
+            body.style.overflow = '';
+        } else {
+            // 打开菜单
+            mobileMenu.classList.add('active');
+            overlay.classList.add('active');
+            body.style.overflow = 'hidden';
+        }
+    }
+}
+
 // 将函数暴露给全局作用域
 window.toggleFullscreen = toggleFullscreen;
 window.toggleDarkMode = toggleDarkMode;
+window.toggleMobileMenu = toggleMobileMenu;
 
 // 更新主题图标
 function updateThemeIcon(theme) {
@@ -95,15 +119,27 @@ function initSystemThemeWatcher() {
     });
 }
 
-// 滚动时显示/隐藏回到顶部按钮
+// 滚动时显示/隐藏回到顶部按钮和导航栏状态
 function initScrollTopButton() {
     window.addEventListener('scroll', () => {
         const scrollTopBtn = document.getElementById('scroll-top-btn');
+        const navbar = document.querySelector('.navbar');
+        
+        // 处理回到顶部按钮
         if (scrollTopBtn) {
             if (window.scrollY > 100) {
                 scrollTopBtn.style.display = 'flex';
             } else {
                 scrollTopBtn.style.display = 'none';
+            }
+        }
+        
+        // 处理导航栏滚动状态
+        if (navbar) {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
             }
         }
     });
@@ -160,6 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initScrollTopButton();
     initKeyboardShortcuts();
     initPerformanceMonitoring();
+    initMobileMenu();
     
     // 页面加载完成后隐藏加载指示器
     hideLoading();
@@ -171,6 +208,42 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.opacity = '1';
     }, 100);
 });
+
+// 初始化移动端菜单功能
+function initMobileMenu() {
+    // 点击移动端菜单链接时关闭菜单
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            toggleMobileMenu();
+        });
+    });
+    
+    // 窗口大小改变时处理菜单状态
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            const body = document.body;
+            
+            if (mobileMenu && overlay) {
+                mobileMenu.classList.remove('active');
+                overlay.classList.remove('active');
+                body.style.overflow = '';
+            }
+        }
+    });
+    
+    // ESC键关闭移动端菜单
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu && mobileMenu.classList.contains('active')) {
+                toggleMobileMenu();
+            }
+        }
+    });
+}
 
 // 页面卸载前显示加载指示器
 window.addEventListener('beforeunload', function() {

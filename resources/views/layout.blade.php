@@ -58,7 +58,11 @@
                     </div>
                     
                     <!-- 操作按钮 -->
-                    
+                    <button onclick="toggleMobileMenu()" class="nav-btn mobile-menu-btn" title="菜单">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"/>
+                        </svg>
+                    </button>
                     <button onclick="toggleFullscreen()" class="nav-btn" title="全屏切换">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
@@ -70,8 +74,29 @@
                         </svg>
                     </button>
                 </nav>
+                
+                <!-- 移动端导航菜单 -->
+                <div id="mobile-menu" class="mobile-menu">
+                    <div class="mobile-menu-content">
+                        <a href="{{ route('blog.index') }}" class="mobile-nav-link {{ request()->routeIs('blog.*') ? 'active' : '' }}">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
+                            </svg>
+                            博客
+                        </a>
+                        <a href="{{ route('reports.index') }}" class="mobile-nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            靶场报告
+                        </a>
+                    </div>
+                </div>
             </div>
         </header>
+        
+        <!-- 移动端菜单遮罩 -->
+        <div id="mobile-menu-overlay" class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
 
         <!-- 主要内容 -->
         <main>
