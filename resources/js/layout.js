@@ -15,7 +15,7 @@ function toggleDarkMode() {
     const currentTheme = html.getAttribute('data-theme');
     
     if (currentTheme === 'dark') {
-        html.removeAttribute('data-theme');
+        html.setAttribute('data-theme', 'light');
         localStorage.setItem('theme-mode', 'light');
         updateThemeIcon('light');
     } else {
@@ -74,7 +74,7 @@ function initThemeSystem() {
         document.documentElement.setAttribute('data-theme', 'dark');
         updateThemeIcon('dark');
     } else {
-        document.documentElement.removeAttribute('data-theme');
+        document.documentElement.setAttribute('data-theme', 'light');
         updateThemeIcon('light');
     }
 }
@@ -88,7 +88,7 @@ function initSystemThemeWatcher() {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 updateThemeIcon('dark');
             } else {
-                document.documentElement.removeAttribute('data-theme');
+                document.documentElement.setAttribute('data-theme', 'light');
                 updateThemeIcon('light');
             }
         }
@@ -175,4 +175,29 @@ document.addEventListener('DOMContentLoaded', function() {
 // 页面卸载前显示加载指示器
 window.addEventListener('beforeunload', function() {
     showLoading();
-}); 
+});
+
+
+
+// 主题切换时的背景效果处理
+function handleThemeChange() {
+    const starsBackground = document.getElementById('stars-background');
+    const daylightBackground = document.getElementById('daylight-background');
+    
+    // 添加过渡效果
+    [starsBackground, daylightBackground].forEach(el => {
+        if (el) {
+            el.style.transition = 'opacity 0.5s ease';
+        }
+    });
+}
+
+// 监听主题变化
+if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', handleThemeChange);
+    
+    // 监听系统主题变化
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', handleThemeChange);
+    }
+} 

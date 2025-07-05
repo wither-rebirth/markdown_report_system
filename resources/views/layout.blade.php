@@ -20,6 +20,14 @@
     @stack('styles')
 </head>
 <body>
+    <!-- 动态背景效果 -->
+    <div id="background-effects">
+        <!-- 星空背景 (暗黑模式) -->
+        <div id="stars-background"></div>
+        <!-- 日间模式背景 -->
+        <div id="daylight-background"></div>
+    </div>
+    
     <div id="app">
         <!-- 增强的导航栏 -->
         <header class="navbar">

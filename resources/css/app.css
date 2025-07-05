@@ -566,51 +566,7 @@ main {
 
 
 
-/* 粒子效果容器 */
-.particles-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1;
-    overflow: hidden;
-}
 
-.particle {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: var(--primary-color);
-    border-radius: 50%;
-    pointer-events: none;
-    animation: particleFloat 6s linear infinite;
-}
-
-@keyframes particleFloat {
-    0% {
-        transform: translateY(100vh) rotate(0deg);
-        opacity: 0;
-    }
-    10% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(-100vh) rotate(360deg);
-        opacity: 0;
-    }
-}
-
-/* 优化性能：在移动设备上禁用粒子效果 */
-@media (max-width: 768px) {
-    .particles-container {
-        display: none;
-    }
-}
 
 
 
@@ -1024,5 +980,191 @@ footer a:hover {
         break-inside: avoid;
         box-shadow: none;
         border: 1px solid #000;
+    }
+}
+
+/* 动态背景效果 */
+#background-effects {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+/* 星空背景 - 暗黑模式 */
+#stars-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+/* 日间模式隐藏星空 */
+[data-theme="light"] #stars-background {
+    opacity: 0;
+}
+
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme]) #stars-background {
+        opacity: 0;
+    }
+}
+
+/* 暗黑模式显示星空 */
+[data-theme="dark"] #stars-background {
+    opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) #stars-background {
+        opacity: 1;
+    }
+}
+
+/* 创建星星 */
+#stars-background::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(3px 3px at 20px 30px, #fff, transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(2px 2px at 90px 40px, #fff, transparent),
+        radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(3px 3px at 160px 30px, #fff, transparent),
+        radial-gradient(2px 2px at 200px 90px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(2px 2px at 240px 50px, #fff, transparent),
+        radial-gradient(1px 1px at 280px 120px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(2px 2px at 320px 20px, #fff, transparent),
+        radial-gradient(3px 3px at 360px 100px, #fff, transparent);
+    background-repeat: repeat;
+    background-size: 400px 200px;
+    animation: twinkle 4s infinite;
+}
+
+#stars-background::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 50px 60px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(2px 2px at 100px 120px, #fff, transparent),
+        radial-gradient(3px 3px at 150px 40px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(1px 1px at 220px 80px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(2px 2px at 270px 140px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(3px 3px at 330px 70px, #fff, transparent),
+        radial-gradient(2px 2px at 380px 110px, #fff, transparent);
+    background-repeat: repeat;
+    background-size: 450px 250px;
+    animation: twinkle 6s infinite reverse;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+
+
+
+
+/* 日间模式背景 - 默认显示 */
+#daylight-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.06) 0%, transparent 60%),
+        radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.05) 0%, transparent 60%),
+        radial-gradient(circle at 60% 70%, rgba(245, 158, 11, 0.04) 0%, transparent 60%);
+}
+
+/* 明确的日间模式显示 */
+[data-theme="light"] #daylight-background {
+    opacity: 1;
+}
+
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme]) #daylight-background {
+        opacity: 1;
+    }
+}
+
+/* 暗黑模式隐藏 */
+[data-theme="dark"] #daylight-background {
+    opacity: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) #daylight-background {
+        opacity: 0;
+    }
+}
+
+/* 日间模式浮动几何形状 */
+#daylight-background::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle 60px at 15% 25%, rgba(59, 130, 246, 0.12), transparent),
+        radial-gradient(circle 80px at 75% 60%, rgba(16, 185, 129, 0.10), transparent),
+        radial-gradient(circle 50px at 45% 80%, rgba(139, 92, 246, 0.09), transparent),
+        radial-gradient(circle 70px at 85% 15%, rgba(245, 158, 11, 0.08), transparent);
+    background-size: 800px 600px;
+    animation: gentleFloat 20s infinite ease-in-out;
+}
+
+#daylight-background::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle 55px at 25% 70%, rgba(59, 130, 246, 0.08), transparent),
+        radial-gradient(circle 65px at 60% 30%, rgba(16, 185, 129, 0.07), transparent),
+        radial-gradient(circle 45px at 90% 85%, rgba(139, 92, 246, 0.06), transparent),
+        radial-gradient(circle 40px at 30% 40%, rgba(245, 158, 11, 0.06), transparent);
+    background-size: 900px 700px;
+    animation: gentleFloat 25s infinite ease-in-out reverse;
+}
+
+@keyframes gentleFloat {
+    0%, 100% {
+        transform: translate(0px, 0px) rotate(0deg);
+    }
+    33% {
+        transform: translate(30px, -30px) rotate(120deg);
+    }
+    66% {
+        transform: translate(-20px, 20px) rotate(240deg);
+    }
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+    #stars-background::before,
+    #stars-background::after {
+        background-size: 300px 150px;
+    }
+    
+    #daylight-background::before {
+        background-size: 600px 400px;
+    }
+    
+    #daylight-background::after {
+        background-size: 700px 500px;
     }
 } 
