@@ -11,6 +11,7 @@ export default defineConfig({
                 'resources/css/index.css',
                 'resources/css/report.css',
                 'resources/css/upload.css',
+                'resources/css/blog.css',
                 'resources/js/app.js',
                 'resources/js/layout.js',
                 'resources/js/index.js',

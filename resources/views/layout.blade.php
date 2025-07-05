@@ -24,25 +24,41 @@
         <!-- 增强的导航栏 -->
         <header class="navbar">
             <div class="navbar-container">
-                <!-- 左侧：系统标题和统计 -->
+                <!-- 左侧：系统标题 -->
                 <div class="navbar-left">
                     <h1 class="navbar-title">
-                        <a href="{{ url('/') }}">🎯 靶场报告系统</a>
+                        <a href="{{ url('/') }}">🌟 我的博客</a>
                     </h1>
                 </div>
                 
-
-                
                 <!-- 右侧：导航链接和操作按钮 -->
                 <nav class="navbar-right">
+                    <!-- 导航菜单 -->
+                    <div class="navbar-menu">
+                        <a href="{{ route('blog.index') }}" class="nav-link {{ request()->routeIs('blog.*') ? 'active' : '' }}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
+                            </svg>
+                            博客
+                        </a>
+                        <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            靶场报告
+                        </a>
+                    </div>
+                    
+                    <!-- 操作按钮 -->
                     @if(Route::currentRouteName() === 'reports.index')
                     <a href="{{ route('reports.create') }}" class="navbar-upload-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                         </svg>
-                        上传
+                        上传报告
                     </a>
                     @endif
+                    
                     <button onclick="toggleFullscreen()" class="nav-btn" title="全屏切换">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>

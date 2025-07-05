@@ -187,19 +187,36 @@ body {
     flex-shrink: 0;
 }
 
+.navbar-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-right: 1rem;
+}
+
 .nav-link {
-    color: white;
+    color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
     padding: 0.5rem 1rem;
     border-radius: 8px;
     transition: var(--transition);
     font-weight: 500;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .nav-link:hover {
     background: rgba(255, 255, 255, 0.15);
     text-decoration: none;
     color: white;
+}
+
+.nav-link.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-weight: 600;
 }
 
 .navbar-upload-btn {

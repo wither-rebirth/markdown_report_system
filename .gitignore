@@ -18,33 +18,8 @@ yarn-error.log
 /.idea
 /.vscode 
 
-# Storage目录 - 忽略所有内容但保留.gitkeep文件
-/storage/*
-!/storage/.gitkeep
-!/storage/app/
-/storage/app/*
-!/storage/app/.gitkeep
-!/storage/app/public/
-/storage/app/public/*
-!/storage/app/public/.gitkeep
-!/storage/framework/
-/storage/framework/*
-!/storage/framework/.gitkeep
-!/storage/framework/cache/
-/storage/framework/cache/*
-!/storage/framework/cache/.gitkeep
-!/storage/framework/sessions/
-/storage/framework/sessions/*
-!/storage/framework/sessions/.gitkeep
-!/storage/framework/testing/
-/storage/framework/testing/*
-!/storage/framework/testing/.gitkeep
-!/storage/framework/views/
-/storage/framework/views/*
-!/storage/framework/views/.gitkeep
-!/storage/logs/
-/storage/logs/*
-!/storage/logs/.gitkeep
+# Storage目录 - 完全忽略所有内容
+/storage/
 
 # 数据库文件
 database/database.sqlite
