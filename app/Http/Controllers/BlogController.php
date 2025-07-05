@@ -89,7 +89,7 @@ class BlogController extends Controller
             ->take(3)
             ->toArray();
         
-        // 转换内容为HTML
+        // 转换内容为HTML（内容已经移除了前言部分）
         $post['html_content'] = $this->markdownConverter->convert($post['content']);
         
         return view('blog.show', compact('post', 'relatedPosts'));
@@ -125,7 +125,7 @@ class BlogController extends Controller
                         'slug' => $filename,
                         'title' => $metadata['title'] ?? $filename,
                         'excerpt' => $metadata['excerpt'] ?? $this->extractExcerpt($content),
-                        'content' => $content,
+                        'content' => $this->removeFrontMatter($content),
                         'author' => $metadata['author'] ?? 'Admin',
                         'category' => $metadata['category'] ?? 'Technology',
                         'tags' => $metadata['tags'] ?? [],
@@ -165,8 +165,9 @@ class BlogController extends Controller
                             })->toArray();
                         }
                         
-                        // 处理内容中的图片路径
-                        $processedContent = $this->processBlogImages($content, $dirName);
+                        // 移除前言并处理内容中的图片路径
+                        $contentWithoutFrontMatter = $this->removeFrontMatter($content);
+                        $processedContent = $this->processBlogImages($contentWithoutFrontMatter, $dirName);
                         
                         return [
                             'slug' => $dirName,
@@ -247,8 +248,22 @@ class BlogController extends Controller
     {
         $metadata = [];
         
-        if (preg_match('/^---\s*\n(.*?)\n---\s*\n/s', $content, $matches)) {
-            $yamlContent = $matches[1];
+        // 使用更健壮的正则表达式匹配YAML前言
+        $patterns = [
+            '/^---\s*[\r\n]+(.*?)[\r\n]+---\s*[\r\n]+/s',
+            '/^---.*?[\r\n]+(.*?)[\r\n]+---\s*[\r\n]*/s',
+            '/^---(.*?)---/s'
+        ];
+        
+        $yamlContent = '';
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $content, $matches)) {
+                $yamlContent = $matches[1];
+                break;
+            }
+        }
+        
+        if (!empty($yamlContent)) {
             $lines = explode("\n", $yamlContent);
             
             foreach ($lines as $line) {
@@ -315,12 +330,41 @@ class BlogController extends Controller
     }
     
     /**
+     * 移除前言部分
+     */
+    private function removeFrontMatter($content)
+    {
+        // 更健壮的YAML前言移除正则表达式
+        // 处理不同的换行符格式：\n, \r\n, \r
+        $patterns = [
+            // 标准格式：--- 内容 ---
+            '/^---\s*[\r\n]+.*?[\r\n]+---\s*[\r\n]+/s',
+            // 更宽松的格式
+            '/^---.*?---\s*[\r\n]*/s',
+            // 处理可能没有结尾换行的情况
+            '/^---.*?---/s'
+        ];
+        
+        $cleaned = $content;
+        foreach ($patterns as $pattern) {
+            $result = preg_replace($pattern, '', $cleaned);
+            if ($result !== $cleaned) {
+                $cleaned = $result;
+                break;
+            }
+        }
+        
+        // 清理开头的多余空行和空格
+        return ltrim($cleaned, "\r\n\t ");
+    }
+    
+    /**
      * 提取文章摘要
      */
     private function extractExcerpt($content)
     {
         // 移除前置元数据
-        $content = preg_replace('/^---\s*\n.*?\n---\s*\n/s', '', $content);
+        $content = $this->removeFrontMatter($content);
         
         // 移除Markdown标记
         $content = preg_replace('/[#*`_\[\]()]/', '', $content);
@@ -349,12 +393,20 @@ class BlogController extends Controller
      */
     private function extractModificationTime($content, $filePath)
     {
-        // 尝试从内容中解析日期
-        if (preg_match('/^---\s*\n.*?date:\s*([^\n]+)\n.*?\n---\s*\n/s', $content, $matches)) {
-            $dateStr = trim($matches[1], '"\'');
-            $timestamp = strtotime($dateStr);
-            if ($timestamp !== false) {
-                return $timestamp;
+        // 尝试从内容中解析日期，使用更健壮的正则表达式
+        $patterns = [
+            '/^---\s*[\r\n]+.*?date:\s*([^\r\n]+)[\r\n]+.*?[\r\n]+---\s*[\r\n]+/s',
+            '/^---.*?[\r\n]+.*?date:\s*([^\r\n]+)[\r\n]+.*?[\r\n]+---\s*[\r\n]*/s',
+            '/^---.*?date:\s*([^\r\n]+).*?---/s'
+        ];
+        
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $content, $matches)) {
+                $dateStr = trim($matches[1], '"\'');
+                $timestamp = strtotime($dateStr);
+                if ($timestamp !== false) {
+                    return $timestamp;
+                }
             }
         }
         
