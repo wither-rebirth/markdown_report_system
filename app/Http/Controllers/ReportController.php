@@ -116,7 +116,7 @@ class ReportController extends Controller
         // 保留查询参数
         $reports->appends($request->query());
         
-        return view('index', compact('reports'));
+        return view('report.index', compact('reports'));
     }
     
     /**
@@ -213,7 +213,7 @@ class ReportController extends Controller
      */
     public function create()
     {
-        return view('upload');
+        return view('report.upload');
     }
     
     /**
@@ -344,7 +344,7 @@ class ReportController extends Controller
             ];
         });
         
-        return view('report', $data);
+        return view('report.show', $data);
     }
     
     /**
@@ -393,7 +393,7 @@ class ReportController extends Controller
             ];
         });
         
-        return view('report', $data);
+        return view('report.show', $data);
     }
     
     /**

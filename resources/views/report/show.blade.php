@@ -19,7 +19,7 @@
         <div class="report-meta">
             📅 更新时间: {{ date('Y年m月d日 H:i', $mtime) }} | 
             📄 大小: {{ number_format($size / 1024, 1) }} KB | 
-            🔗 <a href="{{ url('/') }}">返回列表</a>
+            🔗 <a href="{{ route('reports.index') }}">返回列表</a>
         </div>
     </div>
 
