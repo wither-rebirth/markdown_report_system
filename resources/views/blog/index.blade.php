@@ -6,39 +6,21 @@
 
 @section('content')
 <div class="blog-index">
-    <!-- 英雄区域 -->
-    <section class="hero-section">
-        <div class="hero-content">
-            <h1 class="hero-title">🌟 欢迎来到我的博客</h1>
-            <p class="hero-subtitle">分享网络安全、技术学习和日常思考</p>
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <span class="stat-number">{{ count($posts) }}</span>
-                    <span class="stat-label">篇文章</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">{{ count($categories) }}</span>
-                    <span class="stat-label">个分类</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">{{ array_sum(array_column($categories, 'count')) }}</span>
-                    <span class="stat-label">总阅读</span>
-                </div>
-            </div>
+    <!-- 页面头部 -->
+    <section class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">技术博客</h1>
+            <p class="page-description">网络安全 · 技术分享 · 学习笔记</p>
         </div>
-        <div class="hero-image">
-            <svg width="300" height="200" viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="300" height="200" fill="url(#gradient)" rx="10"/>
-                <circle cx="80" cy="60" r="25" fill="rgba(255,255,255,0.3)"/>
-                <circle cx="220" cy="100" r="15" fill="rgba(255,255,255,0.2)"/>
-                <circle cx="150" cy="140" r="20" fill="rgba(255,255,255,0.25)"/>
-                <defs>
-                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
-                    </linearGradient>
-                </defs>
-            </svg>
+        <div class="header-stats">
+            <div class="stat-badge">
+                <span class="stat-number">{{ count($posts) }}</span>
+                <span class="stat-label">文章</span>
+            </div>
+            <div class="stat-badge">
+                <span class="stat-number">{{ count($categories) }}</span>
+                <span class="stat-label">分类</span>
+            </div>
         </div>
     </section>
 
