@@ -212,16 +212,7 @@
             </svg>
         </div>
         <h3>📭 暂无报告</h3>
-        <p>开始上传你的第一个 Markdown 报告吧！</p>
-        <div class="empty-actions">
-            <a href="{{ route('reports.create') }}" class="btn btn-primary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M17,13H13V17H11V13H7V11H11V7H13V11H17V13Z"/>
-                </svg>
-                上传报告
-            </a>
-        </div>
-        <small class="text-muted">支持的文件格式: .md, .txt</small>
+        <p>暂时没有可用的报告。</p>
     </div>
     @endif
 </div>

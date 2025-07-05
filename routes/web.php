@@ -26,11 +26,7 @@ Route::prefix('reports')->group(function () {
     // 报告列表页面
     Route::get('/', [ReportController::class, 'index'])->name('reports.index');
     
-    // 上传页面
-    Route::get('/upload', [ReportController::class, 'create'])->name('reports.create');
-    
-    // 处理文件上传
-    Route::post('/upload', [ReportController::class, 'store'])->name('reports.store');
+
     
     // 显示单个报告
     Route::get('/{slug}', [ReportController::class, 'show'])->name('reports.show');

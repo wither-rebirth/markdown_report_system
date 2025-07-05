@@ -58,14 +58,6 @@
                     </div>
                     
                     <!-- 操作按钮 -->
-                    @if(Route::currentRouteName() === 'reports.index')
-                    <a href="{{ route('reports.create') }}" class="navbar-upload-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                        </svg>
-                        上传报告
-                    </a>
-                    @endif
                     
                     <button onclick="toggleFullscreen()" class="nav-btn" title="全屏切换">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
