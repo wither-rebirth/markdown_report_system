@@ -121,15 +121,25 @@ class BlogController extends Controller
                     // 解析前置元数据
                     $metadata = $this->parseMetadata($content);
                     
+                    // 移除前言并处理内容中的图片路径（使用"shared"作为文件夹名）
+                    $contentWithoutFrontMatter = $this->removeFrontMatter($content);
+                    $processedContent = $this->processBlogImages($contentWithoutFrontMatter, 'shared');
+                    
+                    // 处理YAML前言中的图片路径
+                    $processedImage = $metadata['image'] ?? null;
+                    if ($processedImage && preg_match('/^\.\/images\/(.+)$/', $processedImage, $matches)) {
+                        $processedImage = route('blog.image', ['folder' => 'shared', 'filename' => $matches[1]]);
+                    }
+                    
                     return [
                         'slug' => $filename,
                         'title' => $metadata['title'] ?? $filename,
                         'excerpt' => $metadata['excerpt'] ?? $this->extractExcerpt($content),
-                        'content' => $this->removeFrontMatter($content),
+                        'content' => $processedContent,
                         'author' => $metadata['author'] ?? 'Admin',
                         'category' => $metadata['category'] ?? 'Technology',
                         'tags' => $metadata['tags'] ?? [],
-                        'image' => $metadata['image'] ?? null,
+                        'image' => $processedImage,
                         'published_at' => $metadata['date'] ?? File::lastModified($file),
                         'mtime' => File::lastModified($file),
                         'reading_time' => $this->calculateReadingTime($content),
@@ -204,7 +214,7 @@ class BlogController extends Controller
      */
     private function processBlogImages($content, $folderName)
     {
-        // 将相对路径的图片替换为正确的URL
+        // 处理Markdown格式的图片：![alt](images/filename.jpg)
         $content = preg_replace_callback(
             '/!\[([^\]]*)\]\((?!http)(?!\/)(images\/[^)]+)\)/i',
             function ($matches) use ($folderName) {
@@ -217,6 +227,23 @@ class BlogController extends Controller
             $content
         );
         
+        // 处理HTML格式的图片：<img src="./images/filename.jpg" alt="alt text">
+        $content = preg_replace_callback(
+            '/<img\s+[^>]*src=["\'](?:\.\/)?(?!http)(?!\/)(images\/[^"\']+)["\'][^>]*>/i',
+            function ($matches) use ($folderName) {
+                $imagePath = $matches[1];
+                $filename = basename($imagePath);
+                $imageUrl = route('blog.image', ['folder' => $folderName, 'filename' => $filename]);
+                
+                // 重新构建img标签，保持其他属性
+                $imgTag = $matches[0];
+                $imgTag = preg_replace('/src=["\'](?:\.\/)?(?!http)(?!\/)(images\/[^"\']+)["\']/i', 'src="' . $imageUrl . '"', $imgTag);
+                
+                return $imgTag;
+            },
+            $content
+        );
+        
         return $content;
     }
     
@@ -225,7 +252,12 @@ class BlogController extends Controller
      */
     public function getBlogImage($folder, $filename)
     {
-        $imagePath = storage_path("blog/{$folder}/images/{$filename}");
+        // 如果文件夹名为"shared"，使用共享图片目录
+        if ($folder === 'shared') {
+            $imagePath = storage_path("blog/images/{$filename}");
+        } else {
+            $imagePath = storage_path("blog/{$folder}/images/{$filename}");
+        }
         
         if (!File::exists($imagePath)) {
             abort(404, '图片不存在');
