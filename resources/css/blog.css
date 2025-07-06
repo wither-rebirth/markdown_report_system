@@ -1177,6 +1177,34 @@
     color: var(--primary-color);
 }
 
+[data-theme="dark"] .post-container {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .post-title,
+[data-theme="dark"] .prose h1,
+[data-theme="dark"] .prose h2,
+[data-theme="dark"] .prose h3,
+[data-theme="dark"] .prose h4,
+[data-theme="dark"] .prose h5,
+[data-theme="dark"] .prose h6 {
+    color: var(--text-strong);
+}
+
+[data-theme="dark"] .prose {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .post-nav {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .post-header {
+    border-color: var(--border-color);
+}
+
 /* 自动暗黑模式适配 */
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) .post-card,
@@ -1353,40 +1381,71 @@
         background: var(--surface-color);
         color: var(--primary-color);
     }
+
+    :root:not([data-theme]) .post-container {
+        background: var(--bg-surface);
+        border-color: var(--border-color);
+    }
+
+    :root:not([data-theme]) .post-title,
+    :root:not([data-theme]) .prose h1,
+    :root:not([data-theme]) .prose h2,
+    :root:not([data-theme]) .prose h3,
+    :root:not([data-theme]) .prose h4,
+    :root:not([data-theme]) .prose h5,
+    :root:not([data-theme]) .prose h6 {
+        color: var(--text-strong);
+    }
+
+    :root:not([data-theme]) .prose {
+        color: var(--text-color);
+    }
+
+    :root:not([data-theme]) .post-nav {
+        background: var(--bg-secondary);
+        border-color: var(--border-color);
+    }
+
+    :root:not([data-theme]) .post-header {
+        border-color: var(--border-color);
+    }
 }
 
 /* 评论区域样式 */
 .comments-section {
-    margin-top: 3rem;
-    padding-top: 3rem;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
     border-top: 1px solid var(--border-color);
 }
 
 .comments-section .section-title {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    margin-left: 1rem;
     color: var(--text-strong);
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    font-weight: 600;
 }
 
 /* 评论表单样式 */
 .comment-form-container {
-    margin-bottom: 3rem;
-    padding: 2rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    border-radius: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .comment-form .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .comment-form label {
     display: block;
     margin-bottom: 0.5rem;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--text-strong);
+    font-size: 0.875rem;
 }
 
 .comment-form input,
@@ -1394,19 +1453,19 @@
     width: 100%;
     padding: 0.75rem;
     border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    font-size: 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
     background: var(--bg-primary);
     color: var(--text-primary);
-    transition: all 0.3s ease;
+    transition: border-color 0.2s ease;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    line-height: 1.5;
+    line-height: 1.4;
     box-sizing: border-box;
 }
 
 .comment-form textarea {
     resize: vertical;
-    min-height: 120px;
+    min-height: 80px;
     white-space: pre-wrap !important;
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -1418,7 +1477,7 @@
 .comment-form textarea:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
 
@@ -1426,32 +1485,32 @@
 .char-count {
     display: block;
     margin-top: 0.25rem;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     text-align: right;
 }
 
 .form-actions {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     align-items: center;
+    margin-top: 1rem;
 }
 
 .submit-btn {
-    padding: 0.75rem 1.5rem;
+    padding: 0.5rem 1rem;
     background: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    font-weight: 600;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background-color 0.2s ease;
 }
 
 .submit-btn:hover:not(:disabled) {
     background: var(--primary-hover);
-    transform: translateY(-1px);
 }
 
 .submit-btn:disabled {
@@ -1460,18 +1519,18 @@
 }
 
 .random-name-btn {
-    padding: 0.5rem 1rem;
-    background: transparent;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-surface);
     color: var(--text-muted);
     border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .random-name-btn:hover {
-    background: var(--bg-surface);
+    background: var(--bg-primary);
     color: var(--text-primary);
 }
 
@@ -1479,70 +1538,64 @@
 .comments-list {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .comment-item {
-    padding: 1rem;
+    padding: 0.75rem;
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    border-radius: 0.75rem;
-    transition: all 0.3s ease;
+    border-radius: 0.25rem;
+    transition: border-color 0.2s ease;
 }
 
 .comment-item:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-color: var(--primary-color);
 }
 
 .comment-item.new-comment {
     border-color: var(--primary-color);
-    background: rgba(59, 130, 246, 0.02);
-    animation: newCommentHighlight 2s ease-out;
-}
-
-@keyframes newCommentHighlight {
-    0% {
-        background: rgba(59, 130, 246, 0.1);
-    }
-    100% {
-        background: rgba(59, 130, 246, 0.02);
-    }
+    background: rgba(59, 130, 246, 0.05);
 }
 
 .comment-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
 }
 
 .comment-author {
-    font-weight: 600;
+    font-weight: 500;
     color: var(--primary-color);
-    font-size: 1rem;
+    font-size: 0.875rem;
 }
 
 .comment-time {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
 }
 
 .comment-content {
     color: var(--text-primary);
-    line-height: 1.6;
+    line-height: 1.5;
     white-space: pre-wrap;
     word-wrap: break-word;
+    font-size: 0.875rem;
 }
 
 .no-comments {
     text-align: center;
-    padding: 3rem;
+    padding: 2rem;
     color: var(--text-muted);
+    background: var(--bg-surface);
+    border: 1px dashed var(--border-color);
+    border-radius: 0.25rem;
 }
 
 .no-comments p {
     margin: 0;
-    font-size: 1.125rem;
+    font-size: 0.875rem;
 }
 
 /* 消息提示样式 */
@@ -1577,7 +1630,8 @@
 
 /* 暗黑模式样式 */
 [data-theme="dark"] .comment-form-container,
-[data-theme="dark"] .comment-item {
+[data-theme="dark"] .comment-item,
+[data-theme="dark"] .no-comments {
     background: var(--bg-surface);
     border-color: var(--border-color);
 }
@@ -1592,63 +1646,120 @@
 [data-theme="dark"] .comment-form input:focus,
 [data-theme="dark"] .comment-form textarea:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
 }
 
 [data-theme="dark"] .random-name-btn {
-    background: transparent;
+    background: var(--bg-surface);
     color: var(--text-muted);
     border-color: var(--border-color);
 }
 
 [data-theme="dark"] .random-name-btn:hover {
-    background: var(--bg-surface);
+    background: var(--bg-primary);
     color: var(--text-primary);
+}
+
+[data-theme="dark"] .comments-section .section-title {
+    color: var(--text-strong);
 }
 
 /* 移动端适配 */
 @media (max-width: 768px) {
     .comments-section {
         margin-top: 2rem;
-        padding-top: 2rem;
+        padding-top: 1.5rem;
+    }
+    
+    .comments-section .section-title {
+        font-size: 1.125rem;
+        margin-bottom: 1rem;
+        margin-left: 0.75rem;
     }
     
     .comment-form-container {
-        padding: 1.5rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .comment-form .form-group {
+        margin-bottom: 0.75rem;
+    }
+    
+    .comment-form input,
+    .comment-form textarea {
+        padding: 0.625rem;
+        font-size: 0.8rem;
+    }
+    
+    .comment-form textarea {
+        min-height: 70px;
     }
     
     .form-actions {
         flex-direction: column;
         align-items: stretch;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
     }
     
     .submit-btn,
     .random-name-btn {
         width: 100%;
         justify-content: center;
+        padding: 0.625rem 1rem;
+        font-size: 0.8rem;
+    }
+    
+    .comments-list {
+        gap: 0.5rem;
     }
     
     .comment-item {
-        padding: 1rem;
+        padding: 0.625rem;
     }
     
     .comment-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.5rem;
+        gap: 0.25rem;
+        margin-bottom: 0.375rem;
+    }
+    
+    .comment-author {
+        font-size: 0.8rem;
+    }
+    
+    .comment-time {
+        font-size: 0.7rem;
+    }
+    
+    .comment-content {
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+    
+    .no-comments {
+        padding: 1.5rem 1rem;
+    }
+    
+    .no-comments p {
+        font-size: 0.8rem;
     }
     
     .message {
         right: 1rem;
         left: 1rem;
         top: 1rem;
+        font-size: 0.8rem;
     }
 }
 
 /* 自动配色方案适配 */
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) .comment-form-container,
-    :root:not([data-theme]) .comment-item {
+    :root:not([data-theme]) .comment-item,
+    :root:not([data-theme]) .no-comments {
         background: var(--bg-surface);
         border-color: var(--border-color);
     }
@@ -1663,17 +1774,21 @@
     :root:not([data-theme]) .comment-form input:focus,
     :root:not([data-theme]) .comment-form textarea:focus {
         border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
     }
     
     :root:not([data-theme]) .random-name-btn {
-        background: transparent;
+        background: var(--bg-surface);
         color: var(--text-muted);
         border-color: var(--border-color);
     }
     
     :root:not([data-theme]) .random-name-btn:hover {
-        background: var(--bg-surface);
+        background: var(--bg-primary);
         color: var(--text-primary);
+    }
+    
+    :root:not([data-theme]) .comments-section .section-title {
+        color: var(--text-strong);
     }
 } 
