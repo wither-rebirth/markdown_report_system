@@ -329,7 +329,7 @@
 
 /* Kali Linux 双行提示符样式 */
 .report-content pre code::before {
-    content: '┌──(kali㉿kali)-[~/Documents]\A└─$ ';
+    content: '$ ';
     color: #00ff41;
     font-weight: bold;
     white-space: pre;
@@ -338,7 +338,7 @@
 
 /* 不同类型的 Kali Linux 提示符 */
 .report-content pre.terminal-root code::before {
-    content: '┌──(root㉿kali)-[~/Documents]\A└─# ';
+    content: '# ';
     color: #ff4757;
     font-weight: bold;
     white-space: pre;
@@ -346,7 +346,7 @@
 }
 
 .report-content pre.terminal-windows code::before {
-    content: '┌──(kali㉿kali)-[~/Documents]\A└─$ cmd.exe ';
+    content: 'C:\\> ';
     color: #3742fa;
     font-weight: bold;
     white-space: pre;
@@ -354,7 +354,7 @@
 }
 
 .report-content pre.terminal-python code::before {
-    content: '┌──(kali㉿kali)-[~/Documents]\A└─$ python3\A>>> ';
+    content: '>>> ';
     color: #ffa502;
     font-weight: bold;
     white-space: pre;

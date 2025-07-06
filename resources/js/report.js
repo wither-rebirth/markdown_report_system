@@ -315,15 +315,15 @@ function initCodeCopy() {
             const code = block.querySelector('code') || block;
             let text = code.textContent;
             
-            // 移除 Kali Linux 提示符，只复制实际命令
+            // 移除提示符，只复制实际命令
             if (block.classList.contains('terminal-root')) {
-                text = text.replace(/^┌──\(root㉿kali\)-\[~\/Documents\]\n└─# /gm, '');
+                text = text.replace(/^# /gm, '');
             } else if (block.classList.contains('terminal-windows')) {
-                text = text.replace(/^┌──\(kali㉿kali\)-\[~\/Documents\]\n└─\$ cmd\.exe /gm, '');
+                text = text.replace(/^C:\\> /gm, '');
             } else if (block.classList.contains('terminal-python')) {
-                text = text.replace(/^┌──\(kali㉿kali\)-\[~\/Documents\]\n└─\$ python3\n>>> /gm, '');
+                text = text.replace(/^>>> /gm, '');
             } else {
-                text = text.replace(/^┌──\(kali㉿kali\)-\[~\/Documents\]\n└─\$ /gm, '');
+                text = text.replace(/^\$ /gm, '');
             }
             
             if (navigator.clipboard && navigator.clipboard.writeText) {
