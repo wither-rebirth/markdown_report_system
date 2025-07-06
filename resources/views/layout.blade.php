@@ -9,6 +9,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     
+    <!-- 网站图标 -->
+    <link rel="icon" type="image/png" href="{{ asset('images/wither_rose.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/wither_rose.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/wither_rose.png') }}">
+    
     <!-- 预加载关键资源 -->
     <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
     <link rel="preload" href="{{ asset('js/app.js') }}" as="script">

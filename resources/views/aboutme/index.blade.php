@@ -15,13 +15,17 @@
                 </div>
                 <div class="profile-info">
                     <h1 class="profile-name">{{ $personalInfo['name'] }}</h1>
-                    <p class="profile-title">{{ $personalInfo['title'] }}</p>
-                    <p class="profile-location">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
-                        </svg>
-                        {{ $personalInfo['location'] }}
-                    </p>
+                    @if(!empty($personalInfo['title']))
+                        <p class="profile-title">{{ $personalInfo['title'] }}</p>
+                    @endif
+                    @if(!empty($personalInfo['location']))
+                        <p class="profile-location">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
+                            </svg>
+                            {{ $personalInfo['location'] }}
+                        </p>
+                    @endif
                 </div>
             </div>
             <div class="profile-bio">
@@ -58,7 +62,17 @@
             </div>
         </div>
 
-
+        <!-- 内容块 -->
+        <div class="content-blocks">
+            @foreach($personalInfo['content_blocks'] as $key => $block)
+                <div class="content-block">
+                    <h2 class="block-title">{{ $block['title'] }}</h2>
+                    <div class="block-content">
+                        <p>{{ $block['content'] }}</p>
+                    </div>
+                </div>
+            @endforeach
+        </div>
 
         <!-- 联系方式 -->
         <div class="contact-section">
@@ -70,12 +84,14 @@
                     </svg>
                     <span>{{ $personalInfo['email'] }}</span>
                 </div>
-                <div class="contact-item">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
-                    </svg>
-                    <span>{{ $personalInfo['location'] }}</span>
-                </div>
+                @if(!empty($personalInfo['location']))
+                    <div class="contact-item">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
+                        </svg>
+                        <span>{{ $personalInfo['location'] }}</span>
+                    </div>
+                @endif
             </div>
             <div class="contact-message">
                 <p>如果您有任何问题或想要合作，欢迎随时与我联系！</p>

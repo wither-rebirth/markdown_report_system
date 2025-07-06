@@ -243,6 +243,60 @@
     margin: 0;
 }
 
+/* 内容块部分 */
+.content-blocks {
+    margin-bottom: 3rem;
+}
+
+.content-block {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.content-block:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.block-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    text-align: center;
+    position: relative;
+}
+
+.block-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background: var(--primary-color);
+    border-radius: 2px;
+}
+
+.block-content {
+    text-align: center;
+}
+
+.block-content p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--text-color);
+    margin: 0;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
 /* 联系方式部分 */
 .contact-section {
     background: var(--card-bg);
@@ -300,12 +354,16 @@
         font-size: 2rem;
     }
     
-    .skills-grid {
-        grid-template-columns: 1fr;
+    .content-block {
+        padding: 1.5rem;
     }
     
-    .achievements-grid {
-        grid-template-columns: 1fr;
+    .block-title {
+        font-size: 1.3rem;
+    }
+    
+    .block-content p {
+        font-size: 1rem;
     }
     
     .contact-info {
