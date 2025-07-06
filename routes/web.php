@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\AboutMeController;
@@ -11,8 +12,11 @@ use App\Http\Controllers\AboutMeController;
 |--------------------------------------------------------------------------
 */
 
-// 首页 - 博客系统
-Route::get('/', [BlogController::class, 'index'])->name('blog.index');
+// 首页 - 主页
+Route::get('/', [HomeController::class, 'index'])->name('home.index');
+
+// 博客路由
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 
 // 博客文章详情
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');

@@ -41,7 +41,7 @@
                 <!-- 左侧：系统标题 -->
                 <div class="navbar-left">
                     <h1 class="navbar-title">
-                        <a href="{{ url('/') }}">🌟 wither's blog</a>
+                        <a href="{{ route('home.index') }}">🌟 wither's blog</a>
                     </h1>
                 </div>
                 

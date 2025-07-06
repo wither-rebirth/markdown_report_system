@@ -12,10 +12,12 @@ export default defineConfig({
                 'resources/css/report.css',
                 'resources/css/blog.css',
                 'resources/css/aboutme.css',
+                'resources/css/home.css',
                 'resources/js/app.js',
                 'resources/js/layout.js',
                 'resources/js/index.js',
-                'resources/js/report.js'
+                'resources/js/report.js',
+                'resources/js/home.js'
             ],
             refresh: true,
         }),
