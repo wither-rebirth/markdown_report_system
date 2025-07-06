@@ -69,6 +69,78 @@
                     <h2 class="block-title">{{ $block['title'] }}</h2>
                     <div class="block-content">
                         <p>{{ $block['content'] }}</p>
+                        @if($key === 'wither_to_rebirth')
+                            <!-- 玫瑰动画效果 -->
+                            <div class="rose-animation-container">
+                                <div class="rose-flower">
+                                    <!-- 外层花瓣 -->
+                                    <div class="rose-petals outer-petals">
+                                        <div class="petal outer-petal petal-1">
+                                            <div class="petal-texture"></div>
+                                        </div>
+                                        <div class="petal outer-petal petal-2">
+                                            <div class="petal-texture"></div>
+                                        </div>
+                                        <div class="petal outer-petal petal-3">
+                                            <div class="petal-texture"></div>
+                                        </div>
+                                        <div class="petal outer-petal petal-4">
+                                            <div class="petal-texture"></div>
+                                        </div>
+                                        <div class="petal outer-petal petal-5">
+                                            <div class="petal-texture"></div>
+                                        </div>
+                                        <div class="petal outer-petal petal-6">
+                                            <div class="petal-texture"></div>
+                                        </div>
+                                    </div>
+                                    <!-- 中层花瓣 -->
+                                    <div class="rose-petals middle-petals">
+                                        <div class="petal middle-petal petal-7">
+                                            <div class="petal-texture"></div>
+                                        </div>
+                                        <div class="petal middle-petal petal-8">
+                                            <div class="petal-texture"></div>
+                                        </div>
+                                        <div class="petal middle-petal petal-9">
+                                            <div class="petal-texture"></div>
+                                        </div>
+                                        <div class="petal middle-petal petal-10">
+                                            <div class="petal-texture"></div>
+                                        </div>
+                                        <div class="petal middle-petal petal-11">
+                                            <div class="petal-texture"></div>
+                                        </div>
+                                    </div>
+                                    <!-- 内层花瓣 -->
+                                    <div class="rose-petals inner-petals">
+                                        <div class="petal inner-petal petal-12">
+                                            <div class="petal-texture"></div>
+                                        </div>
+                                        <div class="petal inner-petal petal-13">
+                                            <div class="petal-texture"></div>
+                                        </div>
+                                        <div class="petal inner-petal petal-14">
+                                            <div class="petal-texture"></div>
+                                        </div>
+                                        <div class="petal inner-petal petal-15">
+                                            <div class="petal-texture"></div>
+                                        </div>
+                                    </div>
+                                    <div class="rose-center"></div>
+                                    <div class="rose-stem"></div>
+                                    <!-- 散落的花瓣 -->
+                                    <div class="fallen-petals">
+                                        <div class="fallen-petal fallen-1"></div>
+                                        <div class="fallen-petal fallen-2"></div>
+                                        <div class="fallen-petal fallen-3"></div>
+                                        <div class="fallen-petal fallen-4"></div>
+                                        <div class="fallen-petal fallen-5"></div>
+                                        <div class="fallen-petal fallen-6"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             @endforeach
