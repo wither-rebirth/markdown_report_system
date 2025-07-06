@@ -506,7 +506,7 @@ class BlogController extends Controller
             'comment' => [
                 'id' => $comment->id,
                 'author_name' => $comment->author_name,
-                'content' => $comment->clean_content,
+                'content' => strip_tags($comment->content), // 只去除HTML标签，不转义特殊字符
                 'created_at' => $comment->formatted_created_at,
                 'time_ago' => $comment->time_ago,
             ]
@@ -528,7 +528,7 @@ class BlogController extends Controller
                 return [
                     'id' => $comment->id,
                     'author_name' => $comment->author_name,
-                    'content' => $comment->clean_content,
+                    'content' => strip_tags($comment->content), // 只去除HTML标签，不转义特殊字符
                     'created_at' => $comment->formatted_created_at,
                     'time_ago' => $comment->time_ago,
                 ];

@@ -1399,6 +1399,19 @@
     background: var(--bg-primary);
     color: var(--text-primary);
     transition: all 0.3s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+
+.comment-form textarea {
+    resize: vertical;
+    min-height: 120px;
+    white-space: pre-wrap !important;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-family: inherit;
+    letter-spacing: normal;
 }
 
 .comment-form input:focus,
@@ -1408,10 +1421,7 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.comment-form textarea {
-    resize: vertical;
-    min-height: 120px;
-}
+
 
 .char-count {
     display: block;
@@ -1469,11 +1479,11 @@
 .comments-list {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .comment-item {
-    padding: 1.5rem;
+    padding: 1rem;
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: 0.75rem;
@@ -1503,7 +1513,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .comment-author {
@@ -1521,6 +1531,7 @@
     color: var(--text-primary);
     line-height: 1.6;
     white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 .no-comments {

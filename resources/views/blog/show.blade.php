@@ -111,7 +111,7 @@
             
             <!-- 评论表单 -->
             <div class="comment-form-container">
-                <form id="comment-form" class="comment-form">
+                <form id="comment-form" class="comment-form" autocomplete="off">
                     @csrf
                     <div class="form-group">
                         <label for="author_name">您的名字 (可选)</label>
@@ -120,8 +120,17 @@
                     
                     <div class="form-group">
                         <label for="content">评论内容 *</label>
-                        <textarea id="content" name="content" rows="4" maxlength="1000" placeholder="请输入您的评论..." required></textarea>
+                        <textarea 
+                            id="content" 
+                            name="content" 
+                            rows="4" 
+                            maxlength="1000" 
+                            placeholder="请输入您的评论..." 
+                            required
+                        ></textarea>
                         <small class="char-count">0/1000</small>
+                        
+
                     </div>
                     
                     <div class="form-actions">
@@ -140,7 +149,7 @@
                             <span class="comment-time">{{ $comment->time_ago }}</span>
                         </div>
                         <div class="comment-content">
-                            {{ $comment->clean_content }}
+                            {{ strip_tags($comment->content) }}
                         </div>
                     </div>
                 @empty
@@ -213,14 +222,16 @@ function generateRandomName() {
 function updateCharCount() {
     const content = document.getElementById('content').value;
     const charCount = document.querySelector('.char-count');
-    charCount.textContent = content.length + '/1000';
-    
-    if (content.length > 950) {
-        charCount.style.color = '#ef4444';
-    } else if (content.length > 800) {
-        charCount.style.color = '#f59e0b';
-    } else {
-        charCount.style.color = '#6b7280';
+    if (charCount) {
+        charCount.textContent = content.length + '/1000';
+        
+        if (content.length > 950) {
+            charCount.style.color = '#ef4444';
+        } else if (content.length > 800) {
+            charCount.style.color = '#f59e0b';
+        } else {
+            charCount.style.color = '#6b7280';
+        }
     }
 }
 
@@ -255,15 +266,31 @@ function addCommentToList(comment) {
     
     const commentItem = document.createElement('div');
     commentItem.className = 'comment-item new-comment';
-    commentItem.innerHTML = `
-        <div class="comment-header">
-            <span class="comment-author">${comment.author_name}</span>
-            <span class="comment-time">${comment.time_ago}</span>
-        </div>
-        <div class="comment-content">
-            ${comment.content}
-        </div>
-    `;
+    
+    // 创建评论结构
+    const commentHeader = document.createElement('div');
+    commentHeader.className = 'comment-header';
+    
+    const authorSpan = document.createElement('span');
+    authorSpan.className = 'comment-author';
+    authorSpan.textContent = comment.author_name;
+    
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'comment-time';
+    timeSpan.textContent = comment.time_ago;
+    
+    commentHeader.appendChild(authorSpan);
+    commentHeader.appendChild(timeSpan);
+    
+    const commentContent = document.createElement('div');
+    commentContent.className = 'comment-content';
+    // 使用textContent来避免HTML转义问题，并手动处理换行
+    commentContent.textContent = comment.content;
+    // 保持换行符的显示
+    commentContent.style.whiteSpace = 'pre-wrap';
+    
+    commentItem.appendChild(commentHeader);
+    commentItem.appendChild(commentContent);
     
     commentsList.insertBefore(commentItem, commentsList.firstChild);
     
@@ -341,7 +368,24 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 绑定字符计数更新
     const contentTextarea = document.getElementById('content');
-    contentTextarea.addEventListener('input', updateCharCount);
+    if (contentTextarea) {
+        // 使用多个事件来确保字符计数正确更新
+        contentTextarea.addEventListener('input', updateCharCount);
+        contentTextarea.addEventListener('keyup', updateCharCount);
+        contentTextarea.addEventListener('paste', function() {
+            setTimeout(updateCharCount, 10);
+        });
+    }
+    
+    // 确保空格键能够正常工作
+    if (contentTextarea) {
+        contentTextarea.addEventListener('keydown', function(e) {
+            if (e.key === ' ' || e.keyCode === 32) {
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+            }
+        }, true);
+    }
     
     // 初始化字符计数
     updateCharCount();
