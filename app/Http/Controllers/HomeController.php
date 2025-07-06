@@ -270,16 +270,17 @@ class HomeController extends Controller
     {
         return [
             'languages' => [
+                ['name' => 'JavaScript', 'level' => 90, 'color' => '#F7DF1E'],
                 ['name' => 'PHP', 'level' => 85, 'color' => '#777BB4'],
                 ['name' => 'Python', 'level' => 80, 'color' => '#3776AB'],
-                ['name' => 'JavaScript', 'level' => 75, 'color' => '#F7DF1E'],
-                ['name' => 'SQL', 'level' => 70, 'color' => '#336791'],
-                ['name' => 'Bash', 'level' => 65, 'color' => '#4EAA25'],
+                ['name' => 'Java', 'level' => 75, 'color' => '#ED8B00'],
+                ['name' => 'C++', 'level' => 70, 'color' => '#00599C'],
             ],
             'frameworks' => [
-                ['name' => 'Laravel', 'level' => 85, 'color' => '#FF2D20'],
-                ['name' => 'Vue.js', 'level' => 70, 'color' => '#4FC08D'],
-                ['name' => 'Express.js', 'level' => 60, 'color' => '#000000'],
+                ['name' => 'Laravel', 'level' => 90, 'color' => '#FF2D20'],
+                ['name' => 'Flask', 'level' => 85, 'color' => '#000000'],
+                ['name' => 'Vue.js', 'level' => 80, 'color' => '#4FC08D'],
+                ['name' => 'SpringBoot', 'level' => 75, 'color' => '#6DB33F'],
             ],
             'tools' => [
                 ['name' => 'Burp Suite', 'level' => 80, 'color' => '#FF6633'],
