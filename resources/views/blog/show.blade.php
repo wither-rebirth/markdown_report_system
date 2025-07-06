@@ -105,6 +105,52 @@
             </section>
         @endif
 
+        <!-- 评论区域 -->
+        <section class="comments-section">
+            <h3 class="section-title">评论 (<span id="comments-count">{{ count($comments) }}</span>)</h3>
+            
+            <!-- 评论表单 -->
+            <div class="comment-form-container">
+                <form id="comment-form" class="comment-form">
+                    @csrf
+                    <div class="form-group">
+                        <label for="author_name">您的名字 (可选)</label>
+                        <input type="text" id="author_name" name="author_name" maxlength="50" placeholder="留空将自动生成随机昵称">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="content">评论内容 *</label>
+                        <textarea id="content" name="content" rows="4" maxlength="1000" placeholder="请输入您的评论..." required></textarea>
+                        <small class="char-count">0/1000</small>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="submit-btn">发表评论</button>
+                        <button type="button" class="random-name-btn" onclick="generateRandomName()">随机昵称</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- 评论列表 -->
+            <div class="comments-list" id="comments-list">
+                @forelse($comments as $comment)
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <span class="comment-author">{{ $comment->author_name }}</span>
+                            <span class="comment-time">{{ $comment->time_ago }}</span>
+                        </div>
+                        <div class="comment-content">
+                            {{ $comment->clean_content }}
+                        </div>
+                    </div>
+                @empty
+                    <div class="no-comments">
+                        <p>暂无评论，快来发表第一条评论吧！</p>
+                    </div>
+                @endforelse
+            </div>
+        </section>
+
         <!-- 导航链接 -->
         <nav class="post-navigation">
             <a href="{{ route('blog.index') }}" class="nav-link">
@@ -153,6 +199,85 @@ function copyLink() {
     });
 }
 
+// 生成随机昵称
+function generateRandomName() {
+    const adjectives = ['智慧的', '勇敢的', '神秘的', '优雅的', '聪明的', '机敏的', '风趣的', '幽默的'];
+    const nouns = ['访客', '读者', '路人', '学者', '探索者', '思考者', '观察者', '旅行者'];
+    const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const noun = nouns[Math.floor(Math.random() * nouns.length)];
+    const number = Math.floor(Math.random() * 900) + 100;
+    document.getElementById('author_name').value = adjective + noun + number;
+}
+
+// 更新字符计数
+function updateCharCount() {
+    const content = document.getElementById('content').value;
+    const charCount = document.querySelector('.char-count');
+    charCount.textContent = content.length + '/1000';
+    
+    if (content.length > 950) {
+        charCount.style.color = '#ef4444';
+    } else if (content.length > 800) {
+        charCount.style.color = '#f59e0b';
+    } else {
+        charCount.style.color = '#6b7280';
+    }
+}
+
+// 显示消息提示
+function showMessage(message, type = 'success') {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message message-${type}`;
+    messageDiv.textContent = message;
+    
+    document.body.appendChild(messageDiv);
+    
+    setTimeout(() => {
+        messageDiv.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+        messageDiv.classList.remove('show');
+        setTimeout(() => {
+            document.body.removeChild(messageDiv);
+        }, 300);
+    }, 3000);
+}
+
+// 添加评论到列表
+function addCommentToList(comment) {
+    const commentsList = document.getElementById('comments-list');
+    const noComments = commentsList.querySelector('.no-comments');
+    
+    if (noComments) {
+        noComments.remove();
+    }
+    
+    const commentItem = document.createElement('div');
+    commentItem.className = 'comment-item new-comment';
+    commentItem.innerHTML = `
+        <div class="comment-header">
+            <span class="comment-author">${comment.author_name}</span>
+            <span class="comment-time">${comment.time_ago}</span>
+        </div>
+        <div class="comment-content">
+            ${comment.content}
+        </div>
+    `;
+    
+    commentsList.insertBefore(commentItem, commentsList.firstChild);
+    
+    // 更新评论计数
+    const countElement = document.getElementById('comments-count');
+    const currentCount = parseInt(countElement.textContent);
+    countElement.textContent = currentCount + 1;
+    
+    // 高亮新评论
+    setTimeout(() => {
+        commentItem.classList.remove('new-comment');
+    }, 2000);
+}
+
 // 代码块复制功能
 document.addEventListener('DOMContentLoaded', function() {
     const codeBlocks = document.querySelectorAll('pre code');
@@ -173,6 +298,53 @@ document.addEventListener('DOMContentLoaded', function() {
         pre.style.position = 'relative';
         pre.appendChild(button);
     });
+    
+    // 绑定评论表单提交
+    const commentForm = document.getElementById('comment-form');
+    commentForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(commentForm);
+        const submitBtn = commentForm.querySelector('.submit-btn');
+        const originalText = submitBtn.textContent;
+        
+        submitBtn.textContent = '提交中...';
+        submitBtn.disabled = true;
+        
+        fetch(`{{ route('blog.comments.store', $post['slug']) }}`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showMessage(data.message, 'success');
+                addCommentToList(data.comment);
+                commentForm.reset();
+                updateCharCount();
+            } else {
+                showMessage(data.error || '评论发表失败', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showMessage('网络错误，请稍后重试', 'error');
+        })
+        .finally(() => {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        });
+    });
+    
+    // 绑定字符计数更新
+    const contentTextarea = document.getElementById('content');
+    contentTextarea.addEventListener('input', updateCharCount);
+    
+    // 初始化字符计数
+    updateCharCount();
 });
 
 // 页面滚动时显示返回顶部按钮

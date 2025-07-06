@@ -1353,4 +1353,316 @@
         background: var(--surface-color);
         color: var(--primary-color);
     }
+}
+
+/* 评论区域样式 */
+.comments-section {
+    margin-top: 3rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.comments-section .section-title {
+    margin-bottom: 2rem;
+    color: var(--text-strong);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* 评论表单样式 */
+.comment-form-container {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+}
+
+.comment-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.comment-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-strong);
+}
+
+.comment-form input,
+.comment-form textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.comment-form input:focus,
+.comment-form textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.comment-form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.char-count {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.submit-btn {
+    padding: 0.75rem 1.5rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.random-name-btn {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.random-name-btn:hover {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+}
+
+/* 评论列表样式 */
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.comment-item {
+    padding: 1.5rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.comment-item:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.comment-item.new-comment {
+    border-color: var(--primary-color);
+    background: rgba(59, 130, 246, 0.02);
+    animation: newCommentHighlight 2s ease-out;
+}
+
+@keyframes newCommentHighlight {
+    0% {
+        background: rgba(59, 130, 246, 0.1);
+    }
+    100% {
+        background: rgba(59, 130, 246, 0.02);
+    }
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.comment-author {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 1rem;
+}
+
+.comment-time {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.comment-content {
+    color: var(--text-primary);
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.no-comments {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+}
+
+.no-comments p {
+    margin: 0;
+    font-size: 1.125rem;
+}
+
+/* 消息提示样式 */
+.message {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.message.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.message-success {
+    background: #10b981;
+    color: white;
+}
+
+.message-error {
+    background: #ef4444;
+    color: white;
+}
+
+/* 暗黑模式样式 */
+[data-theme="dark"] .comment-form-container,
+[data-theme="dark"] .comment-item {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .comment-form input,
+[data-theme="dark"] .comment-form textarea {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .comment-form input:focus,
+[data-theme="dark"] .comment-form textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+[data-theme="dark"] .random-name-btn {
+    background: transparent;
+    color: var(--text-muted);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .random-name-btn:hover {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .comments-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+    }
+    
+    .comment-form-container {
+        padding: 1.5rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .submit-btn,
+    .random-name-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .comment-item {
+        padding: 1rem;
+    }
+    
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .message {
+        right: 1rem;
+        left: 1rem;
+        top: 1rem;
+    }
+}
+
+/* 自动配色方案适配 */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .comment-form-container,
+    :root:not([data-theme]) .comment-item {
+        background: var(--bg-surface);
+        border-color: var(--border-color);
+    }
+    
+    :root:not([data-theme]) .comment-form input,
+    :root:not([data-theme]) .comment-form textarea {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+    }
+    
+    :root:not([data-theme]) .comment-form input:focus,
+    :root:not([data-theme]) .comment-form textarea:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    :root:not([data-theme]) .random-name-btn {
+        background: transparent;
+        color: var(--text-muted);
+        border-color: var(--border-color);
+    }
+    
+    :root:not([data-theme]) .random-name-btn:hover {
+        background: var(--bg-surface);
+        color: var(--text-primary);
+    }
 } 

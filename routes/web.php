@@ -17,6 +17,10 @@ Route::get('/', [BlogController::class, 'index'])->name('blog.index');
 // 博客文章详情
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
+// 博客评论相关路由
+Route::post('/blog/{slug}/comments', [BlogController::class, 'storeComment'])->name('blog.comments.store');
+Route::get('/blog/{slug}/comments', [BlogController::class, 'getComments'])->name('blog.comments.get');
+
 // 博客图片访问
 Route::get('/blog-images/{folder}/{filename}', [BlogController::class, 'getBlogImage'])
     ->name('blog.image')
