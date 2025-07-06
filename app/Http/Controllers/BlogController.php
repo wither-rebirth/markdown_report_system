@@ -62,7 +62,7 @@ class BlogController extends Controller
         $posts->appends($request->query());
         
         // 获取最新文章用于侧边栏
-        $latestPosts = array_slice($allPosts, 0, 5);
+        $latestPosts = array_slice($allPosts, 0, 3);
         
         // 获取分类
         $categories = $this->getCategories($allPosts);

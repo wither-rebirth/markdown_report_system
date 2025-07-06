@@ -17,7 +17,7 @@ class AboutMeController extends Controller
             'title' => '安全研究员 & 开发者',
             'bio' => '热爱网络安全、渗透测试和Web开发。专注于CTF竞赛、靶场挑战和安全研究。',
             'location' => '中国',
-            'email' => 'example@example.com',
+            'email' => 'wither2rebirth@gmail.com',
             'skills' => [
                 'Web安全' => ['SQL注入', 'XSS', 'CSRF', '文件上传漏洞', '权限绕过'],
                 '渗透测试' => ['信息收集', '漏洞扫描', '权限提升', '后渗透'],
@@ -44,9 +44,9 @@ class AboutMeController extends Controller
             ],
             'social_links' => [
                 'github' => 'https://github.com/wither',
-                'twitter' => 'https://twitter.com/wither',
+                'discord' => 'https://discord.com/users/wither0295_45837',
                 'blog' => url('/'),
-                'email' => 'mailto:example@example.com'
+                'email' => 'mailto:wither2rebirth@gmail.com'
             ]
         ];
 
