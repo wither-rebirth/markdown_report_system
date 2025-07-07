@@ -10,6 +10,9 @@
     <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     @stack('styles')
 </head>
 <body class="admin-body">
@@ -53,6 +56,22 @@
                     <a href="{{ route('admin.comments.index') }}" class="menu-link {{ request()->routeIs('admin.comments*') ? 'active' : '' }}">
                         <i class="fas fa-comments"></i>
                         <span>评论管理</span>
+                    </a>
+                </li>
+                
+                <li class="menu-divider"></li>
+                
+                <li class="menu-item">
+                    <a href="{{ route('admin.analytics.index') }}" class="menu-link {{ request()->routeIs('admin.analytics*') ? 'active' : '' }}">
+                        <i class="fas fa-chart-line"></i>
+                        <span>数据分析</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="{{ route('admin.backup.index') }}" class="menu-link {{ request()->routeIs('admin.backup*') ? 'active' : '' }}">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>备份管理</span>
                     </a>
                 </li>
                 

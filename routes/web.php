@@ -102,5 +102,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('comments/{comment}/toggle-approval', [App\Http\Controllers\Admin\CommentController::class, 'toggleApproval'])->name('comments.toggle-approval');
         Route::get('comments/blog/{slug}', [App\Http\Controllers\Admin\CommentController::class, 'byBlog'])->name('comments.by-blog');
         Route::post('comments/detect-spam', [App\Http\Controllers\Admin\CommentController::class, 'detectSpam'])->name('comments.detect-spam');
+        
+        // 数据分析
+        Route::get('analytics', [App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('analytics/realtime', [App\Http\Controllers\Admin\AnalyticsController::class, 'realtime'])->name('analytics.realtime');
+        Route::get('analytics/pages', [App\Http\Controllers\Admin\AnalyticsController::class, 'pages'])->name('analytics.pages');
+        Route::get('analytics/export', [App\Http\Controllers\Admin\AnalyticsController::class, 'export'])->name('analytics.export');
+        Route::post('analytics/generate-daily-stats', [App\Http\Controllers\Admin\AnalyticsController::class, 'generateDailyStats'])->name('analytics.generate-daily-stats');
+        
+        // 备份管理
+        Route::get('backup', [App\Http\Controllers\Admin\BackupController::class, 'index'])->name('backup.index');
+        Route::post('backup/database', [App\Http\Controllers\Admin\BackupController::class, 'createDatabaseBackup'])->name('backup.database');
+        Route::post('backup/files', [App\Http\Controllers\Admin\BackupController::class, 'createFileBackup'])->name('backup.files');
+        Route::post('backup/full', [App\Http\Controllers\Admin\BackupController::class, 'createFullBackup'])->name('backup.full');
+        Route::get('backup/download/{filename}', [App\Http\Controllers\Admin\BackupController::class, 'download'])->name('backup.download');
+        Route::delete('backup/{filename}', [App\Http\Controllers\Admin\BackupController::class, 'delete'])->name('backup.delete');
+        Route::post('backup/cleanup', [App\Http\Controllers\Admin\BackupController::class, 'cleanup'])->name('backup.cleanup');
     });
 });

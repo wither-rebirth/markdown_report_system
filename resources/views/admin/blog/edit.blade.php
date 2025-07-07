@@ -235,21 +235,22 @@
                     <i class="fas fa-times"></i> 取消
                 </a>
             </div>
-            
-            <!-- 删除按钮 -->
-            <form action="{{ route('admin.blog.destroy', $slug) }}" method="POST" style="width: 100%;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" 
-                        class="btn btn-danger" 
-                        style="width: 100%;"
-                        data-confirm="确定要永久删除这篇文章吗？此操作不可恢复！">
-                    <i class="fas fa-trash"></i> 删除文章
-                </button>
-            </form>
         </div>
     </div>
 </form>
+
+<!-- 删除表单 - 独立表单，不嵌套在更新表单内 -->
+<div style="margin: 1.5rem;">
+    <form action="{{ route('admin.blog.destroy', $slug) }}" method="POST" style="width: 100%;" onsubmit="return confirmDelete()">
+        @csrf
+        @method('DELETE')
+        <button type="submit" 
+                class="btn btn-danger" 
+                style="width: 100%;">
+            <i class="fas fa-trash"></i> 删除文章
+        </button>
+    </form>
+</div>
 
 @push('scripts')
 <script>
@@ -257,6 +258,11 @@
 document.querySelectorAll('.tag-name').forEach(function(span) {
     span.style.color = span.dataset.color;
 });
+
+// 删除确认
+function confirmDelete() {
+    return confirm('确定要永久删除这篇文章吗？\n\n此操作将删除文章文件和所有相关的图片文件，此操作不可恢复！');
+}
 </script>
 @endpush
 

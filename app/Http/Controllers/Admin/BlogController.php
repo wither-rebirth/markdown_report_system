@@ -129,9 +129,9 @@ class BlogController extends Controller
 
         $categories = Category::active()->ordered()->get();
         $tags = Tag::active()->ordered()->get();
-        $selectedTags = $this->getBlogTags($slug);
+        $postTags = $this->getBlogTags($slug);
         
-        return view('admin.blog.edit', compact('post', 'categories', 'tags', 'selectedTags'));
+        return view('admin.blog.edit', compact('post', 'slug', 'categories', 'tags', 'postTags'));
     }
 
     /**
@@ -186,11 +186,17 @@ class BlogController extends Controller
             abort(404, '文章不存在');
         }
 
-        $filePath = $this->getPostFilePath($slug);
+        $blogDir = storage_path('blog');
+        $filePath = $blogDir . '/' . $slug . '.md';
+        $dirPath = $blogDir . '/' . $slug;
         
-        // 删除文件
+        // 判断是文件还是文件夹类型的博客
         if (File::exists($filePath)) {
+            // 独立的 .md 文件
             File::delete($filePath);
+        } elseif (File::exists($dirPath) && File::isDirectory($dirPath)) {
+            // 文件夹类型的博客，删除整个文件夹
+            File::deleteDirectory($dirPath);
         }
 
         // 删除标签关联
@@ -257,16 +263,32 @@ class BlogController extends Controller
             $slug = basename(dirname($filePath));
         }
 
+        // 提取去除前置元数据后的内容
+        $articleContent = $this->removeFrontMatter($content);
+        
+        // 查找分类ID
+        $categoryId = null;
+        if (!empty($metadata['category'])) {
+            $category = Category::where('name', $metadata['category'])->first();
+            if ($category) {
+                $categoryId = $category->id;
+            }
+        }
+
         return [
             'slug' => $slug,
             'title' => $metadata['title'] ?? $slug,
             'excerpt' => $metadata['excerpt'] ?? '',
+            'content' => $articleContent,
             'author' => $metadata['author'] ?? 'Admin',
             'category' => $metadata['category'] ?? '',
+            'category_id' => $categoryId,
             'image' => $metadata['image'] ?? null,
             'published_at' => $metadata['date'] ?? File::lastModified($filePath),
             'mtime' => File::lastModified($filePath),
             'file_path' => $filePath,
+            'path' => $filePath,
+            'size' => File::size($filePath),
             'published' => $metadata['published'] ?? true,
         ];
     }
@@ -423,5 +445,34 @@ class BlogController extends Controller
             ->where('blog_slug', $slug)
             ->pluck('tag_id')
             ->toArray();
+    }
+
+    /**
+     * 移除前言部分
+     */
+    private function removeFrontMatter($content)
+    {
+        // 更健壮的YAML前言移除正则表达式
+        // 处理不同的换行符格式：\n, \r\n, \r
+        $patterns = [
+            // 标准格式：--- 内容 ---
+            '/^---\s*[\r\n]+.*?[\r\n]+---\s*[\r\n]+/s',
+            // 更宽松的格式
+            '/^---.*?---\s*[\r\n]*/s',
+            // 处理可能没有结尾换行的情况
+            '/^---.*?---/s'
+        ];
+        
+        $cleaned = $content;
+        foreach ($patterns as $pattern) {
+            $result = preg_replace($pattern, '', $cleaned);
+            if ($result !== $cleaned) {
+                $cleaned = $result;
+                break;
+            }
+        }
+        
+        // 清理开头的多余空行和空格
+        return ltrim($cleaned, "\r\n\t ");
     }
 }
