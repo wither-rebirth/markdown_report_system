@@ -85,12 +85,8 @@ class AdminApp {
     getModulesForPath(path) {
         const moduleMap = {
             '/admin/dashboard': ['dashboard', 'charts'],
-            '/admin/blog': ['blog-editor', 'file-upload'],
-            '/admin/analytics': ['charts', 'date-picker'],
-            '/admin/backup': ['backup-manager'],
-            '/admin/categories': ['category-manager'],
-            '/admin/tags': ['tag-manager'],
-            '/admin/comments': ['comment-manager']
+            '/admin/analytics': ['charts']
+            // 注意：其他页面模块已通过Vite直接加载，不需要动态导入
         };
 
         // 精确匹配

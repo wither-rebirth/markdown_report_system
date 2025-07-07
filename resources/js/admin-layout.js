@@ -314,11 +314,22 @@ class AdminLayout {
                 element.setAttribute('data-tooltip', text);
                 element.removeAttribute('title');
                 
+                let showTimeout;
+                
                 element.addEventListener('mouseenter', () => {
-                    this.showTooltip(element, text);
+                    // 添加800ms延迟，避免频繁显示
+                    showTimeout = setTimeout(() => {
+                        this.showTooltip(element, text);
+                    }, 800);
                 });
                 
                 element.addEventListener('mouseleave', () => {
+                    // 清除显示延迟
+                    if (showTimeout) {
+                        clearTimeout(showTimeout);
+                        showTimeout = null;
+                    }
+                    // 隐藏已显示的提示框
                     this.hideTooltip();
                 });
             }

@@ -7,6 +7,10 @@
 @vite(['resources/css/admin/tags.css'])
 @endpush
 
+@push('scripts')
+@vite(['resources/js/admin/tags.js'])
+@endpush
+
 @section('content')
 <div class="card" style="margin: 1.5rem;">
     <div class="card-header">

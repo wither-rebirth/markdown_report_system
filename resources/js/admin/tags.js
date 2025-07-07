@@ -6,23 +6,45 @@ import { showMessage, initStatusToggle, initDeleteConfirmation, initSlugGenerati
 // 设置标签颜色显示
 export function initTagColors() {
     // 设置标签预览颜色
-    document.querySelectorAll('.tag-preview').forEach(function(element) {
+    const tagPreviews = document.querySelectorAll('.tag-preview');
+    
+    tagPreviews.forEach(function(element) {
         const color = element.dataset.color;
-        element.style.backgroundColor = color;
         
-        // 根据颜色亮度调整文字颜色
-        if (isLightColor(color)) {
-            element.classList.add('light-bg');
-            element.classList.remove('dark-bg');
+        if (color && color !== 'undefined' && color !== '') {
+            element.style.backgroundColor = color;
+            
+            // 根据颜色亮度调整文字颜色
+            if (isLightColor(color)) {
+                element.classList.add('light-bg');
+                element.classList.remove('dark-bg');
+                element.style.color = '#000000';
+            } else {
+                element.classList.add('dark-bg');
+                element.classList.remove('light-bg');
+                element.style.color = '#ffffff';
+            }
         } else {
+            // 如果没有颜色，使用默认颜色
+            element.style.backgroundColor = '#6366f1';
             element.classList.add('dark-bg');
             element.classList.remove('light-bg');
+            element.style.color = '#ffffff';
         }
     });
 
     // 设置颜色色块
-    document.querySelectorAll('.tag-color-swatch').forEach(function(element) {
-        element.style.backgroundColor = element.dataset.bgColor;
+    const colorSwatches = document.querySelectorAll('.tag-color-swatch');
+    
+    colorSwatches.forEach(function(element) {
+        const bgColor = element.dataset.bgColor;
+        
+        if (bgColor && bgColor !== 'undefined' && bgColor !== '') {
+            element.style.backgroundColor = bgColor;
+        } else {
+            // 如果没有颜色，使用默认颜色
+            element.style.backgroundColor = '#6366f1';
+        }
     });
 }
 

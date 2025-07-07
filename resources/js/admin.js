@@ -645,14 +645,24 @@ const AdminApp = {
             element.removeAttribute('title');
             
             let tooltip;
+            let showTimeout;
             
             element.addEventListener('mouseenter', () => {
-                tooltip = this.createTooltip(text);
-                document.body.appendChild(tooltip);
-                this.positionTooltip(tooltip, element);
+                // 添加800ms延迟，避免频繁显示
+                showTimeout = setTimeout(() => {
+                    tooltip = this.createTooltip(text);
+                    document.body.appendChild(tooltip);
+                    this.positionTooltip(tooltip, element);
+                }, 800);
             });
             
             element.addEventListener('mouseleave', () => {
+                // 清除显示延迟
+                if (showTimeout) {
+                    clearTimeout(showTimeout);
+                    showTimeout = null;
+                }
+                // 移除已显示的提示框
                 if (tooltip) {
                     tooltip.remove();
                     tooltip = null;
