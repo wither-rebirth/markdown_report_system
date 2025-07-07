@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use League\CommonMark\CommonMarkConverter;
-use App\BlogComment;
+use App\Models\BlogComment;
 use Illuminate\Support\Facades\Validator;
 
 class BlogController extends Controller

@@ -65,3 +65,42 @@ Route::get('/htb-images/{folder}/{filename}', [ReportController::class, 'getHack
 Route::get('/{slug}.html', function ($slug) {
     return redirect()->route('reports.show', $slug);
 })->where('slug', '[a-zA-Z0-9\-_]+');
+
+// 管理端路由
+Route::prefix('admin')->name('admin.')->group(function () {
+    // 认证路由（不需要登录即可访问）
+    Route::get('/login', [App\Http\Controllers\Admin\AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [App\Http\Controllers\Admin\AuthController::class, 'login']);
+    Route::get('/setup', [App\Http\Controllers\Admin\AuthController::class, 'showSetup'])->name('setup');
+    Route::post('/setup', [App\Http\Controllers\Admin\AuthController::class, 'setup']);
+    
+    // 需要认证的管理端路由
+    Route::middleware('admin')->group(function () {
+        // 仪表板
+        Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard.index');
+        
+        // 认证相关
+        Route::post('/logout', [App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('logout');
+        
+        // 博客管理
+        Route::resource('blog', App\Http\Controllers\Admin\BlogController::class);
+        
+        // 分类管理
+        Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);
+        Route::post('categories/{category}/toggle-status', [App\Http\Controllers\Admin\CategoryController::class, 'toggleStatus'])->name('categories.toggle-status');
+        Route::post('categories/update-order', [App\Http\Controllers\Admin\CategoryController::class, 'updateOrder'])->name('categories.update-order');
+        
+        // 标签管理
+        Route::resource('tags', App\Http\Controllers\Admin\TagController::class);
+        Route::post('tags/{tag}/toggle-status', [App\Http\Controllers\Admin\TagController::class, 'toggleStatus'])->name('tags.toggle-status');
+        Route::post('tags/bulk-delete', [App\Http\Controllers\Admin\TagController::class, 'bulkDelete'])->name('tags.bulk-delete');
+        
+        // 评论管理
+        Route::resource('comments', App\Http\Controllers\Admin\CommentController::class)->except(['create', 'store']);
+        Route::post('comments/bulk-action', [App\Http\Controllers\Admin\CommentController::class, 'bulkAction'])->name('comments.bulk-action');
+        Route::post('comments/{comment}/toggle-approval', [App\Http\Controllers\Admin\CommentController::class, 'toggleApproval'])->name('comments.toggle-approval');
+        Route::get('comments/blog/{slug}', [App\Http\Controllers\Admin\CommentController::class, 'byBlog'])->name('comments.by-blog');
+        Route::post('comments/detect-spam', [App\Http\Controllers\Admin\CommentController::class, 'detectSpam'])->name('comments.detect-spam');
+    });
+});
