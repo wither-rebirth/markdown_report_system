@@ -3,6 +3,14 @@
 @section('title', '编辑标签')
 @section('page-title', '编辑标签')
 
+@push('styles')
+@vite(['resources/css/admin/tags.css'])
+@endpush
+
+@push('scripts')
+@vite(['resources/js/admin/tags.js'])
+@endpush
+
 @section('content')
 <div style="margin: 1.5rem;">
     <div style="max-width: 600px;">

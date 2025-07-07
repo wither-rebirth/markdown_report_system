@@ -3,6 +3,14 @@
 @section('title', '博客管理')
 @section('page-title', '博客管理')
 
+@push('styles')
+@vite(['resources/css/admin/blog.css'])
+@endpush
+
+@push('scripts')
+@vite(['resources/js/admin/blog.js'])
+@endpush
+
 @section('content')
 <div class="card" style="margin: 1.5rem;">
     <div class="card-header">
@@ -118,14 +126,5 @@
     </div>
 </div>
 
-<style>
-.empty-state a {
-    color: #667eea;
-    text-decoration: none;
-}
 
-.empty-state a:hover {
-    text-decoration: underline;
-}
-</style>
 @endsection 

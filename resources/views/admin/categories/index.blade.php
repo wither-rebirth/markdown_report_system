@@ -3,6 +3,14 @@
 @section('title', '分类管理')
 @section('page-title', '分类管理')
 
+@push('styles')
+@vite(['resources/css/admin/categories.css'])
+@endpush
+
+@push('scripts')
+@vite(['resources/js/admin/categories.js'])
+@endpush
+
 @section('content')
 <div class="card" style="margin: 1.5rem;">
     <div class="card-header">
@@ -153,134 +161,5 @@
     </div>
 </div>
 
-@push('scripts')
-<script>
-// 状态切换 - 添加防抖和加载状态
-let categoryToggleTimeout = null;
-document.querySelectorAll('.status-toggle').forEach(function(toggle) {
-    toggle.addEventListener('change', function() {
-        const id = this.dataset.id;
-        const isActive = this.checked;
-        const toggleElement = this;
-        
-        // 防止重复点击
-        if (toggleElement.disabled) return;
-        
-        // 清除之前的timeout
-        if (categoryToggleTimeout) {
-            clearTimeout(categoryToggleTimeout);
-        }
-        
-        // 禁用开关，显示加载状态
-        toggleElement.disabled = true;
-        const slider = toggleElement.nextElementSibling;
-        slider.style.opacity = '0.6';
-        
-        categoryToggleTimeout = setTimeout(() => {
-            fetch(`{{ route('admin.categories.index') }}/${id}/toggle-status`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({ is_active: isActive })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showMessage('状态更新成功', 'success');
-                } else {
-                    toggleElement.checked = !isActive;
-                    showMessage('状态更新失败', 'error');
-                }
-            })
-            .catch(error => {
-                toggleElement.checked = !isActive;
-                showMessage('网络错误', 'error');
-            })
-            .finally(() => {
-                // 恢复开关状态
-                toggleElement.disabled = false;
-                slider.style.opacity = '1';
-                categoryToggleTimeout = null;
-            });
-        }, 300); // 300ms 防抖
-    });
-});
 
-// 排序移动 - 添加防抖和加载状态
-let moveInProgress = false;
-document.querySelectorAll('.move-up, .move-down').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-        // 防止重复点击
-        if (moveInProgress) return;
-        
-        const id = this.dataset.id;
-        const direction = this.classList.contains('move-up') ? 'up' : 'down';
-        const buttonElement = this;
-        
-        // 设置加载状态
-        moveInProgress = true;
-        buttonElement.disabled = true;
-        buttonElement.style.opacity = '0.6';
-        
-        // 禁用同行的移动按钮
-        const row = buttonElement.closest('tr');
-        const moveButtons = row.querySelectorAll('.move-up, .move-down');
-        moveButtons.forEach(btn => {
-            btn.disabled = true;
-            btn.style.opacity = '0.6';
-        });
-        
-        fetch(`{{ route('admin.categories.index') }}/${id}/move`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ direction: direction })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showMessage('排序更新成功', 'success');
-                // 延迟刷新，让用户看到成功消息
-                setTimeout(() => {
-                    location.reload();
-                }, 800);
-            } else {
-                showMessage('排序更新失败', 'error');
-            }
-        })
-        .catch(error => {
-            showMessage('网络错误', 'error');
-        })
-        .finally(() => {
-            // 恢复按钮状态
-            moveInProgress = false;
-            moveButtons.forEach(btn => {
-                btn.disabled = false;
-                btn.style.opacity = '1';
-            });
-        });
-    });
-});
-</script>
-@endpush
-
-<style>
-.empty-state a {
-    color: #667eea;
-    text-decoration: none;
-}
-
-.empty-state a:hover {
-    text-decoration: underline;
-}
-
-.move-up, .move-down {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-}
-</style>
 @endsection 

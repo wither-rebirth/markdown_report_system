@@ -369,13 +369,13 @@ const AdminApp = {
     
     // 字符计数
     setupCharacterCount() {
-        const textareas = document.querySelectorAll('textarea[data-max-length]');
+    const textareas = document.querySelectorAll('textarea[data-max-length]');
         
-        textareas.forEach(textarea => {
+    textareas.forEach(textarea => {
             const maxLength = parseInt(textarea.getAttribute('data-max-length'));
             
             // 创建计数器
-            const counter = document.createElement('div');
+        const counter = document.createElement('div');
             counter.className = 'character-counter';
             counter.style.cssText = `
                 font-size: 0.75rem;
@@ -384,7 +384,7 @@ const AdminApp = {
                 margin-top: 4px;
             `;
             
-            textarea.parentNode.appendChild(counter);
+        textarea.parentNode.appendChild(counter);
             
             // 更新计数
             const updateCounter = () => {
@@ -697,7 +697,7 @@ const AdminApp = {
         tooltip.appendChild(arrow);
         
         // 显示动画
-        setTimeout(() => {
+            setTimeout(() => {
             tooltip.style.opacity = '1';
         }, 10);
         
@@ -880,8 +880,8 @@ const AdminApp = {
     updateToggleState(url, id, isChecked, switchEl) {
         fetch(url, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
+        headers: {
+            'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
             body: JSON.stringify({
@@ -1016,7 +1016,7 @@ const AdminApp = {
         
         // 样式
         toast.style.cssText = `
-            position: fixed;
+        position: fixed;
             top: ${20 + (existingToasts.length * 80)}px;
             right: 20px;
             background: var(--bg-primary);
@@ -1027,8 +1027,8 @@ const AdminApp = {
             display: flex;
             align-items: center;
             gap: var(--spacing-md);
-            z-index: 9999;
-            min-width: 300px;
+        z-index: 9999;
+        min-width: 300px;
             max-width: 500px;
             opacity: 0;
             transform: translateX(100%);

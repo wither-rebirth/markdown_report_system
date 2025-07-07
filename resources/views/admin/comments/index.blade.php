@@ -3,6 +3,14 @@
 @section('title', '评论管理')
 @section('page-title', '评论管理')
 
+@push('styles')
+@vite(['resources/css/admin/comments.css'])
+@endpush
+
+@push('scripts')
+@vite(['resources/js/admin/comments.js'])
+@endpush
+
 @section('content')
 <div class="card" style="margin: 1.5rem;">
     <div class="card-header">
@@ -191,142 +199,5 @@
     </div>
 </div>
 
-@push('scripts')
-<script>
-// 全选功能
-document.getElementById('select-all').addEventListener('change', function() {
-    const checkboxes = document.querySelectorAll('.comment-checkbox');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = this.checked;
-    });
-    updateBatchActions();
-});
 
-// 单个选择框
-document.querySelectorAll('.comment-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', updateBatchActions);
-});
-
-function updateBatchActions() {
-    const selected = document.querySelectorAll('.comment-checkbox:checked');
-    const batchBtns = ['batch-approve', 'batch-spam', 'batch-delete'];
-    
-    batchBtns.forEach(btnId => {
-        const btn = document.getElementById(btnId);
-        btn.style.display = selected.length > 0 ? 'inline-flex' : 'none';
-    });
-    
-    // 更新全选框状态
-    const allCheckboxes = document.querySelectorAll('.comment-checkbox');
-    const selectAll = document.getElementById('select-all');
-    selectAll.checked = selected.length === allCheckboxes.length;
-    selectAll.indeterminate = selected.length > 0 && selected.length < allCheckboxes.length;
-}
-
-// 单个操作
-document.querySelectorAll('.approve-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        updateCommentStatus(this.dataset.id, 'approved');
-    });
-});
-
-document.querySelectorAll('.spam-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        updateCommentStatus(this.dataset.id, 'spam');
-    });
-});
-
-// 批量操作
-document.getElementById('batch-approve').addEventListener('click', function() {
-    batchAction('approve', '确定要通过选中的评论吗？');
-});
-
-document.getElementById('batch-spam').addEventListener('click', function() {
-    batchAction('spam', '确定要将选中的评论标记为垃圾吗？');
-});
-
-document.getElementById('batch-delete').addEventListener('click', function() {
-    batchAction('delete', '确定要删除选中的评论吗？此操作不可恢复！');
-});
-
-function updateCommentStatus(id, status) {
-    fetch(`{{ route('admin.comments.index') }}/${id}/status`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify({ status: status })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showMessage(data.message, 'success');
-            location.reload();
-        } else {
-            showMessage(data.message || '操作失败', 'error');
-        }
-    })
-    .catch(error => {
-        showMessage('网络错误', 'error');
-    });
-}
-
-function batchAction(action, confirmMessage) {
-    const selected = Array.from(document.querySelectorAll('.comment-checkbox:checked')).map(cb => cb.value);
-    
-    if (selected.length === 0) {
-        showMessage('请先选择要操作的评论', 'warning');
-        return;
-    }
-    
-    if (!confirm(confirmMessage)) {
-        return;
-    }
-    
-    fetch(`{{ route('admin.comments.index') }}/bulk`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify({ 
-            action: action, 
-            ids: selected 
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showMessage(data.message, 'success');
-            location.reload();
-        } else {
-            showMessage(data.message || '操作失败', 'error');
-        }
-    })
-    .catch(error => {
-        showMessage('网络错误', 'error');
-    });
-}
-</script>
-@endpush
-
-<style>
-.comment-pending {
-    background-color: #fef3c7;
-}
-
-.comment-pending:hover {
-    background-color: #fde68a;
-}
-
-.empty-state a {
-    color: #667eea;
-    text-decoration: none;
-}
-
-.empty-state a:hover {
-    text-decoration: underline;
-}
-</style>
 @endsection 

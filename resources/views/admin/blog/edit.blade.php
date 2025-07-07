@@ -3,6 +3,14 @@
 @section('title', '编辑文章')
 @section('page-title', '编辑文章')
 
+@push('styles')
+@vite(['resources/css/admin/blog.css'])
+@endpush
+
+@push('scripts')
+@vite(['resources/js/admin/blog.js'])
+@endpush
+
 @section('content')
 <form action="{{ route('admin.blog.update', $slug) }}" method="POST" style="margin: 1.5rem;">
     @csrf
@@ -250,25 +258,7 @@
     </form>
 </div>
 
-@push('scripts')
-<script>
-// 设置标签颜色
-document.querySelectorAll('.tag-name').forEach(function(span) {
-    span.style.color = span.dataset.color;
-});
 
-// 删除确认
-function confirmDelete() {
-    return confirm('确定要永久删除这篇文章吗？\n\n此操作将删除文章文件和所有相关的图片文件，此操作不可恢复！');
-}
-</script>
-@endpush
 
-<style>
-@media (max-width: 768px) {
-    form > div:first-child {
-        grid-template-columns: 1fr !important;
-    }
-}
-</style>
+
 @endsection 

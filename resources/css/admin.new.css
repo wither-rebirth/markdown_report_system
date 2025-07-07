@@ -1,0 +1,187 @@
+/* Admin 样式入口文件 */
+
+/* 导入基础 admin 样式 */
+@import './admin.css';
+
+/* 导入布局相关样式 */
+@import './admin-layout.css';
+
+/* 工具提示样式 */
+.tooltip-popup {
+    position: absolute;
+    background: var(--gray-800);
+    color: white;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10000;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.2s ease-in-out;
+    box-shadow: var(--shadow-lg);
+}
+
+.tooltip-popup::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--gray-800);
+}
+
+/* 表格排序样式 */
+.data-table th[data-sortable] {
+    position: relative;
+    user-select: none;
+}
+
+.data-table th[data-sortable]:hover {
+    background-color: var(--gray-50);
+}
+
+.data-table th[data-sortable]::after {
+    content: '';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border: 4px solid transparent;
+    border-bottom-color: var(--gray-400);
+    opacity: 0.5;
+}
+
+.data-table th.sort-asc::after {
+    border-bottom-color: var(--primary-color);
+    opacity: 1;
+}
+
+.data-table th.sort-desc::after {
+    border-top-color: var(--primary-color);
+    border-bottom-color: transparent;
+    opacity: 1;
+}
+
+/* 批量操作样式 */
+.batch-actions {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-primary);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md) var(--spacing-lg);
+    box-shadow: var(--shadow-xl);
+    display: none;
+    align-items: center;
+    gap: var(--spacing-md);
+    z-index: 1000;
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.batch-actions .selected-count {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.batch-actions .btn {
+    margin: 0 var(--spacing-xs);
+}
+
+/* 表单焦点增强 */
+.form-group.focused .form-label {
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.form-group.focused .form-input,
+.form-group.focused .form-textarea {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* 加载状态样式 */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(2px);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--gray-200);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+    .tooltip-popup {
+        font-size: 11px;
+        padding: 6px 10px;
+    }
+    
+    .batch-actions {
+        left: var(--spacing-md);
+        right: var(--spacing-md);
+        transform: none;
+        width: auto;
+    }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+    .tooltip-popup {
+        background: #000000;
+        border: 1px solid #ffffff;
+    }
+    
+    .data-table th[data-sortable]:hover {
+        background-color: #000000;
+        color: #ffffff;
+    }
+}
+
+/* 减少动画模式支持 */
+@media (prefers-reduced-motion: reduce) {
+    .tooltip-popup,
+    .batch-actions,
+    .form-group.focused .form-label,
+    .loading-spinner {
+        animation: none;
+        transition: none;
+    }
+} 

@@ -3,6 +3,14 @@
 @section('title', '写新文章')
 @section('page-title', '写新文章')
 
+@push('styles')
+@vite(['resources/css/admin/blog.css'])
+@endpush
+
+@push('scripts')
+@vite(['resources/js/admin/blog.js'])
+@endpush
+
 @section('content')
 <form action="{{ route('admin.blog.store') }}" method="POST" style="margin: 1.5rem;">
     @csrf
@@ -215,41 +223,5 @@
     </div>
 </form>
 
-@push('scripts')
-<script>
-// 自动生成slug
-document.getElementById('title').addEventListener('input', function() {
-    const slugInput = document.getElementById('slug');
-    if (!slugInput.dataset.userModified) {
-        slugInput.value = generateSlug(this.value);
-    }
-});
 
-document.getElementById('slug').addEventListener('input', function() {
-    this.dataset.userModified = 'true';
-});
-
-function generateSlug(text) {
-    return text
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/[\s_-]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-}
-
-// 设置标签颜色
-document.querySelectorAll('.tag-name').forEach(function(span) {
-    span.style.color = span.dataset.color;
-});
-</script>
-@endpush
-
-<style>
-@media (max-width: 768px) {
-    form > div {
-        grid-template-columns: 1fr !important;
-    }
-}
-</style>
 @endsection 

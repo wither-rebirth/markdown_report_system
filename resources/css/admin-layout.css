@@ -1,0 +1,246 @@
+/* Admin Layout 样式 - 布局相关样式 */
+
+/* 页面加载动画 */
+.admin-body {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.admin-body.loaded {
+    opacity: 1;
+}
+
+/* 移动端覆盖层动画 */
+.mobile-overlay {
+    transition: all 0.25s ease-in-out;
+    backdrop-filter: blur(4px);
+}
+
+.mobile-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 侧边栏动画优化 */
+.admin-sidebar {
+    transition: transform 0.25s ease-in-out;
+}
+
+.admin-sidebar.mobile-open {
+    transform: translateX(0);
+}
+
+/* 用户下拉菜单动画 */
+.user-dropdown-menu {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.25s ease-in-out;
+}
+
+.user-dropdown-menu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* 消息提示动画 */
+.alert {
+    animation: slideInDown 0.3s ease-out;
+    transition: all 0.3s ease-in-out;
+}
+
+.alert.removing {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+/* 页面标题动画效果 */
+.page-title {
+    transition: all 0.25s ease-in-out;
+}
+
+.page-title:hover {
+    color: var(--primary-color);
+    transform: translateX(5px);
+}
+
+.page-title i {
+    transition: all 0.25s ease-in-out;
+}
+
+.page-title:hover i {
+    transform: scale(1.1);
+    color: var(--primary-hover);
+}
+
+/* 菜单链接悬停动画 */
+.menu-link {
+    transition: all 0.25s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease-in-out;
+}
+
+.menu-link:hover::before {
+    left: 100%;
+}
+
+/* 快速操作按钮动画 */
+.quick-action-btn {
+    transition: all 0.25s ease-in-out;
+}
+
+.quick-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* 表格行悬停动画 */
+.data-table tr {
+    transition: all 0.15s ease-in-out;
+}
+
+.data-table tr:hover {
+    background-color: var(--gray-50);
+    transform: translateX(2px);
+}
+
+/* 按钮悬停动画 */
+.btn {
+    transition: all 0.25s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transition: all 0.4s ease-in-out;
+    transform: translate(-50%, -50%);
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* 卡片悬停动画 */
+.card {
+    transition: all 0.25s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* 表单输入框焦点动画 */
+.form-input,
+.form-textarea,
+.form-select {
+    transition: all 0.25s ease-in-out;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+/* 侧边栏收缩展开动画 */
+@media (min-width: 1025px) {
+    .admin-sidebar.collapsed {
+        width: 70px;
+    }
+    
+    .admin-sidebar.collapsed .menu-text,
+    .admin-sidebar.collapsed .user-info,
+    .admin-sidebar.collapsed .menu-section-title {
+        opacity: 0;
+        visibility: hidden;
+    }
+    
+    .admin-sidebar.collapsed .sidebar-header h3 span,
+    .admin-sidebar.collapsed .sidebar-user .user-info {
+        display: none;
+    }
+}
+
+/* 响应式布局优化 */
+@media (max-width: 768px) {
+    .admin-content {
+        padding: var(--spacing-md);
+    }
+    
+    .page-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        align-items: flex-start;
+    }
+    
+    .page-header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #1f2937;
+        --bg-secondary: #111827;
+        --bg-tertiary: #0f172a;
+        --gray-50: #374151;
+        --gray-100: #4b5563;
+        --gray-200: #6b7280;
+        --gray-800: #f9fafb;
+        --gray-900: #ffffff;
+    }
+    
+    .admin-sidebar {
+        background: var(--bg-primary);
+        border-right-color: var(--gray-200);
+    }
+    
+    .admin-header {
+        background: var(--bg-primary);
+        border-bottom-color: var(--gray-200);
+    }
+}
+
+/* 打印样式 */
+@media print {
+    .admin-sidebar,
+    .admin-header,
+    .quick-actions,
+    .user-menu {
+        display: none !important;
+    }
+    
+    .admin-main {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+    
+    .admin-content {
+        padding: 0 !important;
+    }
+} 

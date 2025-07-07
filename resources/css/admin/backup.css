@@ -1,0 +1,324 @@
+/* Backup 模块样式 */
+
+.backup-page {
+    padding: 20px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* 统计卡片 */
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-icon {
+    font-size: 2rem;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 50%;
+}
+
+.stat-content h3 {
+    margin: 0 0 5px 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* 最新备份信息 */
+.latest-backup {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.latest-backup h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+}
+
+.backup-info {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.backup-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.backup-date {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.backup-size {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* 备份列表 */
+.backups-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.backups-section h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.empty-state p {
+    margin: 0 0 20px 0;
+    font-size: 1.1rem;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.backup-filename {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filename {
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.backup-type {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.backup-type-database {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.backup-type-files {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.backup-type-full {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.backup-age {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.9rem;
+}
+
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.btn-warning {
+    background: #ffc107;
+    color: #212529;
+    border-color: #ffc107;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border-color: #6c757d;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* 模态框样式 */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h4 {
+    margin: 0;
+    color: #333;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.backup-options {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.backup-option {
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+.backup-option h5 {
+    margin: 0 0 8px 0;
+    color: #333;
+}
+
+.backup-option p {
+    margin: 0 0 15px 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.cleanup-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.cleanup-options label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+} 

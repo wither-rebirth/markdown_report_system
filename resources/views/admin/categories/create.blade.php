@@ -3,6 +3,14 @@
 @section('title', '新建分类')
 @section('page-title', '新建分类')
 
+@push('styles')
+@vite(['resources/css/admin/categories.css'])
+@endpush
+
+@push('scripts')
+@vite(['resources/js/admin/categories.js'])
+@endpush
+
 @section('content')
 <div style="margin: 1.5rem;">
     <div style="max-width: 600px;">

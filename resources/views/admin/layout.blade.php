@@ -7,7 +7,7 @@
     <title>@yield('title', '管理后台') - {{ config('app.name', 'Laravel') }}</title>
     
     <!-- 管理端样式 -->
-    <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
+    @vite(['resources/css/admin.new.css'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- Chart.js -->
@@ -325,107 +325,7 @@
     </div>
     
     <!-- 管理端脚本 -->
-    <script src="{{ asset('js/admin.js') }}"></script>
-    
-    <!-- 内联脚本 -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 侧边栏切换
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebarClose = document.getElementById('sidebarClose');
-            const sidebar = document.getElementById('adminSidebar');
-            const overlay = document.getElementById('mobileOverlay');
-            
-            function toggleSidebar() {
-                sidebar.classList.toggle('mobile-open');
-                overlay.classList.toggle('active');
-                document.body.classList.toggle('sidebar-open');
-            }
-            
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', toggleSidebar);
-            }
-            
-            if (sidebarClose) {
-                sidebarClose.addEventListener('click', toggleSidebar);
-            }
-            
-            if (overlay) {
-                overlay.addEventListener('click', toggleSidebar);
-            }
-            
-            // 用户下拉菜单
-            const userDropdownToggle = document.getElementById('userDropdownToggle');
-            const userDropdownMenu = document.getElementById('userDropdownMenu');
-            
-            if (userDropdownToggle && userDropdownMenu) {
-                userDropdownToggle.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    userDropdownMenu.classList.toggle('active');
-                });
-                
-                // 点击其他地方关闭下拉菜单
-                document.addEventListener('click', function() {
-                    userDropdownMenu.classList.remove('active');
-                });
-            }
-            
-            // 表格确认删除
-            document.querySelectorAll('[data-confirm]').forEach(function(element) {
-                element.addEventListener('click', function(e) {
-                    if (!confirm(this.dataset.confirm)) {
-                        e.preventDefault();
-                    }
-                });
-            });
-            
-            // 自动隐藏消息提示
-            setTimeout(function() {
-                document.querySelectorAll('.alert').forEach(function(alert) {
-                    alert.style.opacity = '0';
-                    alert.style.transform = 'translateY(-10px)';
-                    setTimeout(function() {
-                        alert.remove();
-                    }, 300);
-                });
-            }, 5000);
-            
-            // 添加页面加载完成的视觉效果
-            document.body.classList.add('loaded');
-        });
-        
-        // 显示消息提示函数
-        function showMessage(message, type = 'success') {
-            const alertTypes = {
-                success: { icon: 'fas fa-check-circle', title: '操作成功' },
-                error: { icon: 'fas fa-exclamation-triangle', title: '操作失败' },
-                warning: { icon: 'fas fa-exclamation-circle', title: '警告' },
-                info: { icon: 'fas fa-info-circle', title: '提示' }
-            };
-            
-            const alertInfo = alertTypes[type] || alertTypes.info;
-            
-            const alertHtml = `
-                <div class="alert alert-${type}" role="alert">
-                    <div class="alert-icon">
-                        <i class="${alertInfo.icon}"></i>
-                    </div>
-                    <div class="alert-content">
-                        <div class="alert-title">${alertInfo.title}</div>
-                        <div class="alert-message">${message}</div>
-                    </div>
-                    <button class="alert-close" onclick="this.parentElement.remove()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-            
-            const content = document.querySelector('.admin-content');
-            if (content) {
-                content.insertAdjacentHTML('afterbegin', alertHtml);
-            }
-        }
-    </script>
+    @vite(['resources/js/admin.new.js'])
     
     @stack('scripts')
 </body>
