@@ -1,14 +1,18 @@
 @extends('admin.layout')
 
 @section('title', '数据分析')
+@section('page-title', '数据分析')
 
 @section('content')
 <div class="analytics-page">
-    <div class="page-header">
-        <h1>数据分析</h1>
-        <div class="header-actions">
+
+    <!-- 控制面板 -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 1rem; background: var(--bg-primary); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);">
+        <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600;">数据统计</h2>
+        <div style="display: flex; gap: 1rem; align-items: center;">
             <div class="period-selector">
-                <select id="period-select" onchange="changePeriod(this.value)">
+                <label style="margin-right: 0.5rem; font-size: 0.875rem; color: var(--gray-600);">时间周期：</label>
+                <select id="period-select" class="form-select" style="width: auto;" onchange="changePeriod(this.value)">
                     <option value="today" {{ $period === 'today' ? 'selected' : '' }}>今天</option>
                     <option value="yesterday" {{ $period === 'yesterday' ? 'selected' : '' }}>昨天</option>
                     <option value="7days" {{ $period === '7days' ? 'selected' : '' }}>最近7天</option>
@@ -16,7 +20,9 @@
                     <option value="90days" {{ $period === '90days' ? 'selected' : '' }}>最近90天</option>
                 </select>
             </div>
-            <a href="{{ route('admin.analytics.realtime') }}" class="btn btn-primary">实时数据</a>
+            <a href="{{ route('admin.analytics.realtime') }}" class="btn btn-primary">
+                <i class="fas fa-eye"></i> 实时数据
+            </a>
         </div>
     </div>
 

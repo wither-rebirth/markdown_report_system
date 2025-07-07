@@ -4,20 +4,14 @@
 @section('page-title', '标签管理')
 
 @section('content')
-<div class="page-header">
-    <h1 class="page-header-title">🏷️ 标签管理</h1>
-    <div class="page-header-actions">
-        <a href="{{ route('admin.tags.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> 新建标签
-        </a>
-    </div>
-</div>
-
 <div class="card" style="margin: 1.5rem;">
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
             <h3 class="card-title">标签列表</h3>
             <div class="d-flex gap-2">
+                <a href="{{ route('admin.tags.create') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> 新建标签
+                </a>
                 <form method="GET" class="d-flex gap-2">
                     <select name="status" class="form-select" style="width: 120px;">
                         <option value="">全部状态</option>

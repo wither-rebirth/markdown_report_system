@@ -4,18 +4,6 @@
 @section('page-title', '编辑文章')
 
 @section('content')
-<div class="page-header">
-    <h1 class="page-header-title">✏️ 编辑文章</h1>
-    <div class="page-header-actions">
-        <a href="{{ route('admin.blog.index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> 返回列表
-        </a>
-        <a href="{{ route('blog.show', $slug) }}" class="btn btn-outline" target="_blank">
-            <i class="fas fa-eye"></i> 预览
-        </a>
-    </div>
-</div>
-
 <form action="{{ route('admin.blog.update', $slug) }}" method="POST" style="margin: 1.5rem;">
     @csrf
     @method('PUT')
@@ -25,7 +13,17 @@
         <div>
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">文章内容</h3>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="card-title">文章内容</h3>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('blog.show', $slug) }}" class="btn btn-outline" target="_blank">
+                                <i class="fas fa-eye"></i> 预览
+                            </a>
+                            <a href="{{ route('admin.blog.index') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> 返回列表
+                            </a>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="form-group">

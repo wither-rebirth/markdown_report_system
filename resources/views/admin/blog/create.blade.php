@@ -4,15 +4,6 @@
 @section('page-title', '写新文章')
 
 @section('content')
-<div class="page-header">
-    <h1 class="page-header-title">✍️ 写新文章</h1>
-    <div class="page-header-actions">
-        <a href="{{ route('admin.blog.index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> 返回列表
-        </a>
-    </div>
-</div>
-
 <form action="{{ route('admin.blog.store') }}" method="POST" style="margin: 1.5rem;">
     @csrf
     
@@ -21,7 +12,12 @@
         <div>
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">文章内容</h3>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="card-title">文章内容</h3>
+                        <a href="{{ route('admin.blog.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> 返回列表
+                        </a>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="form-group">

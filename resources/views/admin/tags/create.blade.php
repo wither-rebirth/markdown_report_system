@@ -4,15 +4,6 @@
 @section('page-title', '新建标签')
 
 @section('content')
-<div class="page-header">
-    <h1 class="page-header-title">🏷️ 新建标签</h1>
-    <div class="page-header-actions">
-        <a href="{{ route('admin.tags.index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> 返回列表
-        </a>
-    </div>
-</div>
-
 <div style="margin: 1.5rem;">
     <div style="max-width: 600px;">
         <form action="{{ route('admin.tags.store') }}" method="POST">
@@ -20,7 +11,12 @@
             
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">标签信息</h3>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="card-title">标签信息</h3>
+                        <a href="{{ route('admin.tags.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> 返回列表
+                        </a>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="form-group">

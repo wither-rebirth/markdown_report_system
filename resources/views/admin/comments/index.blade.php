@@ -4,26 +4,20 @@
 @section('page-title', '评论管理')
 
 @section('content')
-<div class="page-header">
-    <h1 class="page-header-title">💬 评论管理</h1>
-    <div class="page-header-actions">
-        <button type="button" class="btn btn-success" id="batch-approve" style="display: none;">
-            <i class="fas fa-check"></i> 批量通过
-        </button>
-        <button type="button" class="btn btn-warning" id="batch-spam" style="display: none;">
-            <i class="fas fa-ban"></i> 标记垃圾
-        </button>
-        <button type="button" class="btn btn-danger" id="batch-delete" style="display: none;">
-            <i class="fas fa-trash"></i> 批量删除
-        </button>
-    </div>
-</div>
-
 <div class="card" style="margin: 1.5rem;">
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
             <h3 class="card-title">评论列表</h3>
             <div class="d-flex gap-2">
+                <button type="button" class="btn btn-success" id="batch-approve" style="display: none;">
+                    <i class="fas fa-check"></i> 批量通过
+                </button>
+                <button type="button" class="btn btn-warning" id="batch-spam" style="display: none;">
+                    <i class="fas fa-ban"></i> 标记垃圾
+                </button>
+                <button type="button" class="btn btn-danger" id="batch-delete" style="display: none;">
+                    <i class="fas fa-trash"></i> 批量删除
+                </button>
                 <form method="GET" class="d-flex gap-2">
                     <select name="status" class="form-select" style="width: 120px;">
                         <option value="">全部状态</option>

@@ -1,14 +1,21 @@
 @extends('admin.layout')
 
 @section('title', '备份管理')
+@section('page-title', '备份管理')
 
 @section('content')
 <div class="backup-page">
-    <div class="page-header">
-        <h1>备份管理</h1>
-        <div class="header-actions">
-            <button onclick="showCreateBackupModal()" class="btn btn-primary">创建备份</button>
-            <button onclick="showCleanupModal()" class="btn btn-warning">清理旧备份</button>
+
+    <!-- 控制面板 -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 1rem; background: var(--bg-primary); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);">
+        <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600;">备份管理</h2>
+        <div style="display: flex; gap: 1rem;">
+            <button onclick="showCreateBackupModal()" class="btn btn-primary">
+                <i class="fas fa-plus"></i> 创建备份
+            </button>
+            <button onclick="showCleanupModal()" class="btn btn-warning">
+                <i class="fas fa-broom"></i> 清理旧备份
+            </button>
         </div>
     </div>
 
