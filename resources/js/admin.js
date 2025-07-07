@@ -985,6 +985,15 @@ const AdminApp = {
     
     // 显示Toast消息
     showToast(message, type = 'info', duration = null) {
+        // 检查是否有相同的消息正在显示，避免重复
+        const existingToasts = document.querySelectorAll('.toast');
+        for (let existingToast of existingToasts) {
+            const existingMessage = existingToast.querySelector('.toast-content')?.textContent;
+            if (existingMessage === message) {
+                return; // 不显示重复消息
+            }
+        }
+        
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
         
@@ -1008,7 +1017,7 @@ const AdminApp = {
         // 样式
         toast.style.cssText = `
             position: fixed;
-            top: 20px;
+            top: ${20 + (existingToasts.length * 80)}px;
             right: 20px;
             background: var(--bg-primary);
             border: 1px solid var(--gray-200);
@@ -1051,21 +1060,39 @@ const AdminApp = {
         }, 10);
         
         // 自动隐藏
-        setTimeout(() => {
+        const autoHideTimeout = setTimeout(() => {
             this.hideToast(toast);
         }, duration || this.config.toast.duration);
+        
+        // 存储timeout引用，便于清理
+        toast._autoHideTimeout = autoHideTimeout;
     },
     
     // 隐藏Toast
     hideToast(toast) {
+        // 清除自动隐藏timeout
+        if (toast._autoHideTimeout) {
+            clearTimeout(toast._autoHideTimeout);
+        }
+        
         toast.style.opacity = '0';
         toast.style.transform = 'translateX(100%)';
         
         setTimeout(() => {
             if (toast.parentNode) {
                 toast.parentNode.removeChild(toast);
+                // 重新调整其他toast的位置
+                this.repositionToasts();
             }
         }, 300);
+    },
+    
+    // 重新调整Toast位置
+    repositionToasts() {
+        const toasts = document.querySelectorAll('.toast');
+        toasts.forEach((toast, index) => {
+            toast.style.top = `${20 + (index * 80)}px`;
+        });
     },
     
     // 显示确认对话框
@@ -1169,6 +1196,11 @@ const AdminApp = {
 document.addEventListener('DOMContentLoaded', () => {
     AdminApp.init();
 });
+
+// 全局函数别名，保持向后兼容
+window.showMessage = (message, type) => {
+    AdminApp.showToast(message, type);
+};
 
 // 导出到全局作用域
 window.AdminApp = AdminApp; 

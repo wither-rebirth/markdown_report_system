@@ -90,10 +90,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);
         Route::post('categories/{category}/toggle-status', [App\Http\Controllers\Admin\CategoryController::class, 'toggleStatus'])->name('categories.toggle-status');
         Route::post('categories/update-order', [App\Http\Controllers\Admin\CategoryController::class, 'updateOrder'])->name('categories.update-order');
+        Route::post('categories/{category}/move', [App\Http\Controllers\Admin\CategoryController::class, 'moveCategory'])->name('categories.move');
         
         // 标签管理
         Route::resource('tags', App\Http\Controllers\Admin\TagController::class);
         Route::post('tags/{tag}/toggle-status', [App\Http\Controllers\Admin\TagController::class, 'toggleStatus'])->name('tags.toggle-status');
+        Route::post('tags/bulk-action', [App\Http\Controllers\Admin\TagController::class, 'bulkAction'])->name('tags.bulk-action');
         Route::post('tags/bulk-delete', [App\Http\Controllers\Admin\TagController::class, 'bulkDelete'])->name('tags.bulk-delete');
         
         // 评论管理

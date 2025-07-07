@@ -146,11 +146,49 @@ class CategoryController extends Controller
     /**
      * 切换激活状态
      */
-    public function toggleStatus(Category $category)
+    public function toggleStatus(Request $request, Category $category)
     {
-        $category->update(['is_active' => !$category->is_active]);
+        $isActive = $request->boolean('is_active');
+        $category->update(['is_active' => $isActive]);
         
         $status = $category->is_active ? '激活' : '禁用';
-        return back()->with('success', "分类已{$status}");
+        return response()->json([
+            'success' => true, 
+            'message' => "分类已{$status}",
+            'is_active' => $category->is_active
+        ]);
+    }
+    
+    /**
+     * 移动分类排序
+     */
+    public function moveCategory(Request $request, Category $category)
+    {
+        $direction = $request->input('direction');
+        $currentOrder = $category->sort_order;
+        
+        if ($direction === 'up') {
+            // 向上移动：与上一个分类交换位置
+            $prevCategory = Category::where('sort_order', '<', $currentOrder)
+                ->orderBy('sort_order', 'desc')
+                ->first();
+            
+            if ($prevCategory) {
+                $category->update(['sort_order' => $prevCategory->sort_order]);
+                $prevCategory->update(['sort_order' => $currentOrder]);
+            }
+        } elseif ($direction === 'down') {
+            // 向下移动：与下一个分类交换位置
+            $nextCategory = Category::where('sort_order', '>', $currentOrder)
+                ->orderBy('sort_order', 'asc')
+                ->first();
+            
+            if ($nextCategory) {
+                $category->update(['sort_order' => $nextCategory->sort_order]);
+                $nextCategory->update(['sort_order' => $currentOrder]);
+            }
+        }
+        
+        return response()->json(['success' => true, 'message' => '排序更新成功']);
     }
 }

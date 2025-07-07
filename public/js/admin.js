@@ -317,11 +317,19 @@ function hideLoading(element) {
 
 // 显示通知消息
 function showNotification(message, type = 'success') {
+    // 检查是否有相同的消息正在显示，避免重复
+    const existingNotifications = document.querySelectorAll('.alert');
+    for (let existing of existingNotifications) {
+        if (existing.textContent.trim().includes(message)) {
+            return; // 不显示重复消息
+        }
+    }
+    
     const notification = document.createElement('div');
     notification.className = `alert alert-${type}`;
     notification.style.cssText = `
         position: fixed;
-        top: 1rem;
+        top: ${1 + (existingNotifications.length * 5)}rem;
         right: 1rem;
         z-index: 9999;
         min-width: 300px;
@@ -340,8 +348,20 @@ function showNotification(message, type = 'success') {
         notification.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
         notification.style.opacity = '0';
         notification.style.transform = 'translateX(100%)';
-        setTimeout(() => notification.remove(), 300);
+        setTimeout(() => {
+            notification.remove();
+            // 重新调整其他通知的位置
+            repositionNotifications();
+        }, 300);
     }, 3000);
+}
+
+// 重新调整通知位置
+function repositionNotifications() {
+    const notifications = document.querySelectorAll('.alert');
+    notifications.forEach((notification, index) => {
+        notification.style.top = `${1 + (index * 5)}rem`;
+    });
 }
 
 // 批量操作处理
@@ -381,4 +401,9 @@ window.AdminUtils = {
     showNotification,
     handleBulkAction,
     generateSlug
+};
+
+// 全局函数别名，保持向后兼容
+window.showMessage = (message, type) => {
+    showNotification(message, type);
 }; 

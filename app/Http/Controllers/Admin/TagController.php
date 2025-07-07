@@ -129,27 +129,54 @@ class TagController extends Controller
     /**
      * 切换激活状态
      */
-    public function toggleStatus(Tag $tag)
+    public function toggleStatus(Request $request, Tag $tag)
     {
-        $tag->update(['is_active' => !$tag->is_active]);
+        $isActive = $request->boolean('is_active');
+        $tag->update(['is_active' => $isActive]);
         
         $status = $tag->is_active ? '激活' : '禁用';
-        return back()->with('success', "标签已{$status}");
+        return response()->json([
+            'success' => true, 
+            'message' => "标签已{$status}",
+            'is_active' => $tag->is_active
+        ]);
     }
 
     /**
-     * 批量删除标签
+     * 批量操作标签
      */
-    public function bulkDelete(Request $request)
+    public function bulkAction(Request $request)
     {
+        $action = $request->input('action');
         $ids = $request->input('ids', []);
         
         if (empty($ids)) {
-            return back()->with('error', '请选择要删除的标签');
+            return response()->json(['success' => false, 'message' => '请选择要操作的标签']);
         }
 
-        Tag::whereIn('id', $ids)->delete();
-        
-        return back()->with('success', '批量删除成功');
+        switch ($action) {
+            case 'enable':
+                Tag::whereIn('id', $ids)->update(['is_active' => true]);
+                return response()->json(['success' => true, 'message' => '标签已批量启用']);
+                
+            case 'disable':
+                Tag::whereIn('id', $ids)->update(['is_active' => false]);
+                return response()->json(['success' => true, 'message' => '标签已批量禁用']);
+                
+            case 'delete':
+                Tag::whereIn('id', $ids)->delete();
+                return response()->json(['success' => true, 'message' => '标签已批量删除']);
+                
+            default:
+                return response()->json(['success' => false, 'message' => '无效的操作']);
+        }
+    }
+    
+    /**
+     * 批量删除标签 (保持向后兼容)
+     */
+    public function bulkDelete(Request $request)
+    {
+        return $this->bulkAction($request->merge(['action' => 'delete']));
     }
 }

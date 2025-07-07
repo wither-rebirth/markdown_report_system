@@ -154,36 +154,7 @@
                 </div>
             </div>
             
-            <!-- 标签统计 -->
-            <div class="card" style="margin-top: 1.5rem;">
-                <div class="card-header">
-                    <h3 class="card-title">标签统计</h3>
-                </div>
-                <div class="card-body">
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; font-size: 0.875rem;">
-                        <div>
-                            <strong>创建时间：</strong><br>
-                            {{ $tag->created_at->format('Y-m-d H:i:s') }}
-                        </div>
-                        <div>
-                            <strong>更新时间：</strong><br>
-                            {{ $tag->updated_at->format('Y-m-d H:i:s') }}
-                        </div>
-                        <div>
-                            <strong>使用统计：</strong><br>
-                            <span class="text-muted">文章数量功能正在开发中</span>
-                        </div>
-                        <div>
-                            <strong>状态：</strong><br>
-                            @if($tag->is_active)
-                                <span class="status-badge active">启用</span>
-                            @else
-                                <span class="status-badge inactive">禁用</span>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
+
             
             <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
                 <button type="submit" class="btn btn-primary">
