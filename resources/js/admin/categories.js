@@ -27,6 +27,17 @@ export function initStatusToggle() {
     let categoryToggleTimeout = null;
     
     document.querySelectorAll('.status-toggle').forEach(function(toggle) {
+        // 跳过已被其他处理器处理的元素
+        if (toggle.getAttribute('data-handler')) {
+            return;
+        }
+        
+        // 确保只在分类页面处理
+        const currentPath = window.location.pathname;
+        if (!currentPath.includes('/admin/categories')) {
+            return;
+        }
+        
         toggle.addEventListener('change', function() {
             const id = this.dataset.id;
             const isActive = this.checked;

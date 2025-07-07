@@ -174,7 +174,7 @@ class AdminApp {
         const originalFetch = window.fetch;
         window.fetch = async (...args) => {
             try {
-                const response = await originalFetch.apply(this, args);
+                const response = await originalFetch(...args);
                 
                 if (!response.ok) {
                     this.handleHttpError(response);

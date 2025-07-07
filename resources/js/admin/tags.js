@@ -1,7 +1,7 @@
 // Tags 模块 JavaScript 功能
 
 // 导入categories的基础功能
-import { showMessage, initStatusToggle, initDeleteConfirmation, initSlugGeneration, initCharCounter, initFormValidation } from './categories.js';
+import { showMessage, initDeleteConfirmation, initSlugGeneration, initCharCounter, initFormValidation } from './categories.js';
 
 // 设置标签颜色显示
 export function initTagColors() {
@@ -337,28 +337,127 @@ function highlightText(element, searchTerm) {
     });
 }
 
-// 状态切换增强（继承categories的基础功能，增加标签特有逻辑）
+// 标签状态切换功能
 export function initTagStatusToggle() {
-    initStatusToggle(); // 使用categories的基础功能
+    // 确保只在标签页面运行
+    const currentPath = window.location.pathname;
+    if (!currentPath.includes('/admin/tags')) {
+        return;
+    }
     
-    // 添加标签特有的状态切换逻辑
+    let tagToggleTimeout = null;
+    
     document.querySelectorAll('.status-toggle').forEach(function(toggle) {
-        toggle.addEventListener('change', function() {
-            const row = this.closest('tr');
-            const tagPreview = row.querySelector('.tag-preview');
+        // 确保开关初始状态不被禁用
+        toggle.disabled = false;
+        
+        // 移除可能存在的旧监听器
+        toggle.removeEventListener('change', toggle._statusToggleHandler);
+        
+        // 标记这个元素已被tags.js处理
+        toggle.setAttribute('data-handler', 'tags');
+        
+        // 创建新的处理函数
+        toggle._statusToggleHandler = function(event) {
+            // 阻止事件冒泡，防止其他处理器执行
+            event.stopPropagation();
+            event.stopImmediatePropagation();
             
-            if (this.checked) {
-                row.style.opacity = '1';
-                if (tagPreview) {
-                    tagPreview.style.opacity = '1';
-                }
-            } else {
-                row.style.opacity = '0.6';
-                if (tagPreview) {
-                    tagPreview.style.opacity = '0.6';
-                }
+            const id = this.dataset.id;
+            const isActive = this.checked;
+            const toggleElement = this;
+            
+            // 检查是否已经在处理中
+            if (tagToggleTimeout) {
+                return;
             }
-        });
+            
+            // 确保开关可用
+            if (toggleElement.disabled) {
+                toggleElement.disabled = false;
+            }
+            
+            // 清除之前的timeout
+            if (tagToggleTimeout) {
+                clearTimeout(tagToggleTimeout);
+            }
+            
+            // 禁用开关，显示加载状态
+            toggleElement.disabled = true;
+            const slider = toggleElement.nextElementSibling;
+            slider.style.opacity = '0.6';
+            
+            tagToggleTimeout = setTimeout(() => {
+                const url = `/admin/tags/${id}/toggle-status`;
+                const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
+                const csrfToken = csrfTokenElement?.getAttribute('content');
+                
+                if (!csrfToken) {
+                    showMessage('安全令牌缺失，请刷新页面', 'error');
+                    toggleElement.checked = !isActive;
+                    toggleElement.disabled = false;
+                    const slider = toggleElement.nextElementSibling;
+                    slider.style.opacity = '1';
+                    tagToggleTimeout = null;
+                    return;
+                }
+                
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ is_active: isActive }),
+                    credentials: 'same-origin'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        showMessage('状态更新成功', 'success');
+                        
+                        // 添加标签特有的视觉效果
+                        const row = toggleElement.closest('tr');
+                        const tagPreview = row.querySelector('.tag-preview');
+                        
+                        if (isActive) {
+                            row.style.opacity = '1';
+                            if (tagPreview) {
+                                tagPreview.style.opacity = '1';
+                            }
+                        } else {
+                            row.style.opacity = '0.6';
+                            if (tagPreview) {
+                                tagPreview.style.opacity = '0.6';
+                            }
+                        }
+                    } else {
+                        toggleElement.checked = !isActive;
+                        showMessage(data.message || '状态更新失败', 'error');
+                    }
+                })
+                .catch(error => {
+                    toggleElement.checked = !isActive;
+                    showMessage('网络错误', 'error');
+                })
+                .finally(() => {
+                    // 恢复开关状态
+                    toggleElement.disabled = false;
+                    slider.style.opacity = '1';
+                    tagToggleTimeout = null;
+                });
+            }, 300); // 300ms 防抖
+        };
+        
+        // 添加事件监听器
+        toggle.addEventListener('change', toggle._statusToggleHandler);
     });
 }
 
