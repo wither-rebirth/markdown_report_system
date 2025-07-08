@@ -128,8 +128,9 @@ class AdminApp {
     async importModule(moduleName) {
         // 可用的模块映射
         const availableModules = {
-            'dashboard': './modules/dashboard.js',
-            'charts': './modules/charts.js'
+            'dashboard': './modules/dashboard.js'
+            // 注意：charts模块暂时禁用，因为依赖Chart.js库
+            // 'charts': './modules/charts.js'
             // 其他模块可以根据需要添加
         };
 

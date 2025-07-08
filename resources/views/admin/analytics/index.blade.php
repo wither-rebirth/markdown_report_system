@@ -8,7 +8,7 @@
 @endpush
 
 @push('scripts')
-@vite(['resources/js/admin/analytics.js'])
+@vite(['resources/js/admin/analytics.js', 'resources/js/admin/confirm-dialog.js'])
 @endpush
 
 @section('content')
@@ -94,11 +94,46 @@
     <!-- 趋势图表 -->
     <div class="chart-section">
         <div class="chart-container">
-            <h3>访问趋势</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3>访问趋势</h3>
+                @if(config('app.debug'))
+                    <button onclick="showDebugInfo()" class="btn btn-sm btn-outline-secondary">调试信息</button>
+                @endif
+            </div>
             <canvas id="trendChart"></canvas>
-            <script type="application/json" id="trend-data">{{ json_encode($trendData) }}</script>
+            <script type="application/json" id="trend-data">{!! json_encode($trendData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
         </div>
     </div>
+
+    @if(config('app.debug'))
+    <script>
+    function showDebugInfo() {
+        const element = document.getElementById('trend-data');
+        const data = element ? element.textContent : 'Element not found';
+        
+        const debugInfo = `
+调试信息:
+数据长度: ${data.length}
+前100个字符: ${data.substring(0, 100)}
+数据类型: ${typeof data}
+开始字符编码: ${data.charCodeAt(0)}
+第二个字符编码: ${data.charCodeAt(1)}
+第三个字符编码: ${data.charCodeAt(2)}
+
+完整数据:
+${data}
+        `;
+        
+        alert(debugInfo);
+        console.log('趋势数据调试:', {
+            length: data.length,
+            first100: data.substring(0, 100),
+            fullData: data,
+            charCodes: [data.charCodeAt(0), data.charCodeAt(1), data.charCodeAt(2)]
+        });
+    }
+    </script>
+    @endif
 
     <!-- 详细统计 -->
     <div class="details-section">

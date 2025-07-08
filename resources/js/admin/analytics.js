@@ -23,44 +23,99 @@ export function initTrendChart() {
     if (!trendDataElement) return;
     
     try {
-        const trendData = JSON.parse(trendDataElement.textContent);
+        // 安全地解析JSON数据
+        let trendDataText = trendDataElement.textContent.trim();
         
-        new Chart(ctx.getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: trendData.map(d => d.date),
-                datasets: [{
-                    label: 'PV',
-                    data: trendData.map(d => d.pv),
-                    borderColor: '#3498db',
-                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                    fill: true
-                }, {
-                    label: 'UV',
-                    data: trendData.map(d => d.uv),
-                    borderColor: '#e74c3c',
-                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                },
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    }
-                }
-            }
-        });
+        // 移除可能的BOM字符
+        if (trendDataText.charCodeAt(0) === 0xFEFF) {
+            trendDataText = trendDataText.substr(1);
+        }
+        
+        if (!trendDataText) {
+            console.warn('No trend data found');
+            ctx.parentElement.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">暂无趋势数据</p>';
+            return;
+        }
+        
+        // 验证JSON格式
+        if (!trendDataText.startsWith('[') && !trendDataText.startsWith('{')) {
+            console.error('Invalid JSON format:', trendDataText.substring(0, 50));
+            ctx.parentElement.innerHTML = '<p style="text-align: center; color: #e74c3c; margin: 2rem 0;">数据格式错误</p>';
+            return;
+        }
+        
+        const trendData = JSON.parse(trendDataText);
+        
+        // 使用简单的HTML/CSS图表替代Chart.js
+        createSimpleChart(ctx.parentElement, trendData);
+        
     } catch (error) {
         console.error('Failed to initialize trend chart:', error);
+        console.error('Raw data:', trendDataElement.textContent.substring(0, 100));
+        
+        // 显示友好的错误信息
+        ctx.parentElement.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: #e74c3c;">
+                <p>图表加载失败</p>
+                <p style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;">请刷新页面重试</p>
+            </div>
+        `;
     }
+}
+
+// 创建简单的HTML/CSS图表
+function createSimpleChart(container, data) {
+    if (!data || !Array.isArray(data) || data.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">暂无数据</p>';
+        return;
+    }
+    
+    // 计算最大值用于缩放
+    const maxPv = Math.max(...data.map(d => d.pv || 0));
+    const maxUv = Math.max(...data.map(d => d.uv || 0));
+    const maxValue = Math.max(maxPv, maxUv);
+    
+    if (maxValue === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">暂无访问数据</p>';
+        return;
+    }
+    
+    let chartHtml = `
+        <div class="simple-chart" style="padding: 1rem; background: white; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.875rem;">
+                <div><span style="color: #3498db;">■</span> PV (页面访问量)</div>
+                <div><span style="color: #e74c3c;">■</span> UV (独立访客)</div>
+                <div style="color: #666;">最大值: ${maxValue.toLocaleString()}</div>
+            </div>
+            <div class="chart-bars" style="display: flex; align-items: end; gap: 2px; height: 200px; border-left: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 0 0 0 0;">
+    `;
+    
+    data.forEach((item, index) => {
+        const pvHeight = maxValue > 0 ? (item.pv / maxValue) * 180 : 0;
+        const uvHeight = maxValue > 0 ? (item.uv / maxValue) * 180 : 0;
+        
+        chartHtml += `
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; position: relative;">
+                <div style="display: flex; align-items: end; width: 100%; gap: 1px; justify-content: center;">
+                    <div style="width: 40%; background: #3498db; height: ${pvHeight}px; min-height: 2px; opacity: 0.8;"></div>
+                    <div style="width: 40%; background: #e74c3c; height: ${uvHeight}px; min-height: 2px; opacity: 0.8;"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.75rem; color: #666; transform: rotate(-45deg); transform-origin: center;">
+                    ${item.date}
+                </div>
+            </div>
+        `;
+    });
+    
+    chartHtml += `
+            </div>
+            <div style="margin-top: 1rem; text-align: center; font-size: 0.875rem; color: #666;">
+                访问趋势图 (最近${data.length}天)
+            </div>
+        </div>
+    `;
+    
+    container.innerHTML = chartHtml;
 }
 
 // 初始化设备统计条形图
@@ -168,10 +223,105 @@ export function enhanceExportButtons() {
     });
 }
 
+// 初始化实时图表
+export function initRealtimeChart() {
+    const ctx = document.getElementById('realtimeTrendChart');
+    if (!ctx) return;
+    
+    const dataElement = document.getElementById('realtime-trend-data');
+    if (!dataElement) return;
+    
+    try {
+        let dataText = dataElement.textContent.trim();
+        
+        // 移除可能的BOM字符
+        if (dataText.charCodeAt(0) === 0xFEFF) {
+            dataText = dataText.substr(1);
+        }
+        
+        if (!dataText) {
+            console.warn('No realtime trend data found');
+            ctx.parentElement.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">暂无实时数据</p>';
+            return;
+        }
+        
+        // 验证JSON格式
+        if (!dataText.startsWith('[') && !dataText.startsWith('{')) {
+            console.error('Invalid realtime JSON format:', dataText.substring(0, 50));
+            ctx.parentElement.innerHTML = '<p style="text-align: center; color: #e74c3c; margin: 2rem 0;">实时数据格式错误</p>';
+            return;
+        }
+        
+        const realtimeData = JSON.parse(dataText);
+        
+        // 使用简单的HTML/CSS图表替代Chart.js
+        createRealtimeChart(ctx.parentElement, realtimeData);
+        
+    } catch (error) {
+        console.error('Failed to initialize realtime chart:', error);
+        console.error('Raw realtime data:', dataElement.textContent.substring(0, 100));
+        
+        ctx.parentElement.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: #e74c3c;">
+                <p>实时图表加载失败</p>
+                <p style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;">请刷新页面重试</p>
+            </div>
+        `;
+    }
+}
+
+// 创建实时图表
+function createRealtimeChart(container, data) {
+    if (!data || !Array.isArray(data) || data.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">暂无实时数据</p>';
+        return;
+    }
+    
+    const maxValue = Math.max(...data.map(d => Math.max(d.pv || 0, d.uv || 0)));
+    
+    if (maxValue === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">暂无实时访问数据</p>';
+        return;
+    }
+    
+    let chartHtml = `
+        <div class="realtime-chart" style="padding: 1rem; background: white; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.875rem;">
+                <div><span style="color: #3498db;">■</span> PV</div>
+                <div><span style="color: #e74c3c;">■</span> UV</div>
+                <div style="color: #666;">24小时趋势</div>
+            </div>
+            <div class="realtime-bars" style="display: flex; align-items: end; gap: 1px; height: 150px; border-left: 1px solid #ddd; border-bottom: 1px solid #ddd;">
+    `;
+    
+    data.forEach((item, index) => {
+        const pvHeight = maxValue > 0 ? (item.pv / maxValue) * 130 : 0;
+        const uvHeight = maxValue > 0 ? (item.uv / maxValue) * 130 : 0;
+        
+        chartHtml += `
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; position: relative;">
+                <div style="display: flex; align-items: end; width: 100%; gap: 0.5px; justify-content: center;">
+                    <div style="width: 45%; background: #3498db; height: ${pvHeight}px; min-height: 1px; opacity: 0.8;"></div>
+                    <div style="width: 45%; background: #e74c3c; height: ${uvHeight}px; min-height: 1px; opacity: 0.8;"></div>
+                </div>
+                ${index % 4 === 0 ? `<div style="margin-top: 0.25rem; font-size: 0.6rem; color: #666;">${item.hour}</div>` : ''}
+            </div>
+        `;
+    });
+    
+    chartHtml += `
+            </div>
+        </div>
+    `;
+    
+    container.innerHTML = chartHtml;
+}
+
 // 初始化所有analytics功能
 export function initAnalyticsModule() {
     initDeviceStats();
     initTrendChart();
+    initRealtimeChart();
     initRealtimeUpdate();
     initStatCards();
     initTableSorting();

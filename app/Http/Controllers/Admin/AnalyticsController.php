@@ -8,6 +8,7 @@ use App\Models\PageVisit;
 use App\Models\DailyStat;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AnalyticsController extends Controller
 {
@@ -18,23 +19,44 @@ class AnalyticsController extends Controller
     {
         $period = $request->input('period', '7days');
         
-        // 获取基础统计数据
-        $basicStats = $this->getBasicStats($period);
-        
-        // 获取趋势数据
-        $trendData = $this->getTrendData($period);
-        
-        // 获取热门页面
-        $topPages = $this->getTopPages($period);
-        
-        // 获取设备统计
-        $deviceStats = $this->getDeviceStats($period);
-        
-        // 获取浏览器统计
-        $browserStats = $this->getBrowserStats($period);
-        
-        // 获取来源统计
-        $refererStats = $this->getRefererStats($period);
+        try {
+            // 获取基础统计数据
+            $basicStats = $this->getBasicStats($period);
+            
+            // 获取趋势数据
+            $trendData = $this->getTrendData($period);
+            
+            // 获取热门页面
+            $topPages = $this->getTopPages($period);
+            
+            // 获取设备统计
+            $deviceStats = $this->getDeviceStats($period);
+            
+            // 获取浏览器统计
+            $browserStats = $this->getBrowserStats($period);
+            
+            // 获取来源统计
+            $refererStats = $this->getRefererStats($period);
+            
+        } catch (\Exception $e) {
+            // 如果发生错误，使用默认值
+            Log::error('Analytics data error: ' . $e->getMessage());
+            
+            $basicStats = [
+                'total_pv' => 0,
+                'total_uv' => 0,
+                'total_sessions' => 0,
+                'new_visitors' => 0,
+                'bounce_rate' => 0,
+                'avg_pages_per_session' => 0,
+                'previous' => []
+            ];
+            $trendData = [];
+            $topPages = collect([]);
+            $deviceStats = collect([]);
+            $browserStats = collect([]);
+            $refererStats = collect([]);
+        }
         
         return view('admin.analytics.index', compact(
             'basicStats',
@@ -215,13 +237,14 @@ class AnalyticsController extends Controller
             
             $data[] = [
                 'date' => $date,
-                'pv' => $dayStats->pv ?? 0,
-                'uv' => $dayStats->uv ?? 0,
-                'sessions' => $dayStats->sessions ?? 0,
+                'pv' => (int)($dayStats->pv ?? 0),
+                'uv' => (int)($dayStats->uv ?? 0),
+                'sessions' => (int)($dayStats->sessions ?? 0),
             ];
         }
         
-        return $data;
+        // 确保返回的数据格式正确
+        return array_values($data);
     }
 
     /**
@@ -316,7 +339,21 @@ class AnalyticsController extends Controller
             ];
         }
         
-        return $hours;
+        // 计算24小时总数
+        $total24h = PageVisit::where('visited_at', '>=', now()->subHours(24))->count();
+        
+        // 计算最近1分钟的访问量
+        $currentPpm = PageVisit::where('visited_at', '>=', now()->subMinute())->count();
+        
+        // 计算最近1小时的访问量
+        $currentPph = PageVisit::where('visited_at', '>=', now()->subHour())->count();
+        
+        return [
+            'hourly_trend' => $hours,
+            'total_24h' => $total24h,
+            'current_ppm' => $currentPpm,
+            'current_pph' => $currentPph,
+        ];
     }
 
     /**
