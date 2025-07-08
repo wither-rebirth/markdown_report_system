@@ -8,7 +8,7 @@
 @endpush
 
 @push('scripts')
-@vite(['resources/js/admin/tags.js'])
+@vite(['resources/js/admin/tags.js', 'resources/js/admin/confirm-dialog.js'])
 @endpush
 
 @section('content')
@@ -171,21 +171,29 @@
                 <a href="{{ route('admin.tags.index') }}" class="btn btn-secondary">
                     <i class="fas fa-times"></i> 取消
                 </a>
-                <div style="margin-left: auto;">
-                    <form action="{{ route('admin.tags.destroy', $tag) }}" 
-                          method="POST" 
-                          style="display: inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" 
-                                class="btn btn-danger" 
-                                data-confirm="确定要删除标签「{{ $tag->name }}」吗？">
-                            <i class="fas fa-trash"></i> 删除标签
-                        </button>
-                    </form>
-                </div>
             </div>
         </form>
+        
+        <!-- 删除表单 - 独立于主表单 -->
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+            <div style="text-align: center;">
+                <p style="margin-bottom: 1rem; color: #6b7280; font-size: 0.875rem;">
+                    危险操作：删除后无法恢复
+                </p>
+                <form action="{{ route('admin.tags.destroy', $tag) }}" 
+                      method="POST" 
+                      style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" 
+                            class="btn btn-danger" 
+                            data-confirm="确定要删除标签「{{ $tag->name }}」吗？此操作无法撤销！"
+                            style="padding: 0.75rem 2rem; font-weight: 500;">
+                        <i class="fas fa-trash-alt"></i> 删除标签
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 

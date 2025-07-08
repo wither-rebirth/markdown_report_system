@@ -8,7 +8,7 @@
 @endpush
 
 @push('scripts')
-@vite(['resources/js/admin/blog.js'])
+@vite(['resources/js/admin/blog.js', 'resources/js/admin/confirm-dialog.js'])
 @endpush
 
 @section('content')

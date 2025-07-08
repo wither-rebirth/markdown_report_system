@@ -150,17 +150,9 @@ export function initSortOrder() {
     });
 }
 
-// 删除确认功能
+// 删除确认功能 - 已移至 confirm-dialog.js
 export function initDeleteConfirmation() {
-    document.querySelectorAll('[data-confirm]').forEach(function(element) {
-        element.addEventListener('click', function(e) {
-            const message = this.dataset.confirm;
-            if (!confirm(message)) {
-                e.preventDefault();
-                return false;
-            }
-        });
-    });
+    // 不再需要，确认对话框由 confirm-dialog.js 处理
 }
 
 // Slug 自动生成功能
@@ -296,7 +288,8 @@ export function initColorPicker() {
 
 // 表单验证功能
 export function initFormValidation() {
-    const form = document.querySelector('form');
+    // 只验证主编辑表单，不包括删除表单
+    const form = document.querySelector('form[method="POST"]:not([action*="destroy"])');
     if (!form) return;
     
     form.addEventListener('submit', function(e) {

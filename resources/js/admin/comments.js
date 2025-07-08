@@ -252,62 +252,64 @@ export function initIndividualApprove() {
 // 单个评论标记垃圾功能
 export function initIndividualSpam() {
     document.querySelectorAll('.spam-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
             const commentId = this.dataset.id;
             const row = this.closest('tr');
+            const self = this;
             
-            if (!confirm('确定要将此评论标记为垃圾吗？')) return;
-            
-            this.disabled = true;
-            this.style.opacity = '0.6';
-            
-            fetch(`/admin/comments/${commentId}/spam`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showMessage('已标记为垃圾评论', 'success');
-                    
-                    // 更新状态显示
-                    const statusBadge = row.querySelector('.status-badge');
-                    if (statusBadge) {
-                        statusBadge.textContent = '垃圾';
-                        statusBadge.className = 'status-badge danger';
-                    }
-                    
-                    // 隐藏垃圾按钮
-                    this.style.display = 'none';
-                } else {
-                    showMessage('操作失败', 'error');
-                }
-            })
-            .catch(error => {
-                showMessage('网络错误', 'error');
-            })
-            .finally(() => {
-                this.disabled = false;
-                this.style.opacity = '1';
+            // 使用自定义确认对话框
+            import('./confirm-dialog.js').then(module => {
+                module.showConfirmDialog('确定要将此评论标记为垃圾吗？', function() {
+                    performSpamAction(self, commentId, row);
+                });
             });
         });
     });
 }
 
-// 删除确认功能
-export function initDeleteConfirmation() {
-    document.querySelectorAll('[data-confirm]').forEach(function(element) {
-        element.addEventListener('click', function(e) {
-            const message = this.dataset.confirm;
-            if (!confirm(message)) {
-                e.preventDefault();
-                return false;
+// 执行垃圾评论标记操作
+function performSpamAction(button, commentId, row) {
+    button.disabled = true;
+    button.style.opacity = '0.6';
+    
+    fetch(`/admin/comments/${commentId}/spam`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showMessage('已标记为垃圾评论', 'success');
+            
+            // 更新状态显示
+            const statusBadge = row.querySelector('.status-badge');
+            if (statusBadge) {
+                statusBadge.textContent = '垃圾';
+                statusBadge.className = 'status-badge danger';
             }
-        });
+            
+            // 隐藏垃圾按钮
+            button.style.display = 'none';
+        } else {
+            showMessage('操作失败', 'error');
+        }
+    })
+    .catch(error => {
+        showMessage('网络错误', 'error');
+    })
+    .finally(() => {
+        button.disabled = false;
+        button.style.opacity = '1';
     });
+}
+
+// 删除确认功能 - 已移至 confirm-dialog.js
+export function initDeleteConfirmation() {
+    // 不再需要，确认对话框由 confirm-dialog.js 处理
 }
 
 // 评论内容展开/收起

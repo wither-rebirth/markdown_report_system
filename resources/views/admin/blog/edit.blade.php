@@ -8,7 +8,7 @@
 @endpush
 
 @push('scripts')
-@vite(['resources/js/admin/blog.js'])
+@vite(['resources/js/admin/blog.js', 'resources/js/admin/confirm-dialog.js'])
 @endpush
 
 @section('content')
@@ -246,16 +246,22 @@
 </form>
 
 <!-- 删除表单 - 独立表单，不嵌套在更新表单内 -->
-<div style="margin: 1.5rem;">
-    <form action="{{ route('admin.blog.destroy', $slug) }}" method="POST" style="width: 100%;" onsubmit="return confirmDelete()">
-        @csrf
-        @method('DELETE')
-        <button type="submit" 
-                class="btn btn-danger" 
-                style="width: 100%;">
-            <i class="fas fa-trash"></i> 删除文章
-        </button>
-    </form>
+<div style="margin: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+    <div style="text-align: center;">
+        <p style="margin-bottom: 1rem; color: #6b7280; font-size: 0.875rem;">
+            危险操作：删除后无法恢复
+        </p>
+        <form action="{{ route('admin.blog.destroy', $slug) }}" method="POST" style="display: inline;">
+            @csrf
+            @method('DELETE')
+            <button type="submit" 
+                    class="btn btn-danger" 
+                    data-confirm="确定要删除文章吗？此操作无法撤销！"
+                    style="padding: 0.75rem 2rem; font-weight: 500;">
+                <i class="fas fa-trash-alt"></i> 删除文章
+            </button>
+        </form>
+    </div>
 </div>
 
 
