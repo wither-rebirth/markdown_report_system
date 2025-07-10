@@ -679,7 +679,283 @@ function toggleFullscreen() {
     }
 }
 
-// 页面初始化
+// 移动端侧边栏支持
+function initMobileSidebar() {
+    const sidebar = document.querySelector('.report-sidebar');
+    const overlay = document.createElement('div');
+    overlay.className = 'report-sidebar-overlay';
+    document.body.appendChild(overlay);
+    
+    // 检测移动端
+    const isMobile = () => window.innerWidth <= 768;
+    
+    // 切换侧边栏显示
+    window.toggleTocSidebar = function() {
+        if (isMobile()) {
+            sidebar.classList.toggle('mobile-visible');
+            overlay.classList.toggle('active');
+            
+            // 防止背景滚动
+            if (sidebar.classList.contains('mobile-visible')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        } else {
+            sidebar.classList.toggle('collapsed');
+        }
+    };
+    
+    // 点击遮罩关闭侧边栏
+    overlay.addEventListener('click', () => {
+        if (isMobile() && sidebar.classList.contains('mobile-visible')) {
+            toggleTocSidebar();
+        }
+    });
+    
+    // 响应式处理
+    window.addEventListener('resize', () => {
+        if (!isMobile()) {
+            sidebar.classList.remove('mobile-visible');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+    
+    // 触摸手势支持
+    let startX = 0;
+    let startY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    
+    document.addEventListener('touchstart', (e) => {
+        if (!isMobile()) return;
+        
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    });
+    
+    document.addEventListener('touchmove', (e) => {
+        if (!isMobile()) return;
+        
+        currentX = e.touches[0].clientX;
+        currentY = e.touches[0].clientY;
+    });
+    
+    document.addEventListener('touchend', (e) => {
+        if (!isMobile()) return;
+        
+        const deltaX = currentX - startX;
+        const deltaY = currentY - startY;
+        
+        // 水平滑动距离大于垂直滑动距离，且滑动距离超过阈值
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+            if (deltaX > 0 && startX < 50) {
+                // 从左边缘向右滑动，打开侧边栏
+                if (!sidebar.classList.contains('mobile-visible')) {
+                    toggleTocSidebar();
+                }
+            } else if (deltaX < 0 && sidebar.classList.contains('mobile-visible')) {
+                // 向左滑动，关闭侧边栏
+                toggleTocSidebar();
+            }
+        }
+    });
+}
+
+// 移动端优化的目录生成
+function generateMobileTOC() {
+    const headers = document.querySelectorAll('.report-content h1, .report-content h2, .report-content h3, .report-content h4, .report-content h5, .report-content h6');
+    const toc = document.getElementById('table-of-contents');
+    
+    if (!headers.length || !toc) return;
+    
+    const tocList = document.createElement('ul');
+    tocList.className = 'toc-list';
+    
+    headers.forEach((header, index) => {
+        const id = header.id || `heading-${index}`;
+        if (!header.id) header.id = id;
+        
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        
+        a.href = `#${id}`;
+        a.textContent = header.textContent;
+        a.className = `toc-${header.tagName.toLowerCase()}`;
+        
+        // 移动端点击关闭侧边栏
+        a.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                setTimeout(() => {
+                    const sidebar = document.querySelector('.report-sidebar');
+                    const overlay = document.querySelector('.report-sidebar-overlay');
+                    if (sidebar && overlay) {
+                        sidebar.classList.remove('mobile-visible');
+                        overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                }, 300);
+            }
+        });
+        
+        li.appendChild(a);
+        tocList.appendChild(li);
+    });
+    
+    toc.appendChild(tocList);
+    
+    // 高亮当前章节
+    highlightCurrentSection();
+}
+
+// 高亮当前章节
+function highlightCurrentSection() {
+    const headers = document.querySelectorAll('.report-content h1, .report-content h2, .report-content h3, .report-content h4, .report-content h5, .report-content h6');
+    const tocLinks = document.querySelectorAll('.toc-list a');
+    
+    if (!headers.length || !tocLinks.length) return;
+    
+    function updateActiveLink() {
+        let current = '';
+        
+        headers.forEach(header => {
+            const rect = header.getBoundingClientRect();
+            if (rect.top <= 100) {
+                current = header.id;
+            }
+        });
+        
+        tocLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
+    }
+    
+    // 节流处理
+    let ticking = false;
+    function handleScroll() {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                updateActiveLink();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }
+    
+    window.addEventListener('scroll', handleScroll);
+    updateActiveLink();
+}
+
+// 移动端图片优化
+function optimizeImagesForMobile() {
+    const images = document.querySelectorAll('.report-content img');
+    
+    images.forEach(img => {
+        // 延迟加载
+        if (img.dataset.src && !img.src) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                        observer.unobserve(img);
+                    }
+                });
+            });
+            observer.observe(img);
+        }
+        
+        // 点击放大
+        img.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                const overlay = document.createElement('div');
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.9);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 9999;
+                    padding: 2rem;
+                    cursor: pointer;
+                `;
+                
+                const enlargedImg = img.cloneNode();
+                enlargedImg.style.cssText = `
+                    max-width: 100%;
+                    max-height: 100%;
+                    object-fit: contain;
+                    border-radius: 8px;
+                `;
+                
+                overlay.appendChild(enlargedImg);
+                document.body.appendChild(overlay);
+                document.body.style.overflow = 'hidden';
+                
+                overlay.addEventListener('click', () => {
+                    document.body.removeChild(overlay);
+                    document.body.style.overflow = '';
+                });
+            }
+        });
+    });
+}
+
+// 移动端表格优化
+function optimizeTablesForMobile() {
+    const tables = document.querySelectorAll('.report-content table');
+    
+    tables.forEach(table => {
+        if (window.innerWidth <= 768) {
+            // 添加滚动提示
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = `
+                position: relative;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                margin: 1.5rem 0;
+            `;
+            
+            const hint = document.createElement('div');
+            hint.style.cssText = `
+                position: absolute;
+                top: 50%;
+                right: 1rem;
+                transform: translateY(-50%);
+                background: var(--primary-color);
+                color: white;
+                padding: 0.25rem 0.5rem;
+                border-radius: 4px;
+                font-size: 0.75rem;
+                pointer-events: none;
+                opacity: 0.8;
+                z-index: 1;
+            `;
+            hint.textContent = '→ 滑动查看';
+            
+            table.parentNode.insertBefore(wrapper, table);
+            wrapper.appendChild(table);
+            wrapper.appendChild(hint);
+            
+            // 滚动时隐藏提示
+            wrapper.addEventListener('scroll', () => {
+                hint.style.opacity = '0';
+            });
+        }
+    });
+}
+
+// 初始化移动端功能
 document.addEventListener('DOMContentLoaded', function() {
     // 恢复侧边栏状态
     restoreSidebarState();
@@ -713,6 +989,18 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             scrollToHeading(headingId);
         }, 100);
+    }
+    
+    // 移动端特有功能
+    initMobileSidebar();
+    generateMobileTOC();
+    optimizeImagesForMobile();
+    optimizeTablesForMobile();
+    
+    // 移动端性能优化
+    if ('serviceWorker' in navigator && window.innerWidth <= 768) {
+        // 移动端可以考虑启用 Service Worker 进行缓存
+        console.log('Mobile device detected, consider implementing Service Worker for better performance');
     }
     
     console.log('Report 页面初始化完成');
