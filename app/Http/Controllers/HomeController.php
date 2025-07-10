@@ -311,7 +311,7 @@ class HomeController extends Controller
                     $allFiles[] = [
                         'path' => $file,
                         'type' => 'blog',
-                        'name' => pathinfo($file, PATHINFO_FILENAME),
+                        'name' => $this->extractActivityName($file, 'blog'),
                         'modified' => File::lastModified($file)
                     ];
                 }
@@ -325,7 +325,7 @@ class HomeController extends Controller
                     $allFiles[] = [
                         'path' => $file,
                         'type' => 'report',
-                        'name' => pathinfo($file, PATHINFO_FILENAME),
+                        'name' => $this->extractActivityName($file, 'report'),
                         'modified' => File::lastModified($file)
                     ];
                 }
@@ -349,6 +349,86 @@ class HomeController extends Controller
         }
         
         return $activities;
+    }
+
+    /**
+     * 提取活动名称
+     */
+    private function extractActivityName($filePath, $type)
+    {
+        try {
+            // 根据文件路径智能提取名称
+            $relativePath = str_replace([storage_path('blog'), storage_path('reports')], '', $filePath);
+            $relativePath = ltrim($relativePath, '/\\');
+            
+            if ($type === 'report') {
+                // 对于报告，优先从路径中提取有意义的名称
+                if (strpos($relativePath, 'Hackthebox-Walkthrough') !== false) {
+                    // HackTheBox报告: Hackthebox-Walkthrough/MachineName/Walkthrough.md
+                    // 使用正斜杠来分割路径，因为relativePath已经标准化了
+                    $pathParts = explode('/', str_replace('\\', '/', $relativePath));
+                    if (count($pathParts) >= 3) {
+                        $machineName = $pathParts[1]; // Hackthebox-Walkthrough后面的机器名
+                        if ($machineName && $machineName !== 'Walkthrough.md') {
+                            return 'HackTheBox - ' . $machineName;
+                        }
+                    }
+                } else {
+                    // 其他报告，尝试从目录结构中提取
+                    $pathParts = explode('/', str_replace('\\', '/', $relativePath));
+                    if (count($pathParts) > 1) {
+                        // 如果在子目录中，使用目录名
+                        $dirName = $pathParts[count($pathParts) - 2];
+                        if ($dirName && $dirName !== 'reports') {
+                            return $dirName;
+                        }
+                    }
+                }
+            }
+            
+            // 尝试从文件内容中提取标题（优先用于博客或非HackTheBox报告）
+            $content = File::get($filePath);
+            
+            // 1. 尝试从YAML前置元数据中获取标题
+            $metadata = $this->parseMetadata($content);
+            if (!empty($metadata['title'])) {
+                return $metadata['title'];
+            }
+            
+            // 2. 对于博客，尝试从Markdown内容中提取第一个H1标题
+            if ($type === 'blog') {
+                $title = $this->extractTitleFromContent($content);
+                if ($title) {
+                    return $title;
+                }
+                
+                // 对于博客，从路径中提取
+                $pathParts = explode(DIRECTORY_SEPARATOR, $relativePath);
+                if (count($pathParts) > 1) {
+                    // 如果在子目录中，使用目录名
+                    $dirName = $pathParts[count($pathParts) - 2];
+                    if ($dirName && $dirName !== 'blog') {
+                        return $dirName;
+                    }
+                }
+            }
+            
+            // 3. 最后回退到使用文件名（移除扩展名）
+            $filename = pathinfo($filePath, PATHINFO_FILENAME);
+            
+            // 如果文件名是index，使用父目录名
+            if ($filename === 'index') {
+                $dirname = basename(dirname($filePath));
+                return $dirname !== 'blog' && $dirname !== 'reports' ? $dirname : '首页';
+            }
+            
+            // 美化文件名（将连字符和下划线替换为空格，首字母大写）
+            return ucwords(str_replace(['-', '_'], ' ', $filename));
+            
+        } catch (\Exception $e) {
+            // 如果读取文件失败，回退到文件名
+            return pathinfo($filePath, PATHINFO_FILENAME);
+        }
     }
     
     /**
