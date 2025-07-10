@@ -395,116 +395,122 @@
 }
 
 /* 代码块样式 - Kali Linux 风格 */
+/* 基础代码块样式 - 保持你喜欢的绿色边框和黑色背景 */
 .report-content pre {
     background: #000000;
     border: 2px solid #00ff41;
-    border-radius: 12px;
-    padding: 0;
+    border-radius: 8px;
+    padding: 1.5rem;
     overflow: hidden;
-    font-family: 'Ubuntu Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Ubuntu Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 0.9rem;
-    line-height: 1.4;
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.3), 0 4px 12px rgba(0, 0, 0, 0.5);
+    line-height: 1.5;
     position: relative;
     margin: 1.5rem 0;
-}
-
-.report-content pre::before {
-    content: '';
-    display: block;
-    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-    border-bottom: 1px solid #00ff41;
-    height: 36px;
-    position: relative;
-}
-
-.report-content pre::after {
-    content: 'Terminal';
-    position: absolute;
-    top: 10px;
-    left: 16px;
-    color: #00ff41;
-    font-size: 11px;
-    font-weight: bold;
-    font-family: 'Ubuntu Mono', 'Consolas', monospace;
-    text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
-}
-
-.report-content pre code {
-    background: transparent;
-    color: #ffffff;
-    padding: 1.5rem 1.5rem 1.25rem 1.5rem;
-    border: none;
-    display: block;
-    font-family: 'Ubuntu Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 0.9rem;
-    overflow-x: auto;
-    white-space: pre;
-    line-height: 1.6;
-    margin-top: 8px;
-}
-
-/* Kali Linux 双行提示符样式 */
-.report-content pre code::before {
-    content: '$ ';
-    color: #00ff41;
-    font-weight: bold;
-    white-space: pre;
-    text-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
-}
-
-/* 不同类型的 Kali Linux 提示符 */
-.report-content pre.terminal-root code::before {
-    content: '# ';
-    color: #ff4757;
-    font-weight: bold;
-    white-space: pre;
-    text-shadow: 0 0 8px rgba(255, 71, 87, 0.6);
-}
-
-.report-content pre.terminal-windows code::before {
-    content: 'C:\\> ';
-    color: #3742fa;
-    font-weight: bold;
-    white-space: pre;
-    text-shadow: 0 0 8px rgba(55, 66, 250, 0.6);
-}
-
-.report-content pre.terminal-python code::before {
-    content: '>>> ';
-    color: #ffa502;
-    font-weight: bold;
-    white-space: pre;
-    text-shadow: 0 0 8px rgba(255, 165, 2, 0.6);
-}
-
-/* Kali Linux 鼠标悬停效果 */
-.report-content pre:hover {
-    border-color: #39ff14;
-    box-shadow: 0 0 30px rgba(57, 255, 20, 0.4), 0 6px 20px rgba(0, 0, 0, 0.6);
-    transform: translateY(-3px);
+    box-shadow: 0 2px 8px rgba(0, 255, 65, 0.1);
     transition: all 0.3s ease;
 }
 
-/* Kali Linux 风格的滚动条 */
+/* 代码块内容 */
+.report-content pre code {
+    background: transparent;
+    color: #ffffff;
+    padding: 0;
+    border: none;
+    display: block;
+    font-family: inherit;
+    font-size: inherit;
+    overflow-x: auto;
+    white-space: pre;
+    line-height: inherit;
+}
+
+/* 鼠标悬停效果 - 保持绿色主题但更温和 */
+.report-content pre:hover {
+    border-color: #39ff14;
+    box-shadow: 0 4px 12px rgba(0, 255, 65, 0.2);
+    transform: translateY(-1px);
+}
+
+
+
+/* 输出样式 - 更柔和的颜色 */
+.report-content pre[data-type="output"] {
+    border-color: #ffa502;
+    background: #0f0a00;
+}
+
+.report-content pre[data-type="output"]:hover {
+    border-color: #ffb84d;
+    box-shadow: 0 4px 12px rgba(255, 165, 2, 0.2);
+}
+
+.report-content pre[data-type="output"] code {
+    color: #ffd700;
+}
+
+/* 代码样式 */
+.report-content pre[data-type="code"] {
+    border-color: #3742fa;
+    background: #000510;
+}
+
+.report-content pre[data-type="code"]:hover {
+    border-color: #5865f2;
+    box-shadow: 0 4px 12px rgba(55, 66, 250, 0.2);
+}
+
+.report-content pre[data-type="code"] code {
+    color: #e6e6e6;
+}
+
+/* 滚动条样式 - 默认隐藏，根据代码块类型匹配颜色 */
 .report-content pre code::-webkit-scrollbar {
-    height: 10px;
+    height: 8px;
 }
 
 .report-content pre code::-webkit-scrollbar-track {
-    background: #000000;
+    background: transparent;
     border-radius: 4px;
 }
 
+/* 默认命令行样式（绿色） */
 .report-content pre code::-webkit-scrollbar-thumb {
-    background: #00ff41;
+    background: transparent;
     border-radius: 4px;
-    box-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+    transition: background 0.3s ease;
 }
 
-.report-content pre code::-webkit-scrollbar-thumb:hover {
+.report-content pre:hover code::-webkit-scrollbar-thumb,
+.report-content pre.scrolling code::-webkit-scrollbar-thumb {
+    background: #00ff41;
+}
+
+.report-content pre:hover code::-webkit-scrollbar-thumb:hover,
+.report-content pre.scrolling code::-webkit-scrollbar-thumb:hover {
     background: #39ff14;
-    box-shadow: 0 0 10px rgba(57, 255, 20, 0.7);
+}
+
+/* 输出样式滚动条（橙色） */
+.report-content pre[data-type="output"]:hover code::-webkit-scrollbar-thumb,
+.report-content pre[data-type="output"].scrolling code::-webkit-scrollbar-thumb {
+    background: #ffa502;
+}
+
+.report-content pre[data-type="output"]:hover code::-webkit-scrollbar-thumb:hover,
+.report-content pre[data-type="output"].scrolling code::-webkit-scrollbar-thumb:hover {
+    background: #ffb84d;
+}
+
+/* 代码样式滚动条（蓝色） */
+.report-content pre[data-type="code"]:hover code::-webkit-scrollbar-thumb,
+.report-content pre[data-type="code"].scrolling code::-webkit-scrollbar-thumb {
+    background: #3742fa;
+}
+
+.report-content pre[data-type="code"]:hover code::-webkit-scrollbar-thumb:hover,
+.report-content pre[data-type="code"].scrolling code::-webkit-scrollbar-thumb:hover {
+    background: #5865f2;
 }
 
 /* 行内代码增强暗黑模式 */

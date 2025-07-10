@@ -378,69 +378,48 @@ function initCodeCopy() {
     const codeBlocks = document.querySelectorAll('.report-content pre');
     
     codeBlocks.forEach(block => {
-        // 智能检测代码块类型
+        // 初始化滚动条显示逻辑
+        initScrollbarVisibility(block);
+        // 智能检测代码块类型并设置data-type属性
         const codeElement = block.querySelector('code');
         if (codeElement) {
-            const content = codeElement.textContent.toLowerCase();
+            const content = codeElement.textContent;
+            const contentLower = content.toLowerCase();
+            const firstLine = content.split('\n')[0];
             
-            // 检测不同类型的命令行
-            if (content.includes('sudo') || content.includes('root@') || content.includes('#')) {
-                block.classList.add('terminal-root');
-            } else if (content.includes('c:\\') || content.includes('cmd') || content.includes('powershell')) {
-                block.classList.add('terminal-windows');
-            } else if (content.includes('>>>') || content.includes('python') || content.includes('pip')) {
-                block.classList.add('terminal-python');
+            // 检测代码块类型
+            if (isCommandBlock(content, contentLower, firstLine)) {
+                block.setAttribute('data-type', 'command');
+            } else if (isOutputBlock(content, contentLower)) {
+                block.setAttribute('data-type', 'output');
+            } else if (isCodeBlock(content, contentLower)) {
+                block.setAttribute('data-type', 'code');
+            }
+            // 如果没有明确类型，默认为命令行
+            if (!block.hasAttribute('data-type')) {
+                block.setAttribute('data-type', 'command');
             }
         }
         
-        // 创建 Kali Linux 标题栏
-        const titleBar = document.createElement('div');
-        titleBar.style.cssText = `
-            position: absolute;
-            top: 12px;
-            right: 60px;
-            color: #00ff41;
-            font-size: 10px;
-            font-family: 'Ubuntu Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
-            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
-        `;
-        
-        if (block.classList.contains('terminal-root')) {
-            titleBar.textContent = 'ROOT@KALI';
-        } else if (block.classList.contains('terminal-windows')) {
-            titleBar.textContent = 'CMD.EXE';
-        } else if (block.classList.contains('terminal-python')) {
-            titleBar.textContent = 'PYTHON3';
-        } else {
-            titleBar.textContent = 'KALI@LINUX';
-        }
-        
-        block.appendChild(titleBar);
-        
-        // 创建 Kali Linux 风格复制按钮
+        // 创建简洁的复制按钮
         const copyButton = document.createElement('button');
-        copyButton.innerHTML = '⚡';
-        copyButton.title = '复制命令';
+        copyButton.innerHTML = '📋';
+        copyButton.title = '复制内容';
         copyButton.style.cssText = `
             position: absolute;
-            top: 5px;
-            right: 16px;
-            background: transparent;
-            color: #00ff41;
-            border: 1px solid #00ff41;
-            padding: 4px 8px;
-            border-radius: 6px;
+            top: 8px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 6px 8px;
+            border-radius: 4px;
             font-size: 12px;
             cursor: pointer;
             opacity: 0;
             transition: all 0.3s ease;
             font-family: inherit;
-            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
-            box-shadow: 0 0 5px rgba(0, 255, 65, 0.2);
+            backdrop-filter: blur(4px);
         `;
         
         // 设置代码块为相对定位
@@ -449,34 +428,25 @@ function initCodeCopy() {
         // 添加复制按钮
         block.appendChild(copyButton);
         
-        // Kali Linux 风格悬停效果
+        // 悬停效果
         block.addEventListener('mouseenter', () => {
             copyButton.style.opacity = '1';
-            copyButton.style.background = 'rgba(0, 255, 65, 0.1)';
-            copyButton.style.borderColor = '#39ff14';
-            titleBar.style.opacity = '1';
         });
         
         block.addEventListener('mouseleave', () => {
             copyButton.style.opacity = '0';
-            copyButton.style.background = 'transparent';
-            copyButton.style.borderColor = '#00ff41';
-            titleBar.style.opacity = '0.8';
         });
         
-        // Kali Linux 复制按钮悬停效果
         copyButton.addEventListener('mouseenter', () => {
-            copyButton.style.background = 'rgba(57, 255, 20, 0.2)';
-            copyButton.style.color = '#39ff14';
-            copyButton.style.transform = 'scale(1.1)';
-            copyButton.style.boxShadow = '0 0 15px rgba(57, 255, 20, 0.5)';
+            copyButton.style.background = 'rgba(255, 255, 255, 0.2)';
+            copyButton.style.borderColor = 'rgba(255, 255, 255, 0.5)';
+            copyButton.style.transform = 'scale(1.05)';
         });
         
         copyButton.addEventListener('mouseleave', () => {
-            copyButton.style.background = 'rgba(0, 255, 65, 0.1)';
-            copyButton.style.color = '#00ff41';
+            copyButton.style.background = 'rgba(255, 255, 255, 0.1)';
+            copyButton.style.borderColor = 'rgba(255, 255, 255, 0.3)';
             copyButton.style.transform = 'scale(1)';
-            copyButton.style.boxShadow = '0 0 5px rgba(0, 255, 65, 0.2)';
         });
         
         // 复制功能
@@ -484,56 +454,145 @@ function initCodeCopy() {
             const code = block.querySelector('code') || block;
             let text = code.textContent;
             
-            // 移除提示符，只复制实际命令
-            if (block.classList.contains('terminal-root')) {
-                text = text.replace(/^# /gm, '');
-            } else if (block.classList.contains('terminal-windows')) {
-                text = text.replace(/^C:\\> /gm, '');
-            } else if (block.classList.contains('terminal-python')) {
-                text = text.replace(/^>>> /gm, '');
-            } else {
-                text = text.replace(/^\$ /gm, '');
+            // 如果是命令块，可以选择性地清理一些常见的提示符
+            const dataType = block.getAttribute('data-type');
+            if (dataType === 'command') {
+                // 只移除明显的提示符，保留其他内容
+                text = text.replace(/^(\$|#|\w+@\w+[:#]\$?)\s+/gm, '');
             }
             
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(text).then(() => {
-                    copyButton.innerHTML = '💀';
-                    copyButton.style.color = '#39ff14';
-                    copyButton.style.textShadow = '0 0 10px rgba(57, 255, 20, 0.8)';
-                    copyButton.style.boxShadow = '0 0 20px rgba(57, 255, 20, 0.6)';
+                    copyButton.innerHTML = '✅';
+                    copyButton.style.color = '#4ade80';
                     setTimeout(() => {
-                        copyButton.innerHTML = '⚡';
-                        copyButton.style.color = '#00ff41';
-                        copyButton.style.textShadow = '0 0 5px rgba(0, 255, 65, 0.5)';
-                        copyButton.style.boxShadow = '0 0 5px rgba(0, 255, 65, 0.2)';
-                    }, 2000);
+                        copyButton.innerHTML = '📋';
+                        copyButton.style.color = '#ffffff';
+                    }, 1500);
+                    showToast('内容已复制到剪贴板');
+                }).catch(() => {
+                    fallbackCopy(text, copyButton);
                 });
             } else {
-                // 降级处理
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    copyButton.innerHTML = '💀';
-                    copyButton.style.color = '#39ff14';
-                    copyButton.style.textShadow = '0 0 10px rgba(57, 255, 20, 0.8)';
-                    copyButton.style.boxShadow = '0 0 20px rgba(57, 255, 20, 0.6)';
-                    setTimeout(() => {
-                        copyButton.innerHTML = '⚡';
-                        copyButton.style.color = '#00ff41';
-                        copyButton.style.textShadow = '0 0 5px rgba(0, 255, 65, 0.5)';
-                        copyButton.style.boxShadow = '0 0 5px rgba(0, 255, 65, 0.2)';
-                    }, 2000);
-                } catch (err) {
-                    console.log('无法复制代码');
-                }
-                if (textArea.parentNode) {
-                    textArea.parentNode.removeChild(textArea);
-                }
+                fallbackCopy(text, copyButton);
             }
         });
+    });
+}
+
+// 判断是否为命令块
+function isCommandBlock(content, contentLower, firstLine) {
+    const commandIndicators = [
+        'sudo', 'apt', 'yum', 'dnf', 'npm', 'pip', 'git', 'docker', 'kubectl',
+        'curl', 'wget', 'ssh', 'scp', 'rsync', 'nmap', 'netstat', 'ps aux',
+        'ls -', 'cd ', 'mkdir', 'chmod', 'chown', 'grep', 'find', 'awk', 'sed'
+    ];
+    
+    // 检查是否包含命令行指示符
+    if (firstLine.match(/^[\w-]+@[\w-]+[:#]\$?/) ||  // user@host:$ 格式
+        firstLine.match(/^[#$]\s/) ||                 // # 或 $ 开头
+        firstLine.match(/^C:\\.*?>/) ||               // Windows命令行
+        firstLine.match(/^.*@.*[:#]\$.*$/)) {         // 其他命令行格式
+        return true;
+    }
+    
+    // 检查是否包含常见命令
+    return commandIndicators.some(cmd => contentLower.includes(cmd));
+}
+
+// 判断是否为输出块
+function isOutputBlock(content, contentLower) {
+    const outputIndicators = [
+        'total', 'pid', 'uid', 'gid', 'size', 'date', 'time',
+        'bytes', 'status', 'response', 'error', 'warning',
+        'connected', 'listening', 'running', 'stopped'
+    ];
+    
+    // 如果包含很多数字和空格，可能是输出
+    const numbers = (content.match(/\d+/g) || []).length;
+    const lines = content.split('\n').length;
+    
+    if (numbers > lines * 0.3) { // 30%的行包含数字
+        return true;
+    }
+    
+    // 检查输出特征
+    return outputIndicators.some(indicator => contentLower.includes(indicator));
+}
+
+// 判断是否为代码块
+function isCodeBlock(content, contentLower) {
+    const codeIndicators = [
+        'function', 'def ', 'class ', 'import ', 'from ', 'require',
+        'const ', 'let ', 'var ', 'if (', 'for (', 'while (', 'try {',
+        'public ', 'private ', 'protected ', 'static ', 'void ',
+        '#!/bin/', '<?php', '<html', '<script', 'SELECT ', 'INSERT ',
+        'UPDATE ', 'DELETE ', 'CREATE TABLE'
+    ];
+    
+    return codeIndicators.some(indicator => contentLower.includes(indicator));
+}
+
+// 降级复制方法
+function fallbackCopy(text, copyButton) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        copyButton.innerHTML = '✅';
+        copyButton.style.color = '#4ade80';
+        setTimeout(() => {
+            copyButton.innerHTML = '📋';
+            copyButton.style.color = '#ffffff';
+        }, 1500);
+        showToast('内容已复制到剪贴板');
+    } catch (err) {
+        console.log('复制失败:', err);
+        showToast('复制失败，请手动选择文本');
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+// 初始化滚动条显示逻辑
+function initScrollbarVisibility(block) {
+    const codeElement = block.querySelector('code');
+    if (!codeElement) return;
+    
+    let scrollTimer = null;
+    
+    // 监听滚动事件
+    codeElement.addEventListener('scroll', () => {
+        // 添加滚动类，显示滚动条
+        block.classList.add('scrolling');
+        
+        // 清除之前的定时器
+        if (scrollTimer) {
+            clearTimeout(scrollTimer);
+        }
+        
+        // 停止滚动后延迟隐藏滚动条
+        scrollTimer = setTimeout(() => {
+            block.classList.remove('scrolling');
+        }, 1500); // 1.5秒后隐藏
+    });
+    
+    // 鼠标离开时也清除滚动状态（如果没有在滚动）
+    block.addEventListener('mouseleave', () => {
+        if (scrollTimer) {
+            clearTimeout(scrollTimer);
+            // 快速隐藏
+            scrollTimer = setTimeout(() => {
+                block.classList.remove('scrolling');
+            }, 300);
+        }
     });
 }
 
