@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\AboutMeController;
+use App\Http\Controllers\SitemapController;
 
 /*
 |--------------------------------------------------------------------------
@@ -122,5 +123,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // SEO相关路由
-Route::get('/sitemap.xml', [ReportController::class, 'sitemap'])->name('sitemap');
-Route::get('/robots.txt', [ReportController::class, 'robots'])->name('robots');
+Route::get('/sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap.xml');
+Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots.txt');
+Route::get('/rss.xml', [SitemapController::class, 'rss'])->name('sitemap.rss');
+Route::get('/feed.xml', [SitemapController::class, 'rss'])->name('sitemap.feed');
+Route::get('/atom.xml', [SitemapController::class, 'atom'])->name('sitemap.atom');

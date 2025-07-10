@@ -1,4 +1,131 @@
-@extends('layout', ['title' => $post['title']])
+@extends('layout', ['title' => $post['title'] . ' | Wither\'s Blog'])
+
+@push('meta')
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{{ $post['excerpt'] ?? Str::limit(strip_tags($post['content'] ?? ''), 155) }}">
+    <meta name="keywords" content="{{ implode(',', $post['tags'] ?? []) }},{{ $post['category'] }},技术博客,Wither,网络安全,编程技术">
+    <meta name="author" content="{{ $post['author'] }}">
+    <meta name="robots" content="index, follow">
+    <meta name="revisit-after" content="7 days">
+    <link rel="canonical" href="{{ route('blog.show', $post['slug']) }}">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{{ $post['title'] }}">
+    <meta property="og:description" content="{{ $post['excerpt'] ?? Str::limit(strip_tags($post['content'] ?? ''), 155) }}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ route('blog.show', $post['slug']) }}">
+    <meta property="og:site_name" content="Wither's Blog">
+    @if($post['image'])
+        <meta property="og:image" content="{{ $post['image'] }}">
+        <meta property="og:image:alt" content="{{ $post['title'] }}">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+    @else
+        <meta property="og:image" content="{{ asset('images/blog-og.jpg') }}">
+        <meta property="og:image:alt" content="Wither's Blog - {{ $post['title'] }}">
+    @endif
+    <meta property="og:locale" content="zh_CN">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $post['title'] }}">
+    <meta name="twitter:description" content="{{ $post['excerpt'] ?? Str::limit(strip_tags($post['content'] ?? ''), 155) }}">
+    @if($post['image'])
+        <meta name="twitter:image" content="{{ $post['image'] }}">
+    @else
+        <meta name="twitter:image" content="{{ asset('images/blog-og.jpg') }}">
+    @endif
+    <meta name="twitter:site" content="@WitherSec">
+    <meta name="twitter:creator" content="@WitherSec">
+    
+    <!-- Article Meta Tags -->
+    <meta name="article:author" content="{{ $post['author'] }}">
+    <meta name="article:published_time" content="{{ date('c', $post['published_at']) }}">
+    <meta name="article:modified_time" content="{{ date('c', $post['mtime']) }}">
+    <meta name="article:section" content="{{ $post['category'] }}">
+    @foreach($post['tags'] ?? [] as $tag)
+        <meta name="article:tag" content="{{ $tag }}">
+    @endforeach
+    
+    <!-- Structured Data for Blog Post -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "{{ $post['title'] }}",
+        "description": "{{ $post['excerpt'] ?? Str::limit(strip_tags($post['content'] ?? ''), 150) }}",
+        "author": {
+            "@type": "Person",
+            "name": "{{ $post['author'] }}",
+            "url": "{{ route('aboutme.index') }}"
+        },
+        "publisher": {
+            "@type": "Person",
+            "name": "Wither",
+            "url": "{{ route('aboutme.index') }}"
+        },
+        "datePublished": "{{ date('c', $post['published_at']) }}",
+        "dateModified": "{{ date('c', $post['mtime']) }}",
+        "url": "{{ route('blog.show', $post['slug']) }}",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "{{ route('blog.show', $post['slug']) }}"
+        },
+        @if($post['image'])
+        "image": {
+            "@type": "ImageObject",
+            "url": "{{ $post['image'] }}",
+            "width": 1200,
+            "height": 630,
+            "caption": "{{ $post['title'] }}"
+        },
+        @endif
+        "articleSection": "{{ $post['category'] }}",
+        "keywords": "{{ implode(',', $post['tags'] ?? []) }}",
+        "wordCount": {{ $post['reading_time'] * 200 ?? 800 }},
+        "timeRequired": "PT{{ $post['reading_time'] ?? 4 }}M",
+        "inLanguage": "zh-CN",
+        "isPartOf": {
+            "@type": "Blog",
+            "name": "Wither's Blog",
+            "url": "{{ route('blog.index') }}"
+        },
+        "about": {
+            "@type": "Thing",
+            "name": "{{ $post['category'] }}",
+            "description": "{{ $post['category'] }}相关的技术内容"
+        }
+    }
+    </script>
+    
+    <!-- Breadcrumb Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "首页",
+                "item": "{{ route('home.index') }}"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "技术博客",
+                "item": "{{ route('blog.index') }}"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "{{ $post['title'] }}",
+                "item": "{{ route('blog.show', $post['slug']) }}"
+            }
+        ]
+    }
+    </script>
+@endpush
 
 @push('styles')
     @vite(['resources/css/blog.css'])
@@ -7,6 +134,29 @@
 @section('content')
 <div class="blog-post">
     <div class="post-container">
+        <!-- 面包屑导航 -->
+        <nav class="breadcrumb-nav" aria-label="面包屑导航">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ route('home.index') }}" title="返回首页">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        首页
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ route('blog.index') }}" title="返回博客列表">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        技术博客
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">{{ $post['title'] }}</li>
+            </ol>
+        </nav>
+        
         <!-- 返回按钮 -->
         <div class="post-nav">
             <a href="{{ route('blog.index') }}" class="back-btn">
@@ -21,7 +171,12 @@
         <header class="post-header">
             @if($post['image'])
                 <div class="post-featured-image">
-                    <img src="{{ $post['image'] }}" alt="{{ $post['title'] }}">
+                    <img src="{{ $post['image'] }}" 
+                         alt="{{ $post['title'] }} - {{ $post['category'] }}技术文章封面图" 
+                         width="1200" 
+                         height="630"
+                         decoding="async"
+                         fetchpriority="high">
                 </div>
             @endif
             

@@ -33,6 +33,13 @@
     <link rel="shortcut icon" type="image/png" href="{{ asset('images/wither_rose.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/wither_rose.png') }}">
     
+    <!-- RSS/Atom Feeds -->
+    <link rel="alternate" type="application/rss+xml" title="Wither's Blog RSS Feed" href="{{ route('sitemap.rss') }}">
+    <link rel="alternate" type="application/atom+xml" title="Wither's Blog Atom Feed" href="{{ route('sitemap.atom') }}">
+    
+    <!-- SEO优化链接 -->
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="{{ route('sitemap.xml') }}">
+    
     <!-- 预加载关键资源 - 移除错误的预加载链接，Vite会自动处理 -->
     
     <!-- 引入样式文件 -->

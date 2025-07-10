@@ -1,4 +1,136 @@
-@extends('layout', ['title' => '技术博客'])
+@extends('layout', ['title' => request('search') ? '搜索: ' . request('search') . ' | 技术博客 | Wither\'s Blog' : '技术博客 | Wither\'s Blog - 网络安全技术分享平台'])
+
+@push('meta')
+    <!-- SEO Meta Tags -->
+    @if(request('search'))
+        <meta name="description" content="搜索 &quot;{{ request('search') }}&quot; 的相关技术文章，涵盖网络安全、渗透测试、编程技术等专业内容 - Wither's Blog">
+        <meta name="keywords" content="{{ request('search') }},技术博客,搜索结果,Wither,网络安全,渗透测试,编程技术">
+        <meta name="robots" content="noindex, follow">
+    @else
+        <meta name="description" content="Wither's Blog 技术博客专区，分享网络安全、渗透测试、编程开发、工具使用等原创技术文章。深入浅出的技术教程，助您提升技术水平。">
+        <meta name="keywords" content="技术博客,网络安全,渗透测试,编程开发,CTF,Web安全,系统安全,工具使用,技术教程,Wither">
+        <meta name="robots" content="index, follow">
+    @endif
+    <meta name="author" content="Wither">
+    <meta name="revisit-after" content="3 days">
+    <link rel="canonical" href="{{ request()->url() }}">
+    
+    <!-- 分页SEO优化 -->
+    @if($posts->hasPages())
+        @if($posts->onFirstPage())
+            @if($posts->hasMorePages())
+                <link rel="next" href="{{ $posts->nextPageUrl() }}">
+            @endif
+        @else
+            <link rel="prev" href="{{ $posts->previousPageUrl() }}">
+            @if($posts->hasMorePages())
+                <link rel="next" href="{{ $posts->nextPageUrl() }}">
+            @endif
+        @endif
+    @endif
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{{ request('search') ? '搜索: ' . request('search') . ' | 技术博客' : '技术博客 | Wither\'s Blog' }}">
+    @if(request('search'))
+        <meta property="og:description" content="搜索 &quot;{{ request('search') }}&quot; 的相关技术文章，涵盖网络安全、渗透测试、编程技术等专业内容">
+    @else
+        <meta property="og:description" content="Wither's Blog 技术博客专区，分享网络安全、渗透测试、编程开发、工具使用等原创技术文章">
+    @endif
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request()->url() }}">
+    <meta property="og:site_name" content="Wither's Blog">
+    <meta property="og:image" content="{{ asset('images/blog-og.jpg') }}">
+    <meta property="og:image:alt" content="Wither's Blog 技术博客">
+    <meta property="og:locale" content="zh_CN">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ request('search') ? '搜索: ' . request('search') . ' | 技术博客' : '技术博客 | Wither\'s Blog' }}">
+    @if(request('search'))
+        <meta name="twitter:description" content="搜索 &quot;{{ request('search') }}&quot; 的相关技术文章，涵盖网络安全、渗透测试、编程技术等专业内容">
+    @else
+        <meta name="twitter:description" content="Wither's Blog 技术博客专区，分享网络安全、渗透测试、编程开发、工具使用等原创技术文章">
+    @endif
+    <meta name="twitter:image" content="{{ asset('images/blog-og.jpg') }}">
+    <meta name="twitter:site" content="@WitherSec">
+    <meta name="twitter:creator" content="@WitherSec">
+    
+    <!-- Additional SEO -->
+    <meta name="application-name" content="Wither's Blog">
+    <meta name="msapplication-TileColor" content="#3b82f6">
+    <meta name="theme-color" content="#3b82f6">
+    
+    <!-- Structured Data for Blog Section -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": "Wither's Blog - 技术博客",
+        "description": "专注于网络安全、渗透测试、编程开发等技术领域的原创博客",
+        "url": "{{ route('blog.index') }}",
+        "publisher": {
+            "@type": "Person",
+            "name": "Wither",
+            "url": "{{ route('aboutme.index') }}"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "{{ route('blog.index') }}"
+        },
+        "blogPost": [
+            @foreach($posts->take(10) as $post)
+            {
+                "@type": "BlogPosting",
+                "headline": "{{ $post['title'] }}",
+                "description": "{{ $post['excerpt'] ?? Str::limit(strip_tags($post['content'] ?? ''), 150) }}",
+                "url": "{{ route('blog.show', $post['slug']) }}",
+                "datePublished": "{{ date('c', $post['published_at']) }}",
+                "dateModified": "{{ date('c', $post['mtime']) }}",
+                "author": {
+                    "@type": "Person",
+                    "name": "{{ $post['author'] }}"
+                },
+                "publisher": {
+                    "@type": "Person",
+                    "name": "Wither"
+                },
+                @if($post['image'])
+                "image": "{{ $post['image'] }}",
+                @endif
+                "articleSection": "{{ $post['category'] }}",
+                "keywords": "{{ implode(',', $post['tags'] ?? []) }}",
+                "wordCount": {{ $post['reading_time'] * 200 ?? 800 }},
+                "timeRequired": "PT{{ $post['reading_time'] ?? 4 }}M"
+            }@if(!$loop->last),@endif
+            @endforeach
+        ]
+    }
+    </script>
+    
+    @if(!request('search'))
+    <!-- Breadcrumb Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "首页",
+                "item": "{{ route('home.index') }}"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "技术博客",
+                "item": "{{ route('blog.index') }}"
+            }
+        ]
+    }
+    </script>
+    @endif
+@endpush
 
 @push('styles')
     @vite(['resources/css/blog.css'])
@@ -6,6 +138,28 @@
 
 @section('content')
 <div class="blog-index">
+    <!-- 面包屑导航 -->
+    <nav class="breadcrumb-nav" aria-label="面包屑导航">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{{ route('home.index') }}" title="返回首页">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                    </svg>
+                    首页
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                @if(request('search'))
+                    搜索结果
+                @elseif(request('category'))
+                    {{ request('category') }} 分类
+                @else
+                    技术博客
+                @endif
+            </li>
+        </ol>
+    </nav>
 
 
     <!-- 搜索栏 -->
@@ -48,10 +202,19 @@
             @if($posts->count() > 0)
                 <div class="posts-grid">
                     @foreach($posts as $post)
-                        <article class="post-card" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
+                        <article class="post-card" 
+                                 data-aos="fade-up" 
+                                 data-aos-delay="{{ $loop->index * 100 }}"
+                                 itemscope 
+                                 itemtype="https://schema.org/BlogPosting">
                             @if($post['image'])
                                 <div class="post-image">
-                                    <img src="{{ $post['image'] }}" alt="{{ $post['title'] }}">
+                                    <img src="{{ $post['image'] }}" 
+                                         alt="{{ $post['title'] }} - {{ $post['category'] }}技术文章配图" 
+                                         loading="lazy"
+                                         width="350" 
+                                         height="200"
+                                         decoding="async">
                                 </div>
                             @endif
                             <div class="post-content">
@@ -59,10 +222,14 @@
                                     <span class="post-category">{{ $post['category'] }}</span>
                                     <span class="post-date">{{ date('Y-m-d', $post['published_at']) }}</span>
                                 </div>
-                                <h2 class="post-title">
-                                    <a href="{{ route('blog.show', $post['slug']) }}">{{ $post['title'] }}</a>
+                                <h2 class="post-title" itemprop="headline">
+                                    <a href="{{ route('blog.show', $post['slug']) }}" itemprop="url">{{ $post['title'] }}</a>
                                 </h2>
-                                <p class="post-excerpt">{{ $post['excerpt'] }}</p>
+                                <p class="post-excerpt" itemprop="description">{{ $post['excerpt'] }}</p>
+                                <meta itemprop="datePublished" content="{{ date('c', $post['published_at']) }}">
+                                <meta itemprop="dateModified" content="{{ date('c', $post['mtime']) }}">
+                                <meta itemprop="author" content="{{ $post['author'] }}">
+                                <meta itemprop="articleSection" content="{{ $post['category'] }}">
                                 <div class="post-footer">
                                     <div class="post-info">
                                         <span class="post-author">{{ $post['author'] }}</span>
