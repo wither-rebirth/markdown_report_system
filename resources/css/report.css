@@ -1,9 +1,6 @@
 /* Report 页面样式 - 增强字体渲染 */
 
 .report-page {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 2rem;
     line-height: 1.65;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -11,18 +8,142 @@
     font-smooth: always;
 }
 
+/* 报告布局容器 */
+.report-layout {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* 侧边栏目录样式 */
+.report-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    background: var(--bg-surface);
+    border-right: 2px solid var(--border-color);
+    z-index: 1000;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.report-sidebar.collapsed {
+    transform: translateX(-240px);
+}
+
+.sidebar-content {
+    padding: 1.5rem;
+    height: 100%;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-light);
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    color: var(--text-strong);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.toc-toggle {
+    background: var(--primary-color);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+.toc-toggle:hover {
+    background: var(--primary-hover);
+    transform: scale(1.1);
+}
+
+.report-sidebar.collapsed .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.toc-container {
+    height: calc(100% - 80px);
+    overflow-y: auto;
+}
+
+/* 主要内容区域 */
+.report-main {
+    flex: 1;
+    margin-left: 280px;
+    max-width: 1000px;
+    padding: 2rem;
+    transition: margin-left 0.3s ease;
+}
+
+.report-sidebar.collapsed + .report-main {
+    margin-left: 40px;
+}
+
 /* 报告头部 */
 .report-header {
     margin-bottom: 2rem;
     padding-bottom: 1rem;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid var(--border-color);
 }
 
-.report-header h1 {
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.report-title {
     margin: 0;
     color: var(--primary-color);
     font-size: 2rem;
     font-weight: 700;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-medium);
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+}
+
+.action-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
 }
 
 .report-meta {
@@ -64,76 +185,72 @@
     border-color: var(--primary-color);
 }
 
-/* 目录样式 */
-#table-of-contents {
-    background: var(--bg-surface);
-    border: 2px solid var(--border-color);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    position: relative;
-}
-
-#table-of-contents h3 {
-    margin: 0 0 1rem 0;
-    color: var(--text-color);
-    font-size: 1.1rem;
-}
-
+/* 侧边栏目录样式 */
 .toc-list {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-light);
-    border-radius: 8px;
-    padding: 1.25rem;
     list-style: none;
     margin: 0;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+    padding: 0;
 }
 
 .toc-list li {
-    margin: 0.25rem 0;
+    margin: 0.5rem 0;
     line-height: 1.4;
 }
 
 .toc-list a {
-    color: var(--text-color);
+    color: var(--text-muted);
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
+    display: block;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border-left: 3px solid transparent;
+    font-size: 0.9rem;
 }
 
 .toc-list a:hover {
     color: var(--primary-color);
+    background: var(--primary-light);
+    border-left-color: var(--primary-color);
+    transform: translateX(4px);
+}
+
+.toc-list a.active {
+    color: var(--primary-color);
+    background: var(--primary-light);
+    border-left-color: var(--primary-color);
+    font-weight: 600;
 }
 
 .toc-h1 { 
-    font-weight: bold; 
-    font-size: 1rem;
+    font-weight: 600; 
+    font-size: 0.95rem;
+    padding-left: 0.75rem;
 }
 
 .toc-h2 { 
-    margin-left: 1rem;
-    font-size: 0.95rem;
-}
-
-.toc-h3 { 
-    margin-left: 2rem;
+    padding-left: 1.5rem;
     font-size: 0.9rem;
 }
 
-.toc-h4 { 
-    margin-left: 3rem;
+.toc-h3 { 
+    padding-left: 2.25rem;
     font-size: 0.85rem;
 }
 
-.toc-h5 { 
-    margin-left: 4rem;
+.toc-h4 { 
+    padding-left: 3rem;
     font-size: 0.8rem;
 }
 
-.toc-h6 { 
-    margin-left: 5rem;
+.toc-h5 { 
+    padding-left: 3.75rem;
     font-size: 0.75rem;
+}
+
+.toc-h6 { 
+    padding-left: 4.5rem;
+    font-size: 0.7rem;
 }
 
 /* 报告内容样式优化 - 增强暗黑模式 */
@@ -521,9 +638,17 @@
         display: none !important;
     }
     
-    .report-page {
+    .report-layout {
+        display: block;
+    }
+    
+    .report-sidebar {
+        display: none !important;
+    }
+    
+    .report-main {
+        margin-left: 0 !important;
         max-width: none;
-        margin: 0;
         padding: 0;
         font-size: 12pt;
         line-height: 1.4;
@@ -533,6 +658,15 @@
         border-bottom: 2px solid #000;
         margin-bottom: 1rem;
         padding-bottom: 0.5rem;
+    }
+    
+    .header-top {
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    .report-title {
+        font-size: 18pt;
     }
     
     .report-content h1,
@@ -554,32 +688,100 @@
         color: #000;
         text-decoration: underline;
     }
-    
-    #table-of-contents {
-        page-break-after: always;
-    }
 }
 
 /* 响应式设计 */
+@media (max-width: 1024px) {
+    .report-sidebar {
+        width: 260px;
+    }
+    
+    .report-main {
+        margin-left: 260px;
+    }
+    
+    .report-sidebar.collapsed + .report-main {
+        margin-left: 40px;
+    }
+}
+
 @media (max-width: 768px) {
-    .report-page {
+    .report-layout {
+        flex-direction: column;
+    }
+    
+    .report-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        max-height: 50vh;
+        transform: translateY(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1001;
+        border-right: none;
+        border-bottom: 2px solid var(--border-color);
+    }
+    
+    .report-sidebar.mobile-visible {
+        transform: translateY(0);
+    }
+    
+    .report-sidebar.collapsed {
+        transform: translateY(-100%);
+    }
+    
+    .report-main {
+        margin-left: 0;
         padding: 1rem;
+        width: 100%;
     }
     
-    .report-header {
-        margin-bottom: 1.5rem;
+    .report-sidebar.collapsed + .report-main {
+        margin-left: 0;
     }
     
-    .report-header h1 {
+    .header-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .report-title {
         font-size: 1.5rem;
     }
     
-    #table-of-contents {
+    .header-actions {
+        order: -1;
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .action-btn {
+        min-width: 36px;
+        height: 36px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .sidebar-content {
         padding: 1rem;
     }
     
-    .toc-list {
-        padding: 0.75rem;
+    .sidebar-header h3 {
+        font-size: 1rem;
+    }
+    
+    .toc-toggle {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+    
+    .toc-list a {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85rem;
     }
     
     .report-content {
@@ -613,8 +815,44 @@
     .report-content td {
         padding: 0.5rem;
     }
-    
+}
 
+@media (max-width: 480px) {
+    .report-main {
+        padding: 0.75rem;
+    }
+    
+    .report-title {
+        font-size: 1.25rem;
+    }
+    
+    .action-btn {
+        min-width: 32px;
+        height: 32px;
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+    }
+    
+    .report-content {
+        padding: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .report-content h1 {
+        font-size: 1.25rem;
+    }
+    
+    .report-content h2 {
+        font-size: 1.1rem;
+    }
+    
+    .report-content h3 {
+        font-size: 1rem;
+    }
+    
+    .toc-list a {
+        font-size: 0.8rem;
+    }
 }
 
 @media (max-width: 480px) {

@@ -99,35 +99,52 @@
     }
     </script>
 
-    <!-- 报告头部信息 -->
-    <div class="report-header" style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #e2e8f0;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h1 style="margin: 0; color: var(--primary-color);">{{ $title }}</h1>
-            <div class="no-print">
-                <button onclick="window.print()" style="margin-right: 0.5rem;" title="打印报告">🖨️</button>
-                <button onclick="toggleFullscreen()" title="全屏模式">🔍</button>
+    <!-- 报告布局容器 -->
+    <div class="report-layout">
+        <!-- 侧边栏目录 -->
+        <aside class="report-sidebar no-print">
+            <div class="sidebar-content">
+                <div class="sidebar-header">
+                    <h3>📋 目录</h3>
+                    <button class="toc-toggle" onclick="toggleTocSidebar()" title="收起/展开目录">
+                        <span class="toggle-icon">◀</span>
+                    </button>
+                </div>
+                <div id="table-of-contents" class="toc-container"></div>
             </div>
-        </div>
-        
-        <div class="report-meta">
-            📅 更新时间: {{ date('Y年m月d日 H:i', $mtime) }} | 
-            📄 大小: {{ number_format($size / 1024, 1) }} KB | 
-            @if(($type ?? '') === 'hackthebox')
-                🎯 类型: HackTheBox Writeup |
-            @else
-                🎯 类型: 安全研究报告 |
-            @endif
-            🔗 <a href="{{ route('reports.index') }}">返回列表</a>
-        </div>
+        </aside>
+
+        <!-- 主要内容区域 -->
+        <main class="report-main">
+            <!-- 报告头部信息 -->
+            <div class="report-header">
+                <div class="header-top">
+                    <h1 class="report-title">{{ $title }}</h1>
+                    <div class="header-actions no-print">
+                        <button class="action-btn" onclick="toggleTocSidebar()" title="显示/隐藏目录">📋</button>
+                        <button class="action-btn" onclick="window.print()" title="打印报告">🖨️</button>
+                        <button class="action-btn" onclick="toggleFullscreen()" title="全屏模式">🔍</button>
+                    </div>
+                </div>
+                
+                <div class="report-meta">
+                    📅 更新时间: {{ date('Y年m月d日 H:i', $mtime) }} | 
+                    📄 大小: {{ number_format($size / 1024, 1) }} KB | 
+                    @if(($type ?? '') === 'hackthebox')
+                        🎯 类型: HackTheBox Writeup |
+                    @else
+                        🎯 类型: 安全研究报告 |
+                    @endif
+                    🔗 <a href="{{ route('reports.index') }}">返回列表</a>
+                </div>
+            </div>
+
+            <!-- 报告内容 -->
+            <article class="report-content">
+                {!! $html !!}
+            </article>
+        </main>
     </div>
-
-    <!-- 目录 (如果内容较长) -->
-    <div id="table-of-contents" class="no-print" style="margin-bottom: 2rem;"></div>
-
-    <!-- 报告内容 -->
-    <article class="report-content">
-        {!! $html !!}
-    </article>
 </div>
 
 @push('scripts')

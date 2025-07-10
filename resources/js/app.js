@@ -41,9 +41,6 @@ const app = createApp({
     
     // 初始化代码高亮
             this.initCodeHighlight();
-    
-    // 初始化目录生成
-            this.initTableOfContents();
             
             // 监听滚动
             this.setupScrollListener();
@@ -171,52 +168,7 @@ const app = createApp({
             // 这里不再需要额外的复制按钮
         },
 
-        initTableOfContents() {
-    const content = document.querySelector('.report-content');
-    const tocContainer = document.getElementById('table-of-contents');
-    
-    if (content && tocContainer) {
-        const headings = content.querySelectorAll('h1, h2, h3, h4, h5, h6');
-        
-        if (headings.length > 0) {
-            const toc = document.createElement('ul');
-            toc.className = 'toc-list';
-            
-            headings.forEach((heading, index) => {
-                if (!heading.id) {
-                    heading.id = `heading-${index}`;
-                }
-                
-                const li = document.createElement('li');
-                const a = document.createElement('a');
-                a.href = `#${heading.id}`;
-                a.textContent = heading.textContent;
-                a.className = `toc-${heading.tagName.toLowerCase()}`;
-                        a.onclick = (e) => this.smoothScrollTo(e, heading.id);
-                
-                li.appendChild(a);
-                toc.appendChild(li);
-            });
-            
-            tocContainer.appendChild(toc);
-                    
-                    // 动画目录
-                    const tocItems = document.querySelectorAll('.toc-list li');
-                    if (tocItems.length > 0) {
-                        gsap.fromTo('.toc-list li', {
-                            x: -30,
-                            opacity: 0
-                        }, {
-                            x: 0,
-                            opacity: 1,
-                            duration: 0.4,
-                            ease: 'power2.out',
-                            stagger: 0.05
-                        });
-                    }
-                }
-            }
-        },
+
         
         smoothScrollTo(e, targetId) {
             e.preventDefault();

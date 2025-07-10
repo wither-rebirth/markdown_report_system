@@ -4,11 +4,16 @@
 function generateTableOfContents() {
     const headings = document.querySelectorAll('.report-content h1, .report-content h2, .report-content h3, .report-content h4, .report-content h5, .report-content h6');
     
-    // 如果标题数量少于3个，不生成目录
+    // 如果标题数量少于3个，隐藏侧边栏
     if (headings.length < 3) {
-        const tocContainer = document.getElementById('table-of-contents');
-        if (tocContainer) {
-            tocContainer.style.display = 'none';
+        const sidebar = document.querySelector('.report-sidebar');
+        if (sidebar) {
+            sidebar.style.display = 'none';
+            // 调整主内容区域样式
+            const mainContent = document.querySelector('.report-main');
+            if (mainContent) {
+                mainContent.style.marginLeft = '0';
+            }
         }
         return;
     }
@@ -17,7 +22,6 @@ function generateTableOfContents() {
     if (!tocContainer) return;
     
     // 检查报告内容中是否已经包含目录
-    // 如果已经有目录相关的内容，就不生成新的目录
     const reportContent = document.querySelector('.report-content');
     if (reportContent) {
         const existingToc = reportContent.querySelector('ul, ol');
@@ -34,16 +38,18 @@ function generateTableOfContents() {
             
             if (hasKeywords) {
                 console.log('检测到现有目录，跳过自动生成');
-                tocContainer.style.display = 'none';
+                const sidebar = document.querySelector('.report-sidebar');
+                if (sidebar) {
+                    sidebar.style.display = 'none';
+                    const mainContent = document.querySelector('.report-main');
+                    if (mainContent) {
+                        mainContent.style.marginLeft = '0';
+                    }
+                }
                 return;
             }
         }
     }
-    
-    // 创建目录标题
-    const tocTitle = document.createElement('h3');
-    tocTitle.textContent = '📋 目录';
-    tocContainer.appendChild(tocTitle);
     
     // 创建目录列表
     const tocList = document.createElement('ul');
@@ -62,6 +68,7 @@ function generateTableOfContents() {
         tocLink.href = '#' + heading.id;
         tocLink.textContent = heading.textContent;
         tocLink.className = 'toc-' + heading.tagName.toLowerCase();
+        tocLink.dataset.target = heading.id;
         
         // 添加点击事件
         tocLink.addEventListener('click', function(e) {
@@ -74,15 +81,23 @@ function generateTableOfContents() {
     });
     
     tocContainer.appendChild(tocList);
+    
+    // 初始化滚动监听
+    initScrollSpy();
 }
 
 // 滚动到指定标题
 function scrollToHeading(headingId) {
     const heading = document.getElementById(headingId);
     if (heading) {
-        heading.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
+        // 计算偏移量，考虑固定头部
+        const headerOffset = 80;
+        const elementPosition = heading.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
         });
         
         // 更新 URL 哈希
@@ -95,6 +110,179 @@ function scrollToHeading(headingId) {
         setTimeout(() => {
             heading.style.backgroundColor = '';
         }, 2000);
+    }
+}
+
+// 滚动监听 - 高亮当前章节
+function initScrollSpy() {
+    const headings = document.querySelectorAll('.report-content h1, .report-content h2, .report-content h3, .report-content h4, .report-content h5, .report-content h6');
+    const tocLinks = document.querySelectorAll('.toc-list a');
+    
+    if (headings.length === 0 || tocLinks.length === 0) return;
+    
+    function updateActiveTocLink() {
+        let currentActiveHeading = null;
+        const scrollPosition = window.scrollY + 100; // 偏移量
+
+        // 找到当前显示的标题
+        for (let i = headings.length - 1; i >= 0; i--) {
+            const heading = headings[i];
+            if (heading.offsetTop <= scrollPosition) {
+                currentActiveHeading = heading;
+                break;
+            }
+        }
+
+        // 更新目录链接状态
+        tocLinks.forEach(link => {
+            link.classList.remove('active');
+            if (currentActiveHeading && link.dataset.target === currentActiveHeading.id) {
+                link.classList.add('active');
+                
+                // 滚动目录到可见区域
+                const tocContainer = document.querySelector('.toc-container');
+                if (tocContainer) {
+                    const linkRect = link.getBoundingClientRect();
+                    const containerRect = tocContainer.getBoundingClientRect();
+                    
+                    if (linkRect.top < containerRect.top || linkRect.bottom > containerRect.bottom) {
+                        link.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    // 节流滚动事件
+    let ticking = false;
+    function onScroll() {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                updateActiveTocLink();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }
+
+    window.addEventListener('scroll', onScroll);
+    updateActiveTocLink(); // 初始调用
+}
+
+// 侧边栏切换功能
+function toggleTocSidebar() {
+    const sidebar = document.querySelector('.report-sidebar');
+    const mainContent = document.querySelector('.report-main');
+    
+    if (sidebar && mainContent) {
+        // 检查是否为移动端
+        const isMobile = window.innerWidth <= 768;
+        
+        if (isMobile) {
+            // 移动端：切换可见性
+            sidebar.classList.toggle('mobile-visible');
+            
+            // 添加遮罩层
+            if (sidebar.classList.contains('mobile-visible')) {
+                createMobileOverlay();
+            } else {
+                removeMobileOverlay();
+            }
+        } else {
+            // 桌面端：切换收起状态
+            sidebar.classList.toggle('collapsed');
+            
+            // 保存状态到 localStorage
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('toc-sidebar-collapsed', isCollapsed);
+        }
+    }
+}
+
+// 创建移动端遮罩层
+function createMobileOverlay() {
+    const existingOverlay = document.querySelector('.mobile-overlay');
+    if (existingOverlay) return;
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'mobile-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    // 渐入效果
+    setTimeout(() => {
+        overlay.style.opacity = '1';
+    }, 10);
+    
+    // 点击遮罩层关闭侧边栏
+    overlay.addEventListener('click', () => {
+        const sidebar = document.querySelector('.report-sidebar');
+        if (sidebar) {
+            sidebar.classList.remove('mobile-visible');
+            removeMobileOverlay();
+        }
+    });
+}
+
+// 移除移动端遮罩层
+function removeMobileOverlay() {
+    const overlay = document.querySelector('.mobile-overlay');
+    if (overlay) {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            if (overlay.parentNode) {
+                overlay.parentNode.removeChild(overlay);
+            }
+        }, 300);
+    }
+}
+
+// 处理窗口大小变化
+function handleResize() {
+    const sidebar = document.querySelector('.report-sidebar');
+    if (!sidebar) return;
+    
+    const isMobile = window.innerWidth <= 768;
+    
+    if (!isMobile) {
+        // 桌面端：移除移动端相关类和遮罩
+        sidebar.classList.remove('mobile-visible');
+        removeMobileOverlay();
+        
+        // 恢复桌面端状态
+        const isCollapsed = localStorage.getItem('toc-sidebar-collapsed') === 'true';
+        if (isCollapsed) {
+            sidebar.classList.add('collapsed');
+        } else {
+            sidebar.classList.remove('collapsed');
+        }
+    } else {
+        // 移动端：移除桌面端状态
+        sidebar.classList.remove('collapsed');
+    }
+}
+
+// 恢复侧边栏状态
+function restoreSidebarState() {
+    const isCollapsed = localStorage.getItem('toc-sidebar-collapsed') === 'true';
+    const sidebar = document.querySelector('.report-sidebar');
+    
+    if (isCollapsed && sidebar) {
+        sidebar.classList.add('collapsed');
     }
 }
 
@@ -434,11 +622,17 @@ function toggleFullscreen() {
 
 // 页面初始化
 document.addEventListener('DOMContentLoaded', function() {
+    // 恢复侧边栏状态
+    restoreSidebarState();
+    
     // 生成目录
     generateTableOfContents();
     
     // 初始化标题锚点
     initHeadingAnchors();
+    
+    // 监听窗口大小变化
+    window.addEventListener('resize', handleResize);
     
 
     
@@ -470,6 +664,11 @@ window.ReportPage = {
     generateTableOfContents,
     scrollToHeading,
     initHeadingAnchors,
+    initScrollSpy,
+    toggleTocSidebar,
     showToast,
     toggleFullscreen
-}; 
+};
+
+// 全局函数（供HTML调用）
+window.toggleTocSidebar = toggleTocSidebar; 
