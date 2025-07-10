@@ -71,8 +71,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // 认证路由（不需要登录即可访问）
     Route::get('/login', [App\Http\Controllers\Admin\AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [App\Http\Controllers\Admin\AuthController::class, 'login']);
-    Route::get('/setup', [App\Http\Controllers\Admin\AuthController::class, 'showSetup'])->name('setup');
-    Route::post('/setup', [App\Http\Controllers\Admin\AuthController::class, 'setup']);
     
     // 需要认证的管理端路由
     Route::middleware('admin')->group(function () {

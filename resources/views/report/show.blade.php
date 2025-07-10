@@ -30,18 +30,7 @@
     <article class="report-content">
         {!! $html !!}
     </article>
-
-    <!-- 返回顶部按钮 -->
-    <div class="no-print" style="position: fixed; bottom: 2rem; right: 2rem;">
-        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
-                style="background: var(--primary-color); color: white; border: none; padding: 0.75rem; border-radius: 50%; box-shadow: 0 2px 10px rgba(0,0,0,0.2);"
-                title="返回顶部">
-            ⬆️
-        </button>
-    </div>
 </div>
-
-
 
 @push('scripts')
     @vite(['resources/js/report.js'])

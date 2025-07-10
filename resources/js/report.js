@@ -181,28 +181,7 @@ function showToast(message) {
     }, 3000);
 }
 
-// 返回顶部按钮
-function initScrollToTop() {
-    const scrollButton = document.querySelector('.scroll-to-top');
-    if (!scrollButton) return;
-    
-    // 监听滚动事件
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 200) {
-            scrollButton.style.display = 'block';
-        } else {
-            scrollButton.style.display = 'none';
-        }
-    });
-    
-    // 点击事件
-    scrollButton.addEventListener('click', () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    });
-}
+
 
 // 代码块复制功能和样式增强
 function initCodeCopy() {
@@ -457,8 +436,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初始化标题锚点
     initHeadingAnchors();
     
-    // 初始化返回顶部
-    initScrollToTop();
+
     
     // 初始化代码复制
     initCodeCopy();
