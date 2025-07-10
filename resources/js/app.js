@@ -692,6 +692,31 @@ style.textContent = `
         }
     }
     
+    /* 主题切换专用涟漪效果 */
+    .theme-ripple {
+        position: absolute;
+        border-radius: 50%;
+        transform: scale(0);
+        animation: theme-ripple-animation 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+        z-index: 0;
+    }
+    
+    @keyframes theme-ripple-animation {
+        0% {
+            transform: scale(0);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(2);
+            opacity: 0.8;
+        }
+        100% {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+    
     /* 确保按钮和卡片可以包含绝对定位的元素 */
     .btn, .nav-btn, .report-card {
         position: relative;

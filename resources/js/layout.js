@@ -10,9 +10,15 @@ function toggleFullscreen() {
 }
 
 // 增强的暗黑模式切换系统
-function toggleDarkMode() {
+function toggleDarkMode(event) {
     const html = document.documentElement;
     const currentTheme = html.getAttribute('data-theme');
+    const themeBtn = document.querySelector('[onclick="toggleDarkMode(event)"]');
+    
+    // 创建主题切换专用的涟漪效果
+    if (event && themeBtn) {
+        createThemeRipple(event, themeBtn, currentTheme);
+    }
     
     if (currentTheme === 'dark') {
         html.setAttribute('data-theme', 'light');
@@ -29,6 +35,46 @@ function toggleDarkMode() {
     setTimeout(() => {
         html.style.transition = '';
     }, 300);
+}
+
+// 创建主题切换专用涟漪效果
+function createThemeRipple(event, button, currentTheme) {
+    if (!button || typeof button.getBoundingClientRect !== 'function') {
+        return;
+    }
+    
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height) * 2.5;
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
+    
+    const ripple = document.createElement('div');
+    ripple.className = 'theme-ripple';
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    
+    // 根据当前主题设置涟漪颜色和效果
+    if (currentTheme === 'dark') {
+        // 切换到亮色模式的涟漪 - 金黄色太阳效果
+        ripple.style.background = 'radial-gradient(circle, rgba(255, 193, 7, 0.6) 0%, rgba(255, 235, 59, 0.4) 30%, rgba(255, 152, 0, 0.2) 60%, transparent 100%)';
+        ripple.style.boxShadow = '0 0 30px rgba(255, 193, 7, 0.6), 0 0 60px rgba(255, 235, 59, 0.4)';
+    } else {
+        // 切换到暗色模式的涟漪 - 蓝紫色月夜效果
+        ripple.style.background = 'radial-gradient(circle, rgba(79, 172, 254, 0.6) 0%, rgba(147, 51, 234, 0.4) 30%, rgba(99, 102, 241, 0.2) 60%, transparent 100%)';
+        ripple.style.boxShadow = '0 0 30px rgba(79, 172, 254, 0.6), 0 0 60px rgba(147, 51, 234, 0.4)';
+    }
+    
+    // 确保按钮能够包含涟漪元素
+    if (button && button.appendChild) {
+        button.appendChild(ripple);
+        
+        setTimeout(() => {
+            if (ripple.parentNode) {
+                ripple.parentNode.removeChild(ripple);
+            }
+        }, 800);
+    }
 }
 
 // 移动端菜单切换
