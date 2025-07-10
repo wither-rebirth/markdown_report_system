@@ -4,15 +4,15 @@
 function generateTableOfContents() {
     const headings = document.querySelectorAll('.report-content h1, .report-content h2, .report-content h3, .report-content h4, .report-content h5, .report-content h6');
     
-    // 如果标题数量少于3个，隐藏侧边栏
+    // 如果标题数量少于3个，隐藏侧边栏并居中内容
     if (headings.length < 3) {
         const sidebar = document.querySelector('.report-sidebar');
         if (sidebar) {
             sidebar.style.display = 'none';
-            // 调整主内容区域样式
+            // 调整主内容区域样式为居中布局
             const mainContent = document.querySelector('.report-main');
             if (mainContent) {
-                mainContent.style.marginLeft = '0';
+                mainContent.classList.add('report-main-centered');
             }
         }
         return;
@@ -43,7 +43,7 @@ function generateTableOfContents() {
                     sidebar.style.display = 'none';
                     const mainContent = document.querySelector('.report-main');
                     if (mainContent) {
-                        mainContent.style.marginLeft = '0';
+                        mainContent.classList.add('report-main-centered');
                     }
                 }
                 return;
@@ -74,6 +74,22 @@ function generateTableOfContents() {
         tocLink.addEventListener('click', function(e) {
             e.preventDefault();
             scrollToHeading(heading.id);
+            
+            // 移动端点击关闭侧边栏
+            if (window.innerWidth <= 768) {
+                setTimeout(() => {
+                    const sidebar = document.querySelector('.report-sidebar');
+                    const overlay = document.querySelector('.report-sidebar-overlay');
+                    if (sidebar && sidebar.classList.contains('mobile-visible')) {
+                        sidebar.classList.remove('mobile-visible');
+                        if (overlay) {
+                            overlay.classList.remove('active');
+                        }
+                        document.body.style.overflow = '';
+                    }
+                    removeMobileOverlay();
+                }, 300);
+            }
         });
         
         tocItem.appendChild(tocLink);
@@ -763,92 +779,7 @@ function initMobileSidebar() {
     });
 }
 
-// 移动端优化的目录生成
-function generateMobileTOC() {
-    const headers = document.querySelectorAll('.report-content h1, .report-content h2, .report-content h3, .report-content h4, .report-content h5, .report-content h6');
-    const toc = document.getElementById('table-of-contents');
-    
-    if (!headers.length || !toc) return;
-    
-    const tocList = document.createElement('ul');
-    tocList.className = 'toc-list';
-    
-    headers.forEach((header, index) => {
-        const id = header.id || `heading-${index}`;
-        if (!header.id) header.id = id;
-        
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        
-        a.href = `#${id}`;
-        a.textContent = header.textContent;
-        a.className = `toc-${header.tagName.toLowerCase()}`;
-        
-        // 移动端点击关闭侧边栏
-        a.addEventListener('click', () => {
-            if (window.innerWidth <= 768) {
-                setTimeout(() => {
-                    const sidebar = document.querySelector('.report-sidebar');
-                    const overlay = document.querySelector('.report-sidebar-overlay');
-                    if (sidebar && overlay) {
-                        sidebar.classList.remove('mobile-visible');
-                        overlay.classList.remove('active');
-                        document.body.style.overflow = '';
-                    }
-                }, 300);
-            }
-        });
-        
-        li.appendChild(a);
-        tocList.appendChild(li);
-    });
-    
-    toc.appendChild(tocList);
-    
-    // 高亮当前章节
-    highlightCurrentSection();
-}
 
-// 高亮当前章节
-function highlightCurrentSection() {
-    const headers = document.querySelectorAll('.report-content h1, .report-content h2, .report-content h3, .report-content h4, .report-content h5, .report-content h6');
-    const tocLinks = document.querySelectorAll('.toc-list a');
-    
-    if (!headers.length || !tocLinks.length) return;
-    
-    function updateActiveLink() {
-        let current = '';
-        
-        headers.forEach(header => {
-            const rect = header.getBoundingClientRect();
-            if (rect.top <= 100) {
-                current = header.id;
-            }
-        });
-        
-        tocLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${current}`) {
-                link.classList.add('active');
-            }
-        });
-    }
-    
-    // 节流处理
-    let ticking = false;
-    function handleScroll() {
-        if (!ticking) {
-            requestAnimationFrame(() => {
-                updateActiveLink();
-                ticking = false;
-            });
-            ticking = true;
-        }
-    }
-    
-    window.addEventListener('scroll', handleScroll);
-    updateActiveLink();
-}
 
 // 移动端图片优化
 function optimizeImagesForMobile() {
@@ -993,7 +924,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 移动端特有功能
     initMobileSidebar();
-    generateMobileTOC();
     optimizeImagesForMobile();
     optimizeTablesForMobile();
     
