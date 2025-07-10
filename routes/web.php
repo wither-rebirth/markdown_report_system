@@ -120,3 +120,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('backup/cleanup', [App\Http\Controllers\Admin\BackupController::class, 'cleanup'])->name('backup.cleanup');
     });
 });
+
+// SEO相关路由
+Route::get('/sitemap.xml', [ReportController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt', [ReportController::class, 'robots'])->name('robots');

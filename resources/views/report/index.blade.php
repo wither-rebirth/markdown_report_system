@@ -1,4 +1,27 @@
-@extends('layout', ['title' => '报告列表'])
+@extends('layout', ['title' => '靶场报告 | Wither\'s Blog'])
+
+@push('meta')
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Wither's Blog 靶场报告专区，包含 HackTheBox、TryHackMe 等各类渗透测试靶场的详细 Writeup 和解题思路分享。">
+    <meta name="keywords" content="HackTheBox,TryHackMe,CTF,Writeup,Walkthrough,靶场报告,渗透测试,网络安全,Wither,技术分享">
+    <meta name="author" content="Wither">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ route('reports.index') }}">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="靶场报告 | Wither's Blog">
+    <meta property="og:description" content="Wither's Blog 靶场报告专区，包含 HackTheBox、TryHackMe 等各类渗透测试靶场的详细 Writeup 和解题思路分享。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ route('reports.index') }}">
+    <meta property="og:site_name" content="Wither's Blog">
+    <meta property="og:image" content="{{ asset('images/reports-og.jpg') }}">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="靶场报告 | Wither's Blog">
+    <meta name="twitter:description" content="Wither's Blog 靶场报告专区，包含 HackTheBox、TryHackMe 等各类渗透测试靶场的详细 Writeup 和解题思路分享。">
+    <meta name="twitter:image" content="{{ asset('images/reports-og.jpg') }}">
+@endpush
 
 @push('styles')
     @vite(['resources/css/index.css'])

@@ -227,7 +227,7 @@ class ReportController extends Controller
         }
         
         // 使用缓存提高性能
-        $cacheKey = "report.{$slug}." . File::lastModified($filePath);
+        $cacheKey = "report.{$slug}." . File::lastModified($filePath) . '.v2';
         
         $data = Cache::remember($cacheKey, 3600, function () use ($filePath, $slug) {
             $content = File::get($filePath);
@@ -244,12 +244,21 @@ class ReportController extends Controller
                 $title = trim($matches[1]);
             }
             
+            // 提取SEO数据
+            $excerpt = $this->extractExcerpt($content);
+            $keywords = $this->extractKeywords($content, $title);
+            
             return [
                 'title' => $title,
                 'html' => $html,
                 'slug' => $slug,
                 'mtime' => File::lastModified($filePath),
                 'size' => File::size($filePath),
+                'excerpt' => $excerpt,
+                'keywords' => $keywords,
+                'type' => 'report',
+                'full_title' => $title . ' | Wither\'s Blog',
+                'canonical_url' => route('reports.show', $slug),
             ];
         });
         
@@ -271,7 +280,7 @@ class ReportController extends Controller
         }
         
         // 使用缓存提高性能
-        $cacheKey = "htb.report.{$slug}." . File::lastModified($walkthroughFile);
+        $cacheKey = "htb.report.{$slug}." . File::lastModified($walkthroughFile) . '.v2';
         
         $data = Cache::remember($cacheKey, 3600, function () use ($walkthroughFile, $slug, $folderName, $reportDir) {
             $content = File::get($walkthroughFile);
@@ -290,6 +299,10 @@ class ReportController extends Controller
                 $imageCount = count($imageFiles);
             }
             
+            // 提取SEO数据
+            $excerpt = $this->extractExcerpt($content);
+            $keywords = $this->extractKeywords($content, $folderName);
+            
             return [
                 'title' => $folderName,
                 'html' => $html,
@@ -298,7 +311,11 @@ class ReportController extends Controller
                 'size' => File::size($walkthroughFile),
                 'type' => 'hackthebox',
                 'folder_name' => $folderName,
-                'image_count' => $imageCount
+                'image_count' => $imageCount,
+                'excerpt' => $excerpt,
+                'keywords' => $keywords,
+                'full_title' => 'HackTheBox Writeup: ' . $folderName . ' | Wither\'s Blog',
+                'canonical_url' => route('reports.show', $slug),
             ];
         });
         
@@ -526,6 +543,81 @@ class ReportController extends Controller
     }
     
     /**
+     * 提取关键词
+     */
+    private function extractKeywords($content, $title)
+    {
+        $keywords = [];
+        
+        // 基础关键词
+        $keywords[] = 'Wither';
+        $keywords[] = 'Penetration Testing';
+        $keywords[] = 'Cybersecurity';
+        $keywords[] = 'Security Research';
+        
+        // 根据类型添加关键词
+        $lowerContent = mb_strtolower($content);
+        $lowerTitle = mb_strtolower($title);
+        
+        // HackTheBox 相关
+        if (strpos($lowerContent, 'hackthebox') !== false || strpos($lowerTitle, 'hackthebox') !== false) {
+            $keywords[] = 'HackTheBox';
+            $keywords[] = 'HTB';
+            $keywords[] = 'Writeup';
+            $keywords[] = 'Walkthrough';
+            $keywords[] = 'CTF';
+        }
+        
+        // 常见安全术语
+        $securityTerms = [
+            'sql injection' => 'SQL Injection',
+            'xss' => 'XSS',
+            'csrf' => 'CSRF',
+            'lfi' => 'LFI',
+            'rfi' => 'RFI',
+            'privilege escalation' => 'Privilege Escalation',
+            'buffer overflow' => 'Buffer Overflow',
+            'reverse shell' => 'Reverse Shell',
+            'web shell' => 'Web Shell',
+            'enumeration' => 'Enumeration',
+            'reconnaissance' => 'Reconnaissance',
+            'nmap' => 'Nmap',
+            'burp suite' => 'Burp Suite',
+            'metasploit' => 'Metasploit',
+            'gobuster' => 'Gobuster',
+            'dirb' => 'Dirb',
+            'nikto' => 'Nikto',
+            'sqlmap' => 'SQLMap',
+            'hydra' => 'Hydra',
+            'john' => 'John the Ripper',
+            'hashcat' => 'Hashcat',
+            'steganography' => 'Steganography',
+            'cryptography' => 'Cryptography',
+            'forensics' => 'Digital Forensics',
+            'malware' => 'Malware Analysis',
+            'reverse engineering' => 'Reverse Engineering',
+        ];
+        
+        foreach ($securityTerms as $term => $keyword) {
+            if (strpos($lowerContent, $term) !== false || strpos($lowerTitle, $term) !== false) {
+                $keywords[] = $keyword;
+            }
+        }
+        
+        // 添加标题中的关键词
+        $titleWords = explode(' ', $title);
+        foreach ($titleWords as $word) {
+            $cleanWord = preg_replace('/[^a-zA-Z0-9\-]/', '', $word);
+            if (strlen($cleanWord) > 3) {
+                $keywords[] = $cleanWord;
+            }
+        }
+        
+        // 去重并返回
+        return implode(', ', array_unique($keywords));
+    }
+    
+    /**
      * 格式化文件大小
      */
     private function formatFileSize($bytes)
@@ -666,5 +758,127 @@ class ReportController extends Controller
         
         // 如果都没有找到，返回文件的系统修改时间
         return File::lastModified($filePath);
+    }
+    
+    /**
+     * 生成XML sitemap
+     */
+    public function sitemap()
+    {
+        $reports = $this->getAllReportsForSitemap();
+        
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+        
+        // 添加主页
+        $xml .= '  <url>' . "\n";
+        $xml .= '    <loc>' . route('home.index') . '</loc>' . "\n";
+        $xml .= '    <lastmod>' . date('Y-m-d\TH:i:s\Z') . '</lastmod>' . "\n";
+        $xml .= '    <changefreq>daily</changefreq>' . "\n";
+        $xml .= '    <priority>1.0</priority>' . "\n";
+        $xml .= '  </url>' . "\n";
+        
+        // 添加报告列表页
+        $xml .= '  <url>' . "\n";
+        $xml .= '    <loc>' . route('reports.index') . '</loc>' . "\n";
+        $xml .= '    <lastmod>' . date('Y-m-d\TH:i:s\Z') . '</lastmod>' . "\n";
+        $xml .= '    <changefreq>weekly</changefreq>' . "\n";
+        $xml .= '    <priority>0.9</priority>' . "\n";
+        $xml .= '  </url>' . "\n";
+        
+        // 添加博客页
+        $xml .= '  <url>' . "\n";
+        $xml .= '    <loc>' . route('blog.index') . '</loc>' . "\n";
+        $xml .= '    <lastmod>' . date('Y-m-d\TH:i:s\Z') . '</lastmod>' . "\n";
+        $xml .= '    <changefreq>weekly</changefreq>' . "\n";
+        $xml .= '    <priority>0.9</priority>' . "\n";
+        $xml .= '  </url>' . "\n";
+        
+        // 添加关于我页
+        $xml .= '  <url>' . "\n";
+        $xml .= '    <loc>' . route('aboutme.index') . '</loc>' . "\n";
+        $xml .= '    <lastmod>' . date('Y-m-d\TH:i:s\Z') . '</lastmod>' . "\n";
+        $xml .= '    <changefreq>monthly</changefreq>' . "\n";
+        $xml .= '    <priority>0.8</priority>' . "\n";
+        $xml .= '  </url>' . "\n";
+        
+        // 添加所有报告
+        foreach ($reports as $report) {
+            $xml .= '  <url>' . "\n";
+            $xml .= '    <loc>' . route('reports.show', $report['slug']) . '</loc>' . "\n";
+            $xml .= '    <lastmod>' . date('Y-m-d\TH:i:s\Z', $report['mtime']) . '</lastmod>' . "\n";
+            $xml .= '    <changefreq>monthly</changefreq>' . "\n";
+            $xml .= '    <priority>0.7</priority>' . "\n";
+            $xml .= '  </url>' . "\n";
+        }
+        
+        $xml .= '</urlset>';
+        
+        return response($xml)->header('Content-Type', 'application/xml');
+    }
+    
+    /**
+     * 生成robots.txt
+     */
+    public function robots()
+    {
+        $content = "User-agent: *\n";
+        $content .= "Allow: /\n";
+        $content .= "Disallow: /admin/\n";
+        $content .= "Disallow: /api/\n";
+        $content .= "Disallow: /*.json\n";
+        $content .= "Disallow: /storage/\n";
+        $content .= "\n";
+        $content .= "# Sitemap\n";
+        $content .= "Sitemap: " . route('sitemap') . "\n";
+        $content .= "\n";
+        $content .= "# Crawl-delay\n";
+        $content .= "Crawl-delay: 1\n";
+        
+        return response($content)->header('Content-Type', 'text/plain');
+    }
+    
+    /**
+     * 获取所有报告用于sitemap
+     */
+    private function getAllReportsForSitemap()
+    {
+        $reportsDir = storage_path('reports');
+        $hacktheboxDir = storage_path('reports/Hackthebox-Walkthrough');
+        
+        if (!File::exists($reportsDir)) {
+            return [];
+        }
+        
+        $reports = collect();
+        
+        // 处理传统的单个 .md 文件
+        $mdFiles = collect(File::glob($reportsDir . '/*.md'))
+            ->map(function ($file) {
+                $filename = pathinfo($file, PATHINFO_FILENAME);
+                return [
+                    'slug' => $filename,
+                    'mtime' => File::lastModified($file),
+                ];
+            });
+        
+        // 处理 Hackthebox-Walkthrough 文件夹
+        if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
+            $directories = File::directories($hacktheboxDir);
+            
+            foreach ($directories as $dir) {
+                $dirName = basename($dir);
+                $walkthroughFile = $dir . '/Walkthrough.md';
+                
+                if (File::exists($walkthroughFile)) {
+                    $reports->push([
+                        'slug' => 'htb-' . $dirName,
+                        'mtime' => File::lastModified($walkthroughFile),
+                    ]);
+                }
+            }
+        }
+        
+        return $reports->merge($mdFiles)->sortByDesc('mtime')->toArray();
     }
 } 

@@ -4,11 +4,29 @@
     <meta charset="utf-8">
     <title>{{ $title ?? "wither's blog" }}</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="description" content="wither's blog - 个人技术博客与靶场报告展示系统">
+    <meta name="description" content="wither's blog - 个人技术博客与靶场报告展示系统，专注于网络安全、渗透测试、HackTheBox等技术分享">
+    <meta name="keywords" content="wither,blog,网络安全,渗透测试,HackTheBox,CTF,技术分享,靶场报告,Writeup">
+    <meta name="author" content="Wither">
     <meta name="theme-color" content="#3b82f6">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="generator" content="Laravel">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta name="revisit-after" content="7 days">
+    <meta name="language" content="zh-CN">
+    <meta name="distribution" content="global">
+    <meta name="rating" content="general">
+    <meta name="copyright" content="© {{ date('Y') }} Wither's Blog">
+    
+    <!-- DNS预解析 -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    
+    <!-- 预连接 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
     <!-- 网站图标 -->
     <link rel="icon" type="image/png" href="{{ asset('images/wither_rose.png') }}">
@@ -21,6 +39,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @vite(['resources/css/layout.css', 'resources/js/layout.js'])
     
+    <!-- 页面特定的SEO元数据 -->
+    @stack('meta')
 
     @stack('styles')
 </head>
