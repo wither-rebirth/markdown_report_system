@@ -130,7 +130,9 @@ function initHeadingAnchors() {
                 } catch (err) {
                     console.log('无法复制链接');
                 }
-                document.body.removeChild(textArea);
+                if (textArea.parentNode) {
+                    textArea.parentNode.removeChild(textArea);
+                }
             }
             
             // 更新 URL
@@ -339,7 +341,9 @@ function initCodeCopy() {
                 } catch (err) {
                     console.log('无法复制代码');
                 }
-                document.body.removeChild(textArea);
+                if (textArea.parentNode) {
+                    textArea.parentNode.removeChild(textArea);
+                }
             }
         });
     });

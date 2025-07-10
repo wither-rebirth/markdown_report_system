@@ -73,31 +73,37 @@ const app = createApp({
                 ease: this.animationConfig.ease
             });
             
-            // 动画报告卡片
-            gsap.fromTo('.report-card', {
-                y: 50,
-                opacity: 0,
-                scale: 0.9
-            }, {
-                y: 0,
-                opacity: 1,
-                scale: 1,
-                duration: this.animationConfig.duration,
-                ease: this.animationConfig.ease,
-                stagger: 0.1
-            });
+            // 动画报告卡片 (仅在元素存在时执行)
+            const reportCards = document.querySelectorAll('.report-card');
+            if (reportCards.length > 0) {
+                gsap.fromTo('.report-card', {
+                    y: 50,
+                    opacity: 0,
+                    scale: 0.9
+                }, {
+                    y: 0,
+                    opacity: 1,
+                    scale: 1,
+                    duration: this.animationConfig.duration,
+                    ease: this.animationConfig.ease,
+                    stagger: 0.1
+                });
+            }
             
-            // 动画搜索框
-            gsap.fromTo('#report-search', {
-                x: -50,
-                opacity: 0
-            }, {
-                x: 0,
-                opacity: 1,
-                duration: this.animationConfig.duration,
-                ease: this.animationConfig.ease,
-                delay: 0.3
-            });
+            // 动画搜索框 (仅在元素存在时执行)
+            const searchElement = document.querySelector('#report-search');
+            if (searchElement) {
+                gsap.fromTo('#report-search', {
+                    x: -50,
+                    opacity: 0
+                }, {
+                    x: 0,
+                    opacity: 1,
+                    duration: this.animationConfig.duration,
+                    ease: this.animationConfig.ease,
+                    delay: 0.3
+                });
+            }
         },
         
         setupScrollObserver() {
@@ -195,16 +201,19 @@ const app = createApp({
             tocContainer.appendChild(toc);
                     
                     // 动画目录
-                    gsap.fromTo('.toc-list li', {
-                        x: -30,
-                        opacity: 0
-                    }, {
-                        x: 0,
-                        opacity: 1,
-                        duration: 0.4,
-                        ease: 'power2.out',
-                        stagger: 0.05
-                    });
+                    const tocItems = document.querySelectorAll('.toc-list li');
+                    if (tocItems.length > 0) {
+                        gsap.fromTo('.toc-list li', {
+                            x: -30,
+                            opacity: 0
+                        }, {
+                            x: 0,
+                            opacity: 1,
+                            duration: 0.4,
+                            ease: 'power2.out',
+                            stagger: 0.05
+                        });
+                    }
                 }
             }
         },
@@ -278,7 +287,11 @@ const app = createApp({
         
         // 添加涟漪效果
         createRipple(event) {
-            const button = event.currentTarget;
+            const button = event.target.closest('.btn, .nav-btn, .report-card') || event.target;
+            if (!button || typeof button.getBoundingClientRect !== 'function') {
+                return; // 如果不是有效的DOM元素，直接返回
+            }
+            
             const rect = button.getBoundingClientRect();
             const size = Math.max(rect.width, rect.height);
             const x = event.clientX - rect.left - size / 2;
@@ -290,11 +303,16 @@ const app = createApp({
             ripple.style.left = x + 'px';
             ripple.style.top = y + 'px';
             
-            button.appendChild(ripple);
-            
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
+            // 确保button能够包含ripple元素
+            if (button && button.appendChild) {
+                button.appendChild(ripple);
+                
+                setTimeout(() => {
+                    if (ripple.parentNode) {
+                        ripple.parentNode.removeChild(ripple);
+                    }
+                }, 600);
+            }
         },
         
         // 初始化3D卡片效果
@@ -536,6 +554,15 @@ const app = createApp({
             // 创建粒子容器
             const particlesContainer = document.createElement('div');
             particlesContainer.className = 'particles-container';
+            particlesContainer.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 1;
+            `;
             document.body.appendChild(particlesContainer);
             
             // 初始化各种特效
@@ -694,6 +721,29 @@ style.textContent = `
     @keyframes float-gentle {
         0%, 100% { transform: translateY(0px); }
         50% { transform: translateY(-10px); }
+    }
+    
+    /* 涟漪效果样式 */
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(0);
+        animation: ripple-animation 0.6s linear;
+        pointer-events: none;
+    }
+    
+    @keyframes ripple-animation {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+    
+    /* 确保按钮和卡片可以包含绝对定位的元素 */
+    .btn, .nav-btn, .report-card {
+        position: relative;
+        overflow: hidden;
     }
 `;
 document.head.appendChild(style);

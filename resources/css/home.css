@@ -859,6 +859,11 @@
         align-items: center;
     }
     
+    /* 移动端隐藏滚动提示 */
+    .hero-scroll {
+        display: none;
+    }
+    
     .stats-grid {
         grid-template-columns: 1fr;
         gap: 1rem;

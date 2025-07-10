@@ -405,7 +405,9 @@ function animateThemeSwitch() {
     setTimeout(() => {
         overlay.style.opacity = '0';
         setTimeout(() => {
-            body.removeChild(overlay);
+            if (overlay.parentNode) {
+                overlay.parentNode.removeChild(overlay);
+            }
         }, 300);
     }, 150);
 }

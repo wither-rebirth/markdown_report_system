@@ -211,6 +211,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 初始化移动端菜单功能
 function initMobileMenu() {
+    // 确保移动端菜单在初始化时处于关闭状态
+    const mobileMenu = document.getElementById('mobile-menu');
+    const overlay = document.getElementById('mobile-menu-overlay');
+    const body = document.body;
+    
+    if (mobileMenu && overlay) {
+        mobileMenu.classList.remove('active');
+        overlay.classList.remove('active');
+        body.style.overflow = '';
+    }
+    
     // 点击移动端菜单链接时关闭菜单
     const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
     mobileNavLinks.forEach(link => {

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="description" content="wither's blog - 个人技术博客与靶场报告展示系统">
     <meta name="theme-color" content="#3b82f6">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
@@ -15,14 +15,13 @@
     <link rel="shortcut icon" type="image/png" href="{{ asset('images/wither_rose.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/wither_rose.png') }}">
     
-    <!-- 预加载关键资源 -->
-    <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
-    <link rel="preload" href="{{ asset('js/app.js') }}" as="script">
+    <!-- 预加载关键资源 - 移除错误的预加载链接，Vite会自动处理 -->
     
     <!-- 引入样式文件 -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @vite(['resources/css/layout.css', 'resources/js/layout.js'])
     
+
     @stack('styles')
 </head>
 <body>
