@@ -151,4 +151,3 @@
     @vite(['resources/js/report.js'])
 @endpush
 @endsection
-

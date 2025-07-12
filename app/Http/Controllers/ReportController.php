@@ -46,8 +46,8 @@ class ReportController extends Controller
         // 获取搜索查询参数
         $searchQuery = $request->input('search');
         
-        // 使用缓存来提高性能
-        $cacheKey = 'all_reports_' . filemtime($hacktheboxDir);
+        // 使用更精确的缓存键，包含所有相关文件的最新修改时间
+        $cacheKey = 'all_reports_' . $this->generateReportsCacheKey($reportsDir, $hacktheboxDir);
         $allReports = Cache::remember($cacheKey, 600, function () use ($reportsDir, $hacktheboxDir) {
             $reports = collect();
             
@@ -117,6 +117,92 @@ class ReportController extends Controller
         $reports->appends($request->query());
         
         return view('report.index', compact('reports'));
+    }
+    
+    /**
+     * 生成报告缓存键，基于所有相关文件的最新修改时间
+     */
+    private function generateReportsCacheKey($reportsDir, $hacktheboxDir)
+    {
+        $latestMtime = 0;
+        $fileCount = 0;
+        
+        // 检查普通报告文件
+        if (File::exists($reportsDir)) {
+            $reportFiles = File::glob($reportsDir . '/*.md');
+            foreach ($reportFiles as $file) {
+                $latestMtime = max($latestMtime, File::lastModified($file));
+                $fileCount++;
+            }
+        }
+        
+        // 检查 Hackthebox 报告文件
+        if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
+            $directories = File::directories($hacktheboxDir);
+            foreach ($directories as $dir) {
+                $walkthroughFile = $dir . '/Walkthrough.md';
+                if (File::exists($walkthroughFile)) {
+                    $latestMtime = max($latestMtime, File::lastModified($walkthroughFile));
+                    $fileCount++;
+                }
+            }
+        }
+        
+        // 组合缓存键：时间戳 + 文件数量
+        return $latestMtime . '_' . $fileCount;
+    }
+    
+    /**
+     * 清除所有报告相关缓存
+     */
+    public function clearAllReportsCache()
+    {
+        try {
+            // 清除报告列表缓存
+            $this->clearReportListCache();
+            
+            // 清除单个报告缓存
+            $this->clearIndividualReportsCache();
+            
+            // 清除首页缓存
+            Cache::forget('home_stats');
+            Cache::forget('latest_reports_3');
+            
+            return response()->json(['message' => '所有报告缓存已清除']);
+        } catch (\Exception $e) {
+            Log::error('清除报告缓存失败: ' . $e->getMessage());
+            return response()->json(['error' => '清除缓存失败'], 500);
+        }
+    }
+    
+    /**
+     * 清除报告列表缓存
+     */
+    private function clearReportListCache()
+    {
+        // 使用 Redis keys 命令查找所有相关缓存键
+        $cacheKeys = Cache::getRedis()->keys('all_reports_*');
+        if (!empty($cacheKeys)) {
+            Cache::getRedis()->del($cacheKeys);
+        }
+    }
+    
+    /**
+     * 清除所有单个报告的缓存
+     */
+    private function clearIndividualReportsCache()
+    {
+        // 清除普通报告缓存
+        $reportKeys = Cache::getRedis()->keys('report.*');
+        if (!empty($reportKeys)) {
+            Cache::getRedis()->del($reportKeys);
+        }
+        
+        // 清除 HackTheBox 报告缓存
+        $htbKeys = Cache::getRedis()->keys('htb.report.*');
+        if (!empty($htbKeys)) {
+            Cache::getRedis()->del($htbKeys);
+        }
     }
     
     /**

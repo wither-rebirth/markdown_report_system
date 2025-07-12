@@ -231,30 +231,195 @@ class SitemapController extends Controller
             return $reports;
         }
         
-        $files = glob($reportsPath . '/*.md');
-        foreach ($files as $file) {
-            $slug = basename($file, '.md');
-            $stat = stat($file);
-            $content = file_get_contents($file);
-            
-            // 解析front matter
-            $frontMatter = $this->parseFrontMatter($content);
-            
-            $reports[] = [
-                'slug' => $slug,
-                'title' => $frontMatter['title'] ?? ucwords(str_replace('-', ' ', $slug)),
-                'excerpt' => $frontMatter['excerpt'] ?? '',
-                'mtime' => $stat['mtime'],
-                'size' => $stat['size']
-            ];
-        }
+        // 使用缓存提高性能，但确保能检测到文件变化
+        $cacheKey = 'sitemap_reports_' . $this->generateReportsCacheKey($reportsPath);
         
-        // 按修改时间排序
-        usort($reports, function($a, $b) {
-            return $b['mtime'] <=> $a['mtime'];
+        $reports = cache()->remember($cacheKey, 300, function () use ($reportsPath) {
+            $allReports = [];
+            
+            // 处理传统的单个 .md 文件
+            $files = glob($reportsPath . '/*.md');
+            foreach ($files as $file) {
+                $slug = basename($file, '.md');
+                $stat = stat($file);
+                $content = file_get_contents($file);
+                
+                // 解析front matter
+                $frontMatter = $this->parseFrontMatter($content);
+                
+                $allReports[] = [
+                    'slug' => $slug,
+                    'title' => $frontMatter['title'] ?? ucwords(str_replace('-', ' ', $slug)),
+                    'excerpt' => $frontMatter['excerpt'] ?? $this->extractExcerpt($content),
+                    'mtime' => $stat['mtime'],
+                    'size' => $stat['size']
+                ];
+            }
+            
+            // 处理 Hackthebox-Walkthrough 文件夹
+            $hacktheboxDir = storage_path('reports/Hackthebox-Walkthrough');
+            if (is_dir($hacktheboxDir)) {
+                $directories = glob($hacktheboxDir . '/*', GLOB_ONLYDIR);
+                
+                foreach ($directories as $dir) {
+                    $dirName = basename($dir);
+                    $walkthroughFile = $dir . '/Walkthrough.md';
+                    
+                    // 检查是否存在 Walkthrough.md 文件
+                    if (file_exists($walkthroughFile)) {
+                        $stat = stat($walkthroughFile);
+                        $content = file_get_contents($walkthroughFile);
+                        
+                        // 解析front matter
+                        $frontMatter = $this->parseFrontMatter($content);
+                        
+                        // 提取修改时间（优先从内容中提取）
+                        $mtime = $this->extractModificationTime($content, $walkthroughFile);
+                        
+                        $allReports[] = [
+                            'slug' => 'htb-' . $dirName,
+                            'title' => $frontMatter['title'] ?? $dirName,
+                            'excerpt' => $frontMatter['excerpt'] ?? $this->extractExcerpt($content),
+                            'mtime' => $mtime,
+                            'size' => $stat['size']
+                        ];
+                    }
+                }
+            }
+            
+            // 按修改时间排序
+            usort($allReports, function($a, $b) {
+                return $b['mtime'] <=> $a['mtime'];
+            });
+            
+            return $allReports;
         });
         
         return $limit ? array_slice($reports, 0, $limit) : $reports;
+    }
+    
+    /**
+     * 生成报告缓存键，基于所有相关文件的最新修改时间
+     */
+    private function generateReportsCacheKey($reportsPath)
+    {
+        $latestMtime = 0;
+        $fileCount = 0;
+        
+        // 检查普通报告文件
+        if (is_dir($reportsPath)) {
+            $reportFiles = glob($reportsPath . '/*.md');
+            foreach ($reportFiles as $file) {
+                $latestMtime = max($latestMtime, filemtime($file));
+                $fileCount++;
+            }
+        }
+        
+        // 检查 Hackthebox 报告文件
+        $hacktheboxDir = $reportsPath . '/Hackthebox-Walkthrough';
+        if (is_dir($hacktheboxDir)) {
+            $directories = glob($hacktheboxDir . '/*', GLOB_ONLYDIR);
+            foreach ($directories as $dir) {
+                $walkthroughFile = $dir . '/Walkthrough.md';
+                if (file_exists($walkthroughFile)) {
+                    $latestMtime = max($latestMtime, filemtime($walkthroughFile));
+                    $fileCount++;
+                }
+            }
+        }
+        
+        // 组合缓存键：时间戳 + 文件数量
+        return $latestMtime . '_' . $fileCount;
+    }
+    
+    /**
+     * 提取摘要
+     */
+    private function extractExcerpt($content)
+    {
+        // 移除 front matter
+        $content = preg_replace('/^---\s*\n.*?\n---\s*\n/s', '', $content);
+        
+        // 移除 HTML 标签和 Markdown 语法
+        $content = strip_tags($content);
+        $content = preg_replace('/^#+\s+/m', '', $content); // 移除标题标记
+        $content = preg_replace('/\*\*(.+?)\*\*/s', '$1', $content); // 移除粗体
+        $content = preg_replace('/\*(.+?)\*/s', '$1', $content); // 移除斜体
+        $content = preg_replace('/`(.+?)`/s', '$1', $content); // 移除代码标记
+        $content = preg_replace('/\[(.+?)\]\(.+?\)/s', '$1', $content); // 移除链接
+        
+        // 获取第一段文字
+        $lines = explode("\n", trim($content));
+        $excerpt = '';
+        
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (!empty($line)) {
+                $excerpt = $line;
+                break;
+            }
+        }
+        
+        // 如果没有找到有效的摘要，使用前100个字符
+        if (empty($excerpt) && !empty($content)) {
+            $excerpt = mb_substr(trim($content), 0, 100);
+        }
+        
+        return $excerpt;
+    }
+    
+    /**
+     * 从内容中提取修改时间
+     */
+    private function extractModificationTime($content, $filePath)
+    {
+        $dates = [];
+        $now = time();
+        $oneYearFromNow = $now + (365 * 24 * 60 * 60); // 一年后
+        
+        // 尝试从内容中提取各种日期格式，但排除SSL证书等技术信息中的日期
+        $patterns = [
+            '/Date:\s*(\d{4}[-\/]\d{1,2}[-\/]\d{1,2})/i',
+            '/更新时间.*?(\d{4}[-\/]\d{1,2}[-\/]\d{1,2})/i',
+            '/修改时间.*?(\d{4}[-\/]\d{1,2}[-\/]\d{1,2})/i',
+            '/创建时间.*?(\d{4}[-\/]\d{1,2}[-\/]\d{1,2})/i',
+            '/发布时间.*?(\d{4}[-\/]\d{1,2}[-\/]\d{1,2})/i',
+        ];
+        
+        foreach ($patterns as $pattern) {
+            if (preg_match_all($pattern, $content, $matches)) {
+                foreach ($matches[1] as $match) {
+                    try {
+                        $timestamp = strtotime($match);
+                        // 只接受合理的日期范围：2020年到一年后
+                        if ($timestamp !== false && $timestamp > 0 
+                            && $timestamp >= strtotime('2020-01-01') 
+                            && $timestamp <= $oneYearFromNow) {
+                            $dates[] = $timestamp;
+                        }
+                    } catch (\Exception $e) {
+                        // 忽略无效日期
+                    }
+                }
+            }
+        }
+        
+        // 如果找到了合理的日期，返回最新的日期
+        if (!empty($dates)) {
+            return max($dates);
+        }
+        
+        // 获取文件夹的修改时间
+        $folderPath = dirname($filePath);
+        if (is_dir($folderPath)) {
+            $folderMtime = filemtime($folderPath);
+            if ($folderMtime !== false && $folderMtime > 0) {
+                return $folderMtime;
+            }
+        }
+        
+        // 如果都没有找到，返回文件的系统修改时间
+        return filemtime($filePath);
     }
     
     /**

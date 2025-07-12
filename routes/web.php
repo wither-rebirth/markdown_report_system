@@ -53,6 +53,9 @@ Route::prefix('reports')->group(function () {
     // 清除缓存
     Route::post('/clear-cache/{slug?}', [ReportController::class, 'clearCache'])->name('reports.clear-cache');
     
+    // 清除所有报告缓存
+    Route::post('/clear-all-cache', [ReportController::class, 'clearAllReportsCache'])->name('reports.clear-all-cache');
+    
     // 获取统计信息
     Route::get('/api/stats', [ReportController::class, 'stats'])->name('reports.stats');
 });
