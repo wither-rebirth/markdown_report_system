@@ -2,7 +2,9 @@
 
 @push('meta')
     <!-- SEO Meta Tags -->
-    <meta name="description" content="{{ $excerpt ?? 'Wither\'s Blog 靶场报告和技术分享' }}">
+    @if($excerpt)
+    <meta name="description" content="{{ $excerpt }}">
+    @endif
     <meta name="keywords" content="{{ $keywords ?? 'Wither,安全研究,渗透测试,技术分享' }}">
     <meta name="author" content="Wither">
     <meta name="robots" content="index, follow">
@@ -10,8 +12,10 @@
     <link rel="canonical" href="{{ $canonical_url ?? request()->url() }}">
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="{{ $full_title ?? $title . ' | Wither\'s Blog' }}">
-    <meta property="og:description" content="{{ $excerpt ?? 'Wither\'s Blog 靶场报告和技术分享' }}">
+    <meta property="og:title" content="{{ $full_title ?? $title }}">
+    @if($excerpt)
+    <meta property="og:description" content="{{ $excerpt }}">
+    @endif
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{ $canonical_url ?? request()->url() }}">
     <meta property="og:site_name" content="Wither's Blog">
@@ -26,8 +30,10 @@
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ $full_title ?? $title . ' | Wither\'s Blog' }}">
-    <meta name="twitter:description" content="{{ $excerpt ?? 'Wither\'s Blog 靶场报告和技术分享' }}">
+    <meta name="twitter:title" content="{{ $full_title ?? $title }}">
+    @if($excerpt)
+    <meta name="twitter:description" content="{{ $excerpt }}">
+    @endif
     @if(($type ?? '') === 'hackthebox')
         <meta name="twitter:image" content="{{ asset('images/hackthebox-og.jpg') }}">
     @else
@@ -59,7 +65,9 @@
         "@context": "https://schema.org",
         "@type": "TechArticle",
         "headline": "{{ $title }}",
-        "description": "{{ $excerpt ?? 'Wither\'s Blog 靶场报告和技术分享' }}",
+        @if($excerpt)
+        "description": "{{ $excerpt }}",
+        @endif
         "author": {
             "@type": "Person",
             "name": "Wither",

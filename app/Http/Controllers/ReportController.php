@@ -343,7 +343,7 @@ class ReportController extends Controller
                 'excerpt' => $excerpt,
                 'keywords' => $keywords,
                 'type' => 'report',
-                'full_title' => $title . ' | Wither\'s Blog',
+                'full_title' => $title,
                 'canonical_url' => route('reports.show', $slug),
             ];
         });
@@ -400,7 +400,7 @@ class ReportController extends Controller
                 'image_count' => $imageCount,
                 'excerpt' => $excerpt,
                 'keywords' => $keywords,
-                'full_title' => 'HackTheBox Writeup: ' . $folderName . ' | Wither\'s Blog',
+                'full_title' => $folderName . ' - HackTheBox Writeup',
                 'canonical_url' => route('reports.show', $slug),
             ];
         });
@@ -612,20 +612,58 @@ class ReportController extends Controller
      */
     private function extractExcerpt($content)
     {
+        // 1. 优先检查YAML front matter中的description
+        if (preg_match('/^---\s*\n.*?description:\s*[\'"]?(.*?)[\'"]?\s*\n.*?---\s*\n/s', $content, $matches)) {
+            $description = trim($matches[1]);
+            if (!empty($description)) {
+                return $description;
+            }
+        }
+        
+        // 2. 检查markdown中的Description章节
+        if (preg_match('/^#{1,6}\s*Description\s*\n(.*?)(?=\n#{1,6}|\n\n|\Z)/sim', $content, $matches)) {
+            $description = trim($matches[1]);
+            if (!empty($description)) {
+                // 移除markdown语法并限制长度
+                $description = strip_tags($description);
+                $description = preg_replace('/\*\*(.*?)\*\*/', '$1', $description);
+                $description = preg_replace('/\*(.*?)\*/', '$1', $description);
+                $description = preg_replace('/`(.*?)`/', '$1', $description);
+                
+                if (mb_strlen($description) > 200) {
+                    return mb_substr($description, 0, 200) . '...';
+                }
+                return $description;
+            }
+        }
+        
+        // 3. 检查特定的description块（如果有特殊格式）
+        if (preg_match('/^description:\s*(.+)$/m', $content, $matches)) {
+            $description = trim($matches[1]);
+            if (!empty($description)) {
+                return $description;
+            }
+        }
+        
+        // 4. 如果没有找到description块，则使用原有的excerpt逻辑
+        $processedContent = $content;
+        
         // 移除标题和元数据
-        $content = preg_replace('/^#.*$/m', '', $content);
-        $content = preg_replace('/<!--.*?-->/s', '', $content);
-        $content = trim($content);
+        $processedContent = preg_replace('/^#.*$/m', '', $processedContent);
+        $processedContent = preg_replace('/<!--.*?-->/s', '', $processedContent);
+        $processedContent = preg_replace('/^---\s*\n.*?---\s*\n/s', '', $processedContent);
+        $processedContent = trim($processedContent);
         
         // 获取第一段或前150个字符
-        $paragraphs = explode("\n\n", $content);
+        $paragraphs = explode("\n\n", $processedContent);
         $firstParagraph = trim($paragraphs[0]);
         
         if (mb_strlen($firstParagraph) > 150) {
             return mb_substr($firstParagraph, 0, 150) . '...';
         }
         
-        return $firstParagraph ?: '暂无摘要';
+        // 5. 最后兜底，如果什么都没有，返回null而不是默认描述
+        return !empty($firstParagraph) ? $firstParagraph : null;
     }
     
     /**

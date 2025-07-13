@@ -1,4 +1,4 @@
-@extends('layout', ['title' => '靶场报告 | Wither\'s Blog'])
+@extends('layout', ['title' => '靶场报告'])
 
 @push('meta')
     <!-- SEO Meta Tags -->
