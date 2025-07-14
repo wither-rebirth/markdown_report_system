@@ -127,7 +127,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 // SEO相关路由
 Route::get('/sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap.xml');
-Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots.txt');
+// robots.txt 现在是静态文件，不需要路由
 Route::get('/rss.xml', [SitemapController::class, 'rss'])->name('sitemap.rss');
 Route::get('/feed.xml', [SitemapController::class, 'rss'])->name('sitemap.feed');
 Route::get('/atom.xml', [SitemapController::class, 'atom'])->name('sitemap.atom');

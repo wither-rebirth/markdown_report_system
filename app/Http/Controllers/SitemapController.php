@@ -164,16 +164,7 @@ class SitemapController extends Controller
             ->header('Content-Type', 'application/atom+xml; charset=utf-8');
     }
     
-    /**
-     * 生成robots.txt
-     */
-    public function robots()
-    {
-        $robots = view('sitemap.robots')->render();
-        
-        return response($robots, 200)
-            ->header('Content-Type', 'text/plain; charset=utf-8');
-    }
+    // robots.txt 现在是静态文件，不需要控制器方法
     
     /**
      * 获取博客文章列表

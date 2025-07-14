@@ -42,7 +42,6 @@ class TrackPageViews
                 'js/*',
                 'images/*',
                 'favicon.ico',
-                'robots.txt',
                 'sitemap.xml',
             ];
 
