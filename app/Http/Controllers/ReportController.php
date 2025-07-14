@@ -942,27 +942,6 @@ class ReportController extends Controller
     }
     
     /**
-     * 生成robots.txt
-     */
-    public function robots()
-    {
-        $content = "User-agent: *\n";
-        $content .= "Allow: /\n";
-        $content .= "Disallow: /admin/\n";
-        $content .= "Disallow: /api/\n";
-        $content .= "Disallow: /*.json\n";
-        $content .= "Disallow: /storage/\n";
-        $content .= "\n";
-        $content .= "# Sitemap\n";
-        $content .= "Sitemap: " . route('sitemap') . "\n";
-        $content .= "\n";
-        $content .= "# Crawl-delay\n";
-        $content .= "Crawl-delay: 1\n";
-        
-        return response($content)->header('Content-Type', 'text/plain');
-    }
-    
-    /**
      * 获取所有报告用于sitemap
      */
     private function getAllReportsForSitemap()

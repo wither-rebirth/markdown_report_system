@@ -1,4 +1,4 @@
-@extends('layout', ['title' => '靶场报告'])
+@extends('layout', ['title' => '靶场报告', 'hasCanonical' => true])
 
 @push('meta')
     <!-- SEO Meta Tags -->

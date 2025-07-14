@@ -1,4 +1,4 @@
-@extends('layout', ['title' => request('search') ? '搜索: ' . request('search') . ' | 技术博客 | Wither\'s Blog' : '技术博客 | Wither\'s Blog - 网络安全技术分享平台'])
+@extends('layout', ['title' => request('search') ? '搜索: ' . request('search') . ' | 技术博客 | Wither\'s Blog' : '技术博客 | Wither\'s Blog - 网络安全技术分享平台', 'hasCanonical' => true])
 
 @push('meta')
     <!-- SEO Meta Tags -->

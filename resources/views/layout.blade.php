@@ -40,6 +40,14 @@
     <!-- SEO优化链接 -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="{{ route('sitemap.xml') }}">
     
+    <!-- 页面特定的SEO元数据 -->
+    @stack('meta')
+    
+    <!-- 默认Canonical URL - 只在变量$hasCanonical不为true时显示 -->
+    @if(!isset($hasCanonical) || !$hasCanonical)
+        <link rel="canonical" href="{{ request()->url() }}">
+    @endif
+    
     <!-- 预加载关键资源 - 移除错误的预加载链接，Vite会自动处理 -->
     
     <!-- 引入样式文件 -->
@@ -47,8 +55,6 @@
     @vite(['resources/css/layout.css', 'resources/js/layout.js'])
     
     <!-- 页面特定的SEO元数据 -->
-    @stack('meta')
-
     @stack('styles')
 </head>
 <body>

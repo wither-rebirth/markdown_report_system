@@ -1,4 +1,4 @@
-@extends('layout', ['title' => $post['title'] . ' | Wither\'s Blog'])
+@extends('layout', ['title' => $post['title'] . ' | Wither\'s Blog', 'hasCanonical' => true])
 
 @push('meta')
     <!-- SEO Meta Tags -->

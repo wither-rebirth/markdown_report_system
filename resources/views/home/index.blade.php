@@ -1,4 +1,68 @@
-@extends('layout', ['title' => "wither's blog"])
+@extends('layout', ['title' => "wither's blog", 'hasCanonical' => true])
+
+@push('meta')
+    <!-- SEO Meta Tags for Home Page -->
+    <meta name="description" content="Wither's Blog - 专注于网络安全、渗透测试、CTF挑战的个人技术博客。分享HackTheBox writeup、安全工具使用、编程技术等原创内容。">
+    <meta name="keywords" content="wither,blog,网络安全,渗透测试,HackTheBox,CTF,技术分享,靶场报告,Writeup,安全研究,编程开发">
+    <meta name="author" content="Wither">
+    <meta name="robots" content="index, follow">
+    <meta name="revisit-after" content="3 days">
+    <link rel="canonical" href="{{ route('home.index') }}">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Wither's Blog - 网络安全技术博客">
+    <meta property="og:description" content="专注于网络安全、渗透测试、CTF挑战的个人技术博客。分享HackTheBox writeup、安全工具使用、编程技术等原创内容。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ route('home.index') }}">
+    <meta property="og:site_name" content="Wither's Blog">
+    <meta property="og:image" content="{{ asset('images/wither-og.jpg') }}">
+    <meta property="og:image:alt" content="Wither's Blog - 网络安全技术博客">
+    <meta property="og:locale" content="zh_CN">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Wither's Blog - 网络安全技术博客">
+    <meta name="twitter:description" content="专注于网络安全、渗透测试、CTF挑战的个人技术博客。分享HackTheBox writeup、安全工具使用、编程技术等原创内容。">
+    <meta name="twitter:image" content="{{ asset('images/wither-og.jpg') }}">
+    <meta name="twitter:site" content="@WitherSec">
+    <meta name="twitter:creator" content="@WitherSec">
+    
+    <!-- Additional SEO -->
+    <meta name="application-name" content="Wither's Blog">
+    <meta name="msapplication-TileColor" content="#3b82f6">
+    <meta name="theme-color" content="#3b82f6">
+    
+    <!-- Structured Data for Homepage -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": "Wither's Blog",
+        "description": "专注于网络安全、渗透测试、CTF挑战的个人技术博客",
+        "url": "{{ route('home.index') }}",
+        "author": {
+            "@type": "Person",
+            "name": "Wither",
+            "description": "网络安全研究者，专注于渗透测试和CTF挑战",
+            "url": "{{ route('aboutme.index') }}"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Wither's Blog",
+            "url": "{{ route('home.index') }}"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "{{ route('home.index') }}"
+        },
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "{{ route('blog.index') }}?search={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+@endpush
 
 @push('styles')
     @vite(['resources/css/home.css'])

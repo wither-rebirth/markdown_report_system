@@ -1,4 +1,73 @@
-@extends('layout')
+@extends('layout', ['title' => '关于我 | Wither\'s Blog', 'hasCanonical' => true])
+
+@push('meta')
+    <!-- SEO Meta Tags for About Page -->
+    <meta name="description" content="了解更多关于Wither的信息 - 网络安全研究者，专注于渗透测试、CTF挑战和安全工具开发。分享个人学习经历和技术成长历程。">
+    <meta name="keywords" content="Wither,关于我,网络安全研究者,渗透测试,CTF,技术博客作者,安全工具开发,个人简介">
+    <meta name="author" content="Wither">
+    <meta name="robots" content="index, follow">
+    <meta name="revisit-after" content="30 days">
+    <link rel="canonical" href="{{ route('aboutme.index') }}">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="关于我 | Wither's Blog">
+    <meta property="og:description" content="了解更多关于Wither的信息 - 网络安全研究者，专注于渗透测试、CTF挑战和安全工具开发。">
+    <meta property="og:type" content="profile">
+    <meta property="og:url" content="{{ route('aboutme.index') }}">
+    <meta property="og:site_name" content="Wither's Blog">
+    <meta property="og:image" content="{{ asset('images/wither.JPG') }}">
+    <meta property="og:image:alt" content="Wither - 网络安全研究者">
+    <meta property="og:locale" content="zh_CN">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="关于我 | Wither's Blog">
+    <meta name="twitter:description" content="了解更多关于Wither的信息 - 网络安全研究者，专注于渗透测试、CTF挑战和安全工具开发。">
+    <meta name="twitter:image" content="{{ asset('images/wither.JPG') }}">
+    <meta name="twitter:site" content="@WitherSec">
+    <meta name="twitter:creator" content="@WitherSec">
+    
+    <!-- Structured Data for Person -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "{{ $personalInfo['name'] ?? 'Wither' }}",
+        "description": "网络安全研究者，专注于渗透测试、CTF挑战和安全工具开发",
+        "url": "{{ route('aboutme.index') }}",
+        "image": "{{ asset('images/wither.JPG') }}",
+        "jobTitle": "{{ $personalInfo['title'] ?? '网络安全研究者' }}",
+        @if(!empty($personalInfo['location']))
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "{{ $personalInfo['location'] }}"
+        },
+        @endif
+        "sameAs": [
+            @if(!empty($personalInfo['social_links']['github']))
+            "{{ $personalInfo['social_links']['github'] }}",
+            @endif
+            @if(!empty($personalInfo['social_links']['blog']))
+            "{{ $personalInfo['social_links']['blog'] }}"
+            @endif
+        ],
+        "knowsAbout": [
+            "网络安全",
+            "渗透测试", 
+            "CTF竞赛",
+            "Web安全",
+            "系统安全",
+            "安全工具开发"
+        ],
+        "alumniOf": "{{ $personalInfo['education'] ?? '计算机科学' }}",
+        "worksFor": {
+            "@type": "Organization",
+            "name": "Wither's Blog",
+            "url": "{{ route('home.index') }}"
+        }
+    }
+    </script>
+@endpush
 
 @section('content')
 @push('styles')
