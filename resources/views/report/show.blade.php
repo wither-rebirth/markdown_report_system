@@ -1,4 +1,4 @@
-@extends('layout', ['title' => $full_title, 'hasCanonical' => true])
+@extends('layout', ['title' => $full_title])
 
 @push('meta')
     <!-- SEO Meta Tags -->
