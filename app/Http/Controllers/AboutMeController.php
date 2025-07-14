@@ -43,7 +43,7 @@ class AboutMeController extends Controller
                 ]
             ],
             'social_links' => [
-                'github' => 'https://github.com/wither',
+                'github' => 'https://github.com/wither-rebirth',
                 'discord' => 'https://discord.com/users/wither0295_45837',
                 'blog' => url('/'),
                 'email' => 'mailto:wither2rebirth@gmail.com'
