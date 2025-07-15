@@ -15,30 +15,30 @@ class AboutMeController extends Controller
         $personalInfo = [
             'name' => 'wither',
             'title' => '',
-            'bio' => '热爱网络安全、渗透测试和Web开发。专注于CTF竞赛、靶场挑战和安全研究，积极学习和探索前沿技术。',
+            'bio' => 'Passionate about cybersecurity, penetration testing, and web development. Focused on CTF competitions, lab challenges, and security research, actively learning and exploring cutting-edge technologies.',
             'location' => '',
             'email' => 'wither2rebirth@gmail.com',
             'skills' => [
-                'Web安全' => ['SQL注入', 'XSS', 'CSRF', '文件上传漏洞', '权限绕过'],
-                '渗透测试' => ['信息收集', '漏洞扫描', '权限提升', '后渗透'],
-                '编程语言' => ['PHP', 'Python', 'JavaScript', 'Bash', 'SQL'],
-                '框架工具' => ['Laravel', 'Vue.js', 'Burp Suite', 'Nmap', 'Metasploit'],
-                '系统环境' => ['Linux', 'Windows', 'Docker', 'Kali Linux', 'Parrot OS']
+                'Web Security' => ['SQL Injection', 'XSS', 'CSRF', 'File Upload Vulnerabilities', 'Privilege Escalation'],
+                'Penetration Testing' => ['Information Gathering', 'Vulnerability Scanning', 'Privilege Escalation', 'Post-Exploitation'],
+                'Programming Languages' => ['PHP', 'Python', 'JavaScript', 'Bash', 'SQL'],
+                'Frameworks & Tools' => ['Laravel', 'Vue.js', 'Burp Suite', 'Nmap', 'Metasploit'],
+                'System Environment' => ['Linux', 'Windows', 'Docker', 'Kali Linux', 'Parrot OS']
             ],
             'achievements' => [
                 [
-                    'title' => 'CTF竞赛获奖',
-                    'description' => '在校期间多次参加CTF竞赛，获得优异成绩',
+                    'title' => 'CTF Competition Awards',
+                    'description' => 'Participated in multiple CTF competitions during college and achieved excellent results',
                     'year' => '2023'
                 ],
                 [
-                    'title' => '学习成果展示',
-                    'description' => '积极参与网络安全学习，完成多个实验项目',
+                    'title' => 'Learning Achievement Showcase',
+                    'description' => 'Actively participated in cybersecurity learning and completed multiple experimental projects',
                     'year' => '2023'
                 ],
                 [
-                    'title' => '技术学习进展',
-                    'description' => '持续学习各种安全技术和开发技能',
+                    'title' => 'Technical Learning Progress',
+                    'description' => 'Continuously learning various security technologies and development skills',
                     'year' => '2022-2023'
                 ]
             ],
@@ -50,12 +50,12 @@ class AboutMeController extends Controller
             ],
             'content_blocks' => [
                 'about_site' => [
-                    'title' => '关于本站',
-                    'content' => '这是我的个人学习记录和技术分享平台。在这里记录我的网络安全学习历程、技术研究成果和CTF挑战的解题过程。希望能够与同样热爱网络安全的同学们交流学习。'
+                    'title' => 'About This Site',
+                    'content' => 'This is my personal learning record and technology sharing platform. Here I document my cybersecurity learning journey, technical research results, and CTF challenge solutions. I hope to communicate and learn with fellow cybersecurity enthusiasts.'
                 ],
                 'wither_to_rebirth' => [
                     'title' => 'wither - to - rebirth',
-                    'content' => '从凋零到重生，这是我的学习座右铭。每一次挫折都是成长的机会，每一次失败都是重新开始的起点。在网络安全的学习道路上，我相信只有不断地学习、实践和突破，才能实现真正的技术重生。'
+                    'content' => 'From withering to rebirth, this is my learning motto. Every setback is an opportunity for growth, every failure is a starting point for a new beginning. On the path of cybersecurity learning, I believe that only through continuous learning, practice, and breakthrough can one achieve true technical rebirth.'
                 ]
             ]
         ];

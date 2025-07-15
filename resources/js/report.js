@@ -37,7 +37,7 @@ function generateTableOfContents() {
             );
             
             if (hasKeywords) {
-                console.log('检测到现有目录，跳过自动生成');
+                console.log('Detected existing table of contents, skipping auto-generation');
                 const sidebar = document.querySelector('.report-sidebar');
                 if (sidebar) {
                     sidebar.style.display = 'none';
@@ -318,9 +318,9 @@ function initHeadingAnchors() {
             // 复制链接到剪贴板
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(url).then(() => {
-                    showToast('链接已复制到剪贴板');
+                    showToast('Link copied to clipboard');
                 }).catch(() => {
-                    console.log('无法复制链接');
+                    console.log('Unable to copy link');
                 });
             } else {
                 // 降级处理
@@ -330,9 +330,9 @@ function initHeadingAnchors() {
                 textArea.select();
                 try {
                     document.execCommand('copy');
-                    showToast('链接已复制到剪贴板');
+                    showToast('Link copied to clipboard');
                 } catch (err) {
-                    console.log('无法复制链接');
+                    console.log('Unable to copy link');
                 }
                 if (textArea.parentNode) {
                     textArea.parentNode.removeChild(textArea);
@@ -345,7 +345,7 @@ function initHeadingAnchors() {
         
         // 添加鼠标悬停样式
         heading.style.cursor = 'pointer';
-        heading.title = '点击复制链接';
+        heading.title = 'Click to copy link';
     });
 }
 
@@ -387,8 +387,6 @@ function showToast(message) {
     }, 3000);
 }
 
-
-
 // 代码块复制功能和样式增强
 function initCodeCopy() {
     const codeBlocks = document.querySelectorAll('.report-content pre');
@@ -420,7 +418,7 @@ function initCodeCopy() {
         // 创建简洁的复制按钮
         const copyButton = document.createElement('button');
         copyButton.innerHTML = '📋';
-        copyButton.title = '复制内容';
+        copyButton.title = 'Copy content';
         copyButton.style.cssText = `
             position: absolute;
             top: 8px;
@@ -485,7 +483,7 @@ function initCodeCopy() {
                         copyButton.innerHTML = '📋';
                         copyButton.style.color = '#ffffff';
                     }, 1500);
-                    showToast('内容已复制到剪贴板');
+                    showToast('Content copied to clipboard');
                 }).catch(() => {
                     fallbackCopy(text, copyButton);
                 });
@@ -568,10 +566,10 @@ function fallbackCopy(text, copyButton) {
             copyButton.innerHTML = '📋';
             copyButton.style.color = '#ffffff';
         }, 1500);
-        showToast('内容已复制到剪贴板');
+        showToast('Content copied to clipboard');
     } catch (err) {
-        console.log('复制失败:', err);
-        showToast('复制失败，请手动选择文本');
+        console.log('Copy failed:', err);
+        showToast('Copy failed, please select text manually');
     }
     
     document.body.removeChild(textArea);
@@ -779,8 +777,6 @@ function initMobileSidebar() {
     });
 }
 
-
-
 // 移动端图片优化
 function optimizeImagesForMobile() {
     const images = document.querySelectorAll('.report-content img');
@@ -872,7 +868,7 @@ function optimizeTablesForMobile() {
                 opacity: 0.8;
                 z-index: 1;
             `;
-            hint.textContent = '→ 滑动查看';
+            hint.textContent = '→ Swipe to view';
             
             table.parentNode.insertBefore(wrapper, table);
             wrapper.appendChild(table);
@@ -899,8 +895,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 监听窗口大小变化
     window.addEventListener('resize', handleResize);
-    
-
     
     // 初始化代码复制
     initCodeCopy();
@@ -933,7 +927,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Mobile device detected, consider implementing Service Worker for better performance');
     }
     
-    console.log('Report 页面初始化完成');
+    console.log('Report page initialization completed');
 });
 
 // 导出函数供其他脚本使用

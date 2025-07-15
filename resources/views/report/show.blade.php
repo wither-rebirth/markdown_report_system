@@ -5,7 +5,7 @@
     @if($excerpt)
     <meta name="description" content="{{ $excerpt }}">
     @endif
-    <meta name="keywords" content="{{ $keywords ?? 'Wither,安全研究,渗透测试,技术分享' }}">
+    <meta name="keywords" content="{{ $keywords ?? 'Wither,Security Research,Penetration Testing,Tech Sharing' }}">
     <meta name="author" content="Wither">
     <meta name="robots" content="index, follow">
     <meta name="revisit-after" content="7 days">
@@ -19,7 +19,7 @@
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{ $canonical_url ?? request()->url() }}">
     <meta property="og:site_name" content="Wither's Blog">
-    <meta property="og:locale" content="zh_CN">
+    <meta property="og:locale" content="en_US">
     @if(($type ?? '') === 'hackthebox')
         <meta property="og:image" content="{{ asset('images/hackthebox-og.jpg') }}">
         <meta property="og:image:alt" content="HackTheBox Writeup - {{ $title }}">
@@ -113,8 +113,8 @@
         <aside class="report-sidebar no-print">
             <div class="sidebar-content">
                 <div class="sidebar-header">
-                    <h3>📋 目录</h3>
-                    <button class="toc-toggle" onclick="toggleTocSidebar()" title="收起/展开目录">
+                    <h3>📋 Table of Contents</h3>
+                    <button class="toc-toggle" onclick="toggleTocSidebar()" title="Collapse/Expand Table of Contents">
                         <span class="toggle-icon">◀</span>
                     </button>
                 </div>
@@ -129,21 +129,21 @@
                 <div class="header-top">
                     <h1 class="report-title">{{ $title }}</h1>
                     <div class="header-actions no-print">
-                        <button class="action-btn" onclick="toggleTocSidebar()" title="显示/隐藏目录">📋</button>
-                        <button class="action-btn" onclick="window.print()" title="打印报告">🖨️</button>
-                        <button class="action-btn" onclick="toggleFullscreen()" title="全屏模式">🔍</button>
+                        <button class="action-btn" onclick="toggleTocSidebar()" title="Show/Hide Table of Contents">📋</button>
+                        <button class="action-btn" onclick="window.print()" title="Print Report">🖨️</button>
+                        <button class="action-btn" onclick="toggleFullscreen()" title="Fullscreen Mode">🔍</button>
                     </div>
                 </div>
                 
                 <div class="report-meta">
-                    📅 更新时间: {{ date('Y年m月d日 H:i', $mtime) }} | 
-                    📄 大小: {{ number_format($size / 1024, 1) }} KB | 
+                    📅 Last Updated: {{ date('M d, Y H:i', $mtime) }} | 
+                    📄 Size: {{ number_format($size / 1024, 1) }} KB | 
                     @if(($type ?? '') === 'hackthebox')
-                        🎯 类型: HackTheBox Writeup |
+                        🎯 Type: HackTheBox Writeup |
                     @else
-                        🎯 类型: 安全研究报告 |
+                        🎯 Type: Security Research Report |
                     @endif
-                    🔗 <a href="{{ route('reports.index') }}">返回列表</a>
+                    🔗 <a href="{{ route('reports.index') }}">Back to List</a>
                 </div>
             </div>
 

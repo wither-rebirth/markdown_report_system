@@ -1,14 +1,14 @@
-@extends('layout', ['title' => request('search') ? '搜索: ' . request('search') . ' | 技术博客 | Wither\'s Blog' : '技术博客 | Wither\'s Blog - 网络安全技术分享平台', 'hasCanonical' => true])
+@extends('layout', ['title' => request('search') ? 'Search: ' . request('search') . ' | Tech Blog | Wither\'s Blog' : 'Tech Blog | Wither\'s Blog - Cybersecurity & Technology Sharing Platform', 'hasCanonical' => true])
 
 @push('meta')
     <!-- SEO Meta Tags -->
     @if(request('search'))
-        <meta name="description" content="搜索 &quot;{{ request('search') }}&quot; 的相关技术文章，涵盖网络安全、渗透测试、编程技术等专业内容 - Wither's Blog">
-        <meta name="keywords" content="{{ request('search') }},技术博客,搜索结果,Wither,网络安全,渗透测试,编程技术">
+        <meta name="description" content="Search results for &quot;{{ request('search') }}&quot; related technical articles, covering cybersecurity, penetration testing, programming technology and other professional content - Wither's Blog">
+        <meta name="keywords" content="{{ request('search') }},Tech Blog,Search Results,Wither,Cybersecurity,Penetration Testing,Programming Technology">
         <meta name="robots" content="noindex, follow">
     @else
-        <meta name="description" content="Wither's Blog 技术博客专区，分享网络安全、渗透测试、编程开发、工具使用等原创技术文章。深入浅出的技术教程，助您提升技术水平。">
-        <meta name="keywords" content="技术博客,网络安全,渗透测试,编程开发,CTF,Web安全,系统安全,工具使用,技术教程,Wither">
+        <meta name="description" content="Wither's Blog Tech Blog section, sharing original technical articles on cybersecurity, penetration testing, programming development, tool usage and more. In-depth technical tutorials to help improve your technical skills.">
+        <meta name="keywords" content="Tech Blog,Cybersecurity,Penetration Testing,Programming Development,CTF,Web Security,System Security,Tool Usage,Technical Tutorials,Wither">
         <meta name="robots" content="index, follow">
     @endif
     <meta name="author" content="Wither">
@@ -30,26 +30,26 @@
     @endif
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="{{ request('search') ? '搜索: ' . request('search') . ' | 技术博客' : '技术博客 | Wither\'s Blog' }}">
+    <meta property="og:title" content="{{ request('search') ? 'Search: ' . request('search') . ' | Tech Blog' : 'Tech Blog | Wither\'s Blog' }}">
     @if(request('search'))
-        <meta property="og:description" content="搜索 &quot;{{ request('search') }}&quot; 的相关技术文章，涵盖网络安全、渗透测试、编程技术等专业内容">
+        <meta property="og:description" content="Search results for &quot;{{ request('search') }}&quot; related technical articles, covering cybersecurity, penetration testing, programming technology and other professional content">
     @else
-        <meta property="og:description" content="Wither's Blog 技术博客专区，分享网络安全、渗透测试、编程开发、工具使用等原创技术文章">
+        <meta property="og:description" content="Wither's Blog Tech Blog section, sharing original technical articles on cybersecurity, penetration testing, programming development, tool usage and more">
     @endif
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request()->url() }}">
     <meta property="og:site_name" content="Wither's Blog">
     <meta property="og:image" content="{{ asset('images/blog-og.jpg') }}">
-    <meta property="og:image:alt" content="Wither's Blog 技术博客">
-    <meta property="og:locale" content="zh_CN">
+    <meta property="og:image:alt" content="Wither's Blog Tech Blog">
+    <meta property="og:locale" content="en_US">
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ request('search') ? '搜索: ' . request('search') . ' | 技术博客' : '技术博客 | Wither\'s Blog' }}">
+    <meta name="twitter:title" content="{{ request('search') ? 'Search: ' . request('search') . ' | Tech Blog' : 'Tech Blog | Wither\'s Blog' }}">
     @if(request('search'))
-        <meta name="twitter:description" content="搜索 &quot;{{ request('search') }}&quot; 的相关技术文章，涵盖网络安全、渗透测试、编程技术等专业内容">
+        <meta name="twitter:description" content="Search results for &quot;{{ request('search') }}&quot; related technical articles, covering cybersecurity, penetration testing, programming technology and other professional content">
     @else
-        <meta name="twitter:description" content="Wither's Blog 技术博客专区，分享网络安全、渗透测试、编程开发、工具使用等原创技术文章">
+        <meta name="twitter:description" content="Wither's Blog Tech Blog section, sharing original technical articles on cybersecurity, penetration testing, programming development, tool usage and more">
     @endif
     <meta name="twitter:image" content="{{ asset('images/blog-og.jpg') }}">
     <meta name="twitter:site" content="@WitherSec">
@@ -65,8 +65,8 @@
     {
         "@context": "https://schema.org",
         "@type": "Blog",
-        "name": "Wither's Blog - 技术博客",
-        "description": "专注于网络安全、渗透测试、编程开发等技术领域的原创博客",
+        "name": "Wither's Blog - Tech Blog",
+        "description": "Original blog focused on cybersecurity, penetration testing, programming development and other technical fields",
         "url": "{{ route('blog.index') }}",
         "publisher": {
             "@type": "Person",
@@ -117,13 +117,13 @@
             {
                 "@type": "ListItem",
                 "position": 1,
-                "name": "首页",
+                "name": "Home",
                 "item": "{{ route('home.index') }}"
             },
             {
                 "@type": "ListItem",
                 "position": 2,
-                "name": "技术博客",
+                "name": "Tech Blog",
                 "item": "{{ route('blog.index') }}"
             }
         ]
@@ -139,23 +139,23 @@
 @section('content')
 <div class="blog-index">
     <!-- 面包屑导航 -->
-    <nav class="breadcrumb-nav" aria-label="面包屑导航">
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb Navigation">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <a href="{{ route('home.index') }}" title="返回首页">
+                <a href="{{ route('home.index') }}" title="Back to Home">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
                     </svg>
-                    首页
+                    Home
                 </a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">
                 @if(request('search'))
-                    搜索结果
+                    Search Results
                 @elseif(request('category'))
-                    {{ request('category') }} 分类
+                    {{ request('category') }} Category
                 @else
-                    技术博客
+                    Tech Blog
                 @endif
             </li>
         </ol>
@@ -173,7 +173,7 @@
                 </div>
                 <input type="text" 
                        name="search" 
-                       placeholder="搜索文章标题、内容、分类..." 
+                       placeholder="Search articles by title, content, category..." 
                        value="{{ request('search') }}"
                        class="search-input"
                        autocomplete="off">
@@ -185,13 +185,13 @@
                     </button>
                 @endif
             </div>
-            <button type="submit" class="search-btn">搜索</button>
+            <button type="submit" class="search-btn">Search</button>
         </form>
         
         @if(request('search'))
             <div class="search-results-info">
-                搜索 "<strong>{{ request('search') }}</strong>" 找到 {{ $posts->total() }} 篇文章
-                <a href="{{ route('blog.index') }}" class="clear-search">清除搜索</a>
+                Search "<strong>{{ request('search') }}</strong>" found {{ $posts->total() }} articles
+                <a href="{{ route('blog.index') }}" class="clear-search">Clear Search</a>
             </div>
         @endif
     </div>
@@ -210,7 +210,7 @@
                             @if($post['image'])
                                 <div class="post-image">
                                     <img src="{{ $post['image'] }}" 
-                                         alt="{{ $post['title'] }} - {{ $post['category'] }}技术文章配图" 
+                                         alt="{{ $post['title'] }} - {{ $post['category'] }} tech article image" 
                                          loading="lazy"
                                          width="350" 
                                          height="200"
@@ -233,7 +233,7 @@
                                 <div class="post-footer">
                                     <div class="post-info">
                                         <span class="post-author">{{ $post['author'] }}</span>
-                                        <span class="post-reading-time">{{ $post['reading_time'] }} 分钟阅读</span>
+                                        <span class="post-reading-time">{{ $post['reading_time'] }} min read</span>
                                     </div>
                                     <div class="post-tags">
                                         @foreach(array_slice($post['tags'], 0, 3) as $tag)
@@ -255,14 +255,14 @@
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/>
                                     </svg>
-                                    上一页
+                                    Previous
                                 </span>
                             @else
                                 <a href="{{ $posts->previousPageUrl() }}" class="pagination-btn">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/>
                                     </svg>
-                                    上一页
+                                    Previous
                                 </a>
                             @endif
 
@@ -278,14 +278,14 @@
 
                             @if($posts->hasMorePages())
                                 <a href="{{ $posts->nextPageUrl() }}" class="pagination-btn">
-                                    下一页
+                                    Next
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
                                     </svg>
                                 </a>
                             @else
                                 <span class="pagination-btn disabled">
-                                    下一页
+                                    Next
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
                                     </svg>
@@ -303,8 +303,8 @@
                         <line x1="16" y1="17" x2="8" y2="17"/>
                         <polyline points="10,9 9,9 8,9"/>
                     </svg>
-                    <h3>暂无文章</h3>
-                    <p>还没有发布任何文章，请稍后再来。</p>
+                    <h3>No Articles</h3>
+                    <p>No articles have been published yet. Please check back later.</p>
                 </div>
             @endif
         </main>
@@ -312,11 +312,10 @@
         <!-- 侧边栏 -->
         <aside class="blog-sidebar">
 
-
             <!-- 最新文章 -->
             @if(count($latestPosts) > 0)
                 <div class="sidebar-widget">
-                    <h3 class="widget-title">最新文章</h3>
+                    <h3 class="widget-title">Latest Articles</h3>
                     <div class="latest-posts">
                         @foreach($latestPosts as $post)
                             <div class="latest-post">
@@ -334,7 +333,7 @@
             <!-- 分类 -->
             @if(count($categories) > 0)
                 <div class="sidebar-widget">
-                    <h3 class="widget-title">分类</h3>
+                    <h3 class="widget-title">Categories</h3>
                     <div class="categories">
                         @foreach($categories as $category)
                             <div class="category-item">
@@ -350,13 +349,13 @@
 
             <!-- 快速链接 -->
             <div class="sidebar-widget">
-                <h3 class="widget-title">快速链接</h3>
+                <h3 class="widget-title">Quick Links</h3>
                 <div class="quick-links">
                     <a href="{{ route('reports.index') }}" class="quick-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                         </svg>
-                        靶场报告系统
+                        Lab Reports System
                     </a>
 
                     <a href="https://github.com" class="quick-link" target="_blank">

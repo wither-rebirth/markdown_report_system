@@ -1,16 +1,16 @@
-@extends('layout', ['title' => '靶场报告', 'hasCanonical' => true])
+@extends('layout', ['title' => 'Lab Reports', 'hasCanonical' => true])
 
 @push('meta')
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Wither's Blog 靶场报告专区，包含 HackTheBox、TryHackMe 等各类渗透测试靶场的详细 Writeup 和解题思路分享。">
-    <meta name="keywords" content="HackTheBox,TryHackMe,CTF,Writeup,Walkthrough,靶场报告,渗透测试,网络安全,Wither,技术分享">
+    <meta name="description" content="Wither's Blog Lab Reports section, featuring detailed Writeups and walkthrough insights for HackTheBox, TryHackMe, and various penetration testing labs.">
+    <meta name="keywords" content="HackTheBox,TryHackMe,CTF,Writeup,Walkthrough,Lab Reports,Penetration Testing,Cybersecurity,Wither,Tech Sharing">
     <meta name="author" content="Wither">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ route('reports.index') }}">
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="靶场报告 | Wither's Blog">
-    <meta property="og:description" content="Wither's Blog 靶场报告专区，包含 HackTheBox、TryHackMe 等各类渗透测试靶场的详细 Writeup 和解题思路分享。">
+    <meta property="og:title" content="Lab Reports | Wither's Blog">
+    <meta property="og:description" content="Wither's Blog Lab Reports section, featuring detailed Writeups and walkthrough insights for HackTheBox, TryHackMe, and various penetration testing labs.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ route('reports.index') }}">
     <meta property="og:site_name" content="Wither's Blog">
@@ -18,8 +18,8 @@
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="靶场报告 | Wither's Blog">
-    <meta name="twitter:description" content="Wither's Blog 靶场报告专区，包含 HackTheBox、TryHackMe 等各类渗透测试靶场的详细 Writeup 和解题思路分享。">
+    <meta name="twitter:title" content="Lab Reports | Wither's Blog">
+    <meta name="twitter:description" content="Wither's Blog Lab Reports section, featuring detailed Writeups and walkthrough insights for HackTheBox, TryHackMe, and various penetration testing labs.">
     <meta name="twitter:image" content="{{ asset('images/reports-og.jpg') }}">
 @endpush
 
@@ -32,18 +32,18 @@
     <!-- 页面头部 -->
     <div class="page-header">
         <div class="page-info">
-            <h2>📊 报告列表</h2>
+            <h2>📊 Report List</h2>
             @if($reports->total() > 0)
             <p class="total-info">
                 @if(request('search'))
-                    搜索 "{{ request('search') }}" 找到 <strong>{{ $reports->total() }}</strong> 个报告
+                    Search "{{ request('search') }}" found <strong>{{ $reports->total() }}</strong> reports
                 @else
-                    共 <strong>{{ $reports->total() }}</strong> 个报告
+                    Total <strong>{{ $reports->total() }}</strong> reports
                 @endif
                 @if($reports->hasPages())
-                    ，当前第 <strong>{{ $reports->currentPage() }}</strong> 页，
-                    共 <strong>{{ $reports->lastPage() }}</strong> 页
-                    (每页显示 {{ $reports->perPage() }} 个)
+                    , currently page <strong>{{ $reports->currentPage() }}</strong> of
+                    <strong>{{ $reports->lastPage() }}</strong>
+                    ({{ $reports->perPage() }} per page)
                 @endif
             </p>
             @endif
@@ -62,7 +62,7 @@
                 <input type="text" 
                        name="search" 
                        id="report-search" 
-                       placeholder="搜索报告标题、内容..." 
+                       placeholder="Search report titles, content..." 
                        value="{{ request('search') }}"
                        class="search-input"
                        autocomplete="off">
@@ -74,14 +74,14 @@
                     </button>
                 @endif
             </div>
-            <button type="submit" class="search-btn">搜索</button>
+            <button type="submit" class="search-btn">Search</button>
         </form>
         
         <!-- 搜索提示 -->
         <div class="search-tips">
-            <span class="search-tip">💡 小贴士：按 <kbd>Ctrl</kbd> + <kbd>K</kbd> 快速聚焦搜索框</span>
+            <span class="search-tip">💡 Tip: Press <kbd>Ctrl</kbd> + <kbd>K</kbd> to quickly focus search box</span>
             @if(request('search'))
-                <a href="{{ route('reports.index') }}" class="clear-search-link">清除搜索</a>
+                <a href="{{ route('reports.index') }}" class="clear-search-link">Clear Search</a>
             @endif
         </div>
     </div>
@@ -122,7 +122,7 @@
                     
                     <div class="card-content">
                         <h3 class="report-title">{{ $report['title'] }}</h3>
-                        <p class="report-excerpt">{{ $report['excerpt'] ?? '点击查看完整内容...' }}</p>
+                        <p class="report-excerpt">{{ $report['excerpt'] ?? 'Click to view full content...' }}</p>
                         
                         <div class="report-meta">
                             <span class="meta-item">
@@ -142,7 +142,7 @@
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z"/>
                                 </svg>
-                                {{ $report['image_count'] }} 张图片
+                                {{ $report['image_count'] }} images
                             </span>
                             @endif
                             @if(isset($report['type']) && $report['type'] === 'hackthebox')
@@ -178,14 +178,14 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/>
                     </svg>
-                    上一页
+                    Previous
                 </span>
             @else
                 <a href="{{ $reports->previousPageUrl() }}" class="pagination-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/>
                     </svg>
-                    上一页
+                    Previous
                 </a>
             @endif
             
@@ -203,14 +203,14 @@
             <!-- 下一页 -->
             @if($reports->hasMorePages())
                 <a href="{{ $reports->nextPageUrl() }}" class="pagination-btn">
-                    下一页
+                    Next
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
                     </svg>
                 </a>
             @else
                 <span class="pagination-btn disabled">
-                    下一页
+                    Next
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
                     </svg>
@@ -220,9 +220,9 @@
         
         <!-- 快速跳转 -->
         <div class="pagination-jump">
-            <span>跳转到</span>
+            <span>Jump to</span>
             <input type="number" id="jumpToPage" min="1" max="{{ $reports->lastPage() }}" value="{{ $reports->currentPage() }}" class="page-input">
-            <button onclick="jumpToPage()" class="jump-btn">确定</button>
+            <button onclick="jumpToPage()" class="jump-btn">Go</button>
         </div>
     </div>
     @endif
@@ -234,8 +234,8 @@
                 <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
             </svg>
         </div>
-        <h3>📭 暂无报告</h3>
-        <p>暂时没有可用的报告。</p>
+        <h3>📭 No Reports</h3>
+        <p>No reports are currently available.</p>
     </div>
     @endif
 </div>

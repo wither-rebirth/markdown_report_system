@@ -17,7 +17,7 @@ class BlogController extends Controller
     
     public function __construct()
     {
-        // 配置 Markdown 转换器
+        // Configure Markdown converter
         $config = [
             'html_input' => 'strip',
             'allow_unsafe_links' => false,
@@ -28,27 +28,27 @@ class BlogController extends Controller
     }
     
     /**
-     * 显示博客首页
+     * Display blog homepage
      */
     public function index(Request $request)
     {
-        // 获取搜索查询参数
+        // Get search query parameter
         $searchQuery = $request->input('search');
         
-        // 获取所有博客文章
+        // Get all blog posts
         $allPosts = $this->getBlogPosts();
         
-        // 应用搜索过滤
+        // Apply search filter
         if (!empty($searchQuery)) {
             $allPosts = $this->filterPostsBySearch($allPosts, $searchQuery);
         }
         
-        // 分页设置
-        $perPage = 6; // 每页显示6篇文章
+        // Pagination settings
+        $perPage = 6; // Display 6 articles per page
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $currentItems = array_slice($allPosts, ($currentPage - 1) * $perPage, $perPage);
         
-        // 创建分页器
+        // Create paginator
         $posts = new LengthAwarePaginator(
             $currentItems,
             count($allPosts),
@@ -60,20 +60,20 @@ class BlogController extends Controller
             ]
         );
         
-        // 保留查询参数
+        // Preserve query parameters
         $posts->appends($request->query());
         
-        // 获取最新文章用于侧边栏
+        // Get latest posts for sidebar
         $latestPosts = array_slice($allPosts, 0, 3);
         
-        // 获取分类
+        // Get categories
         $categories = $this->getCategories($allPosts);
         
         return view('blog.index', compact('posts', 'latestPosts', 'categories'));
     }
     
     /**
-     * 显示单个博客文章
+     * Display single blog post
      */
     public function show($slug)
     {
@@ -81,20 +81,20 @@ class BlogController extends Controller
         $post = collect($posts)->firstWhere('slug', $slug);
         
         if (!$post) {
-            abort(404, '文章不存在');
+            abort(404, 'Article not found');
         }
         
-        // 获取相关文章
+        // Get related posts
         $relatedPosts = collect($posts)
             ->where('category', $post['category'])
             ->where('slug', '!=', $slug)
             ->take(3)
             ->toArray();
         
-        // 转换内容为HTML（内容已经移除了前言部分）
+        // Convert content to HTML (content has already removed front matter)
         $post['html_content'] = $this->markdownConverter->convert($post['content']);
         
-        // 获取评论
+        // Get comments
         $comments = BlogComment::forBlog($slug)
             ->approved()
             ->latest()
@@ -104,7 +104,7 @@ class BlogController extends Controller
     }
     
     /**
-     * 获取博客文章列表
+     * Get blog posts list
      */
     private function getBlogPosts()
     {
@@ -119,20 +119,20 @@ class BlogController extends Controller
         return Cache::remember($cacheKey, 600, function () use ($blogDir) {
             $posts = collect();
             
-            // 处理单独的.md文件
+            // Process individual .md files
             $mdFiles = collect(File::glob($blogDir . '/*.md'))
                 ->map(function ($file) {
                     $content = File::get($file);
                     $filename = pathinfo($file, PATHINFO_FILENAME);
                     
-                    // 解析前置元数据
+                    // Parse front matter metadata
                     $metadata = $this->parseMetadata($content);
                     
-                    // 移除前言并处理内容中的图片路径（使用"shared"作为文件夹名）
+                    // Remove front matter and process images in content (use "shared" as folder name)
                     $contentWithoutFrontMatter = $this->removeFrontMatter($content);
                     $processedContent = $this->processBlogImages($contentWithoutFrontMatter, 'shared');
                     
-                    // 处理YAML前言中的图片路径
+                    // Process image path in YAML front matter
                     $processedImage = $metadata['image'] ?? null;
                     if ($processedImage && preg_match('/^\.\/images\/(.+)$/', $processedImage, $matches)) {
                         $processedImage = route('blog.image', ['folder' => 'shared', 'filename' => $matches[1]]);
@@ -155,20 +155,20 @@ class BlogController extends Controller
                     ];
                 });
             
-            // 处理文件夹类型的blog文章
+            // Process folder-type blog posts
             $directories = collect(File::directories($blogDir))
                 ->map(function ($dir) {
                     $dirName = basename($dir);
                     $postFile = $dir . '/index.md';
                     $imagesDir = $dir . '/images';
                     
-                    // 检查是否存在index.md文件
+                    // Check if index.md file exists
                     if (File::exists($postFile)) {
                         $content = File::get($postFile);
                         $metadata = $this->parseMetadata($content);
                         $mtime = $this->extractModificationTime($content, $postFile);
                         
-                        // 获取图片列表
+                        // Get images list
                         $images = [];
                         if (File::exists($imagesDir) && File::isDirectory($imagesDir)) {
                             $imageFiles = File::glob($imagesDir . '/*.{jpg,jpeg,png,gif,bmp,webp,svg}', GLOB_BRACE);
@@ -182,7 +182,7 @@ class BlogController extends Controller
                             })->toArray();
                         }
                         
-                        // 移除前言并处理内容中的图片路径
+                        // Remove front matter and process images in content
                         $contentWithoutFrontMatter = $this->removeFrontMatter($content);
                         $processedContent = $this->processBlogImages($contentWithoutFrontMatter, $dirName);
                         
@@ -217,11 +217,11 @@ class BlogController extends Controller
     }
     
     /**
-     * 处理博客图片路径
+     * Process blog image paths
      */
     private function processBlogImages($content, $folderName)
     {
-        // 处理Markdown格式的图片：![alt](images/filename.jpg)
+        // Process Markdown format images: ![alt](images/filename.jpg)
         $content = preg_replace_callback(
             '/!\[([^\]]*)\]\((?!http)(?!\/)(images\/[^)]+)\)/i',
             function ($matches) use ($folderName) {
@@ -234,7 +234,7 @@ class BlogController extends Controller
             $content
         );
         
-        // 处理HTML格式的图片：<img src="./images/filename.jpg" alt="alt text">
+        // Process HTML format images: <img src="./images/filename.jpg" alt="alt text">
         $content = preg_replace_callback(
             '/<img\s+[^>]*src=["\'](?:\.\/)?(?!http)(?!\/)(images\/[^"\']+)["\'][^>]*>/i',
             function ($matches) use ($folderName) {
@@ -242,7 +242,7 @@ class BlogController extends Controller
                 $filename = basename($imagePath);
                 $imageUrl = route('blog.image', ['folder' => $folderName, 'filename' => $filename]);
                 
-                // 重新构建img标签，保持其他属性
+                // Rebuild img tag, preserve other attributes
                 $imgTag = $matches[0];
                 $imgTag = preg_replace('/src=["\'](?:\.\/)?(?!http)(?!\/)(images\/[^"\']+)["\']/i', 'src="' . $imageUrl . '"', $imgTag);
                 
@@ -255,11 +255,11 @@ class BlogController extends Controller
     }
     
     /**
-     * 提供博客图片访问
+     * Provide blog image access
      */
     public function getBlogImage($folder, $filename)
     {
-        // 如果文件夹名为"shared"，使用共享图片目录
+        // If folder name is "shared", use shared images directory
         if ($folder === 'shared') {
             $imagePath = storage_path("blog/images/{$filename}");
         } else {
@@ -267,7 +267,7 @@ class BlogController extends Controller
         }
         
         if (!File::exists($imagePath)) {
-            abort(404, '图片不存在');
+            abort(404, 'Image not found');
         }
         
         $mimeType = File::mimeType($imagePath);
@@ -281,13 +281,13 @@ class BlogController extends Controller
     }
     
     /**
-     * 解析文章前置元数据
+     * Parse article front matter metadata
      */
     private function parseMetadata($content)
     {
         $metadata = [];
         
-        // 使用更健壮的正则表达式匹配YAML前言
+        // Use more robust regex to match YAML front matter
         $patterns = [
             '/^---\s*[\r\n]+(.*?)[\r\n]+---\s*[\r\n]+/s',
             '/^---.*?[\r\n]+(.*?)[\r\n]+---\s*[\r\n]*/s',
@@ -325,7 +325,7 @@ class BlogController extends Controller
     }
     
     /**
-     * 根据搜索查询过滤文章
+     * Filter posts by search query
      */
     private function filterPostsBySearch($posts, $searchQuery)
     {
@@ -348,7 +348,7 @@ class BlogController extends Controller
     }
     
     /**
-     * 获取分类列表
+     * Get categories list
      */
     private function getCategories($posts)
     {
@@ -369,18 +369,18 @@ class BlogController extends Controller
     }
     
     /**
-     * 移除前言部分
+     * Remove front matter section
      */
     private function removeFrontMatter($content)
     {
-        // 更健壮的YAML前言移除正则表达式
-        // 处理不同的换行符格式：\n, \r\n, \r
+        // More robust YAML front matter removal regex
+        // Handle different line ending formats: \n, \r\n, \r
         $patterns = [
-            // 标准格式：--- 内容 ---
+            // Standard format: --- content ---
             '/^---\s*[\r\n]+.*?[\r\n]+---\s*[\r\n]+/s',
-            // 更宽松的格式
+            // More relaxed format
             '/^---.*?---\s*[\r\n]*/s',
-            // 处理可能没有结尾换行的情况
+            // Handle cases that may not have ending newlines
             '/^---.*?---/s'
         ];
         
@@ -393,46 +393,46 @@ class BlogController extends Controller
             }
         }
         
-        // 清理开头的多余空行和空格
+        // Clean leading extra empty lines and spaces
         return ltrim($cleaned, "\r\n\t ");
     }
     
     /**
-     * 提取文章摘要
+     * Extract article excerpt
      */
     private function extractExcerpt($content)
     {
-        // 移除前置元数据
+        // Remove front matter metadata
         $content = $this->removeFrontMatter($content);
         
-        // 移除Markdown标记
+        // Remove Markdown markup
         $content = preg_replace('/[#*`_\[\]()]/', '', $content);
         $content = preg_replace('/!\[.*?\]\(.*?\)/', '', $content);
         $content = preg_replace('/\[.*?\]\(.*?\)/', '', $content);
         
-        // 获取前150个字符
+        // Get first 150 characters
         $excerpt = mb_substr(trim($content), 0, 150);
         
-        return $excerpt ? $excerpt . '...' : '暂无摘要';
+        return $excerpt ? $excerpt . '...' : 'No excerpt available';
     }
     
     /**
-     * 计算阅读时间
+     * Calculate reading time
      */
     private function calculateReadingTime($content)
     {
         $wordCount = str_word_count(strip_tags($content));
-        $readingTime = ceil($wordCount / 200); // 假设每分钟阅读200个单词
+        $readingTime = ceil($wordCount / 200); // Assume 200 words per minute
         
         return max(1, $readingTime);
     }
     
     /**
-     * 提取修改时间
+     * Extract modification time
      */
     private function extractModificationTime($content, $filePath)
     {
-        // 尝试从内容中解析日期，使用更健壮的正则表达式
+        // Try to parse date from content using more robust regex
         $patterns = [
             '/^---\s*[\r\n]+.*?date:\s*([^\r\n]+)[\r\n]+.*?[\r\n]+---\s*[\r\n]+/s',
             '/^---.*?[\r\n]+.*?date:\s*([^\r\n]+)[\r\n]+.*?[\r\n]+---\s*[\r\n]*/s',
@@ -449,64 +449,62 @@ class BlogController extends Controller
             }
         }
         
-        // 如果解析失败，使用文件修改时间
+        // If parsing fails, use file modification time
         return File::lastModified($filePath);
     }
     
-
-    
     /**
-     * 创建评论
+     * Create comment
      */
     public function storeComment(Request $request, $slug)
     {
-        // 验证博客文章是否存在
+        // Validate blog post exists
         $posts = $this->getBlogPosts();
         $post = collect($posts)->firstWhere('slug', $slug);
         
         if (!$post) {
-            return response()->json(['error' => '文章不存在'], 404);
+            return response()->json(['error' => 'Article not found'], 404);
         }
         
-        // 验证输入
+        // Validate input
         $validator = Validator::make($request->all(), [
             'content' => 'required|string|min:1|max:1000',
             'author_name' => 'nullable|string|max:50',
         ], [
-            'content.required' => '评论内容不能为空',
-            'content.min' => '评论内容至少需要1个字符',
-            'content.max' => '评论内容最多1000个字符',
-            'author_name.max' => '用户名最多50个字符',
+            'content.required' => 'Comment content cannot be empty',
+            'content.min' => 'Comment content must be at least 1 character',
+            'content.max' => 'Comment content cannot exceed 1000 characters',
+            'author_name.max' => 'Username cannot exceed 50 characters',
         ]);
         
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
         
-        // 生成评论者名字
+        // Generate commenter name
         $authorName = $request->input('author_name');
         if (empty($authorName)) {
             $authorName = BlogComment::generateRandomName();
         }
         
-        // 创建评论
+        // Create comment
         $comment = BlogComment::create([
             'blog_slug' => $slug,
             'author_name' => $authorName,
             'content' => $request->input('content'),
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
-            'is_approved' => true, // 自动审核通过
+            'is_approved' => true, // Auto-approve
         ]);
         
-        // 返回创建的评论
+        // Return created comment
         return response()->json([
             'success' => true,
-            'message' => '评论发表成功！',
+            'message' => 'Comment posted successfully!',
             'comment' => [
                 'id' => $comment->id,
                 'author_name' => $comment->author_name,
-                'content' => strip_tags($comment->content), // 只去除HTML标签，不转义特殊字符
+                'content' => strip_tags($comment->content), // Only remove HTML tags, don't escape special characters
                 'created_at' => $comment->formatted_created_at,
                 'time_ago' => $comment->time_ago,
             ]
@@ -514,7 +512,7 @@ class BlogController extends Controller
     }
     
     /**
-     * 获取评论列表
+     * Get comments list
      */
     public function getComments($slug)
     {
@@ -528,7 +526,7 @@ class BlogController extends Controller
                 return [
                     'id' => $comment->id,
                     'author_name' => $comment->author_name,
-                    'content' => strip_tags($comment->content), // 只去除HTML标签，不转义特殊字符
+                    'content' => strip_tags($comment->content), // Only remove HTML tags, don't escape special characters
                     'created_at' => $comment->formatted_created_at,
                     'time_ago' => $comment->time_ago,
                 ];

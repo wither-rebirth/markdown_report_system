@@ -13,14 +13,14 @@ class MakeReportCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'make:report {title : 报告标题}';
+    protected $signature = 'make:report {title : Report Title}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = '创建一个新的靶场报告 Markdown 文件';
+    protected $description = 'Create a new lab report Markdown file';
 
     /**
      * Execute the console command.
@@ -38,7 +38,7 @@ class MakeReportCommand extends Command
 
         // 检查文件是否已存在
         if (File::exists($filepath)) {
-            $this->error("报告文件 {$filename} 已存在！");
+            $this->error("Report file {$filename} already exists!");
             return 1;
         }
 
@@ -54,11 +54,11 @@ class MakeReportCommand extends Command
         // 写入文件
         File::put($filepath, $template);
 
-        $this->info("✅ 报告创建成功！");
-        $this->line("📄 文件位置: {$filepath}");
-        $this->line("🌐 访问链接: " . url($slug . '.html'));
+        $this->info("✅ Report created successfully!");
+        $this->line("📄 File location: {$filepath}");
+        $this->line("🌐 Access link: " . url($slug . '.html'));
         $this->line("");
-        $this->line("💡 提示：你可以直接编辑 Markdown 文件来添加内容");
+        $this->line("💡 Tip: You can edit the Markdown file directly to add content");
 
         return 0;
     }
@@ -68,138 +68,138 @@ class MakeReportCommand extends Command
      */
     private function generateTemplate($title)
     {
-        $date = now()->format('Y年m月d日');
+        $date = now()->format('Y-m-d');
         $time = now()->format('H:i');
 
         return <<<EOT
 # {$title}
 
-**创建时间：** {$date} {$time}  
-**作者：** 你的名字  
-**标签：** 靶场报告, 渗透测试  
+**Created:** {$date} {$time}  
+**Author:** Your Name  
+**Tags:** Lab Report, Penetration Testing  
 
 ---
 
-## 📋 目标信息
+## 📋 Target Information
 
-| 项目 | 详情 |
-|------|------|
-| 目标名称 | 待填写 |
-| 目标IP | 待填写 |
-| 测试时间 | {$date} |
-| 测试类型 | 渗透测试 |
+| Item | Details |
+|------|---------|
+| Target Name | To be filled |
+| Target IP | To be filled |
+| Test Date | {$date} |
+| Test Type | Penetration Testing |
 
-## 🎯 测试目标
+## 🎯 Test Objectives
 
-- [ ] 信息收集
-- [ ] 漏洞扫描
-- [ ] 漏洞验证
-- [ ] 权限提升
-- [ ] 横向移动
-- [ ] 数据收集
+- [ ] Information Gathering
+- [ ] Vulnerability Scanning
+- [ ] Vulnerability Verification
+- [ ] Privilege Escalation
+- [ ] Lateral Movement
+- [ ] Data Collection
 
-## 🔍 信息收集
+## 🔍 Information Gathering
 
-### 端口扫描
+### Port Scanning
 
 ```bash
-# Nmap 扫描命令
+# Nmap scan command
 nmap -sS -sV -p- target_ip
 
-# 结果
-# 在这里记录扫描结果
+# Results
+# Record scan results here
 ```
 
-### 服务识别
+### Service Identification
 
-| 端口 | 服务 | 版本 | 状态 |
-|------|------|------|------|
-| 80 | HTTP | Apache 2.4 | 开放 |
-| 22 | SSH | OpenSSH 7.4 | 开放 |
+| Port | Service | Version | Status |
+|------|---------|---------|--------|
+| 80 | HTTP | Apache 2.4 | Open |
+| 22 | SSH | OpenSSH 7.4 | Open |
 
-## 🛡️ 漏洞发现
+## 🛡️ Vulnerability Discovery
 
-### 漏洞 1：[漏洞名称]
+### Vulnerability 1: [Vulnerability Name]
 
-**风险等级：** 🔴 高危 / 🟡 中危 / 🟢 低危
+**Risk Level:** 🔴 High / 🟡 Medium / 🟢 Low
 
-**漏洞描述：**
-描述发现的漏洞...
+**Vulnerability Description:**
+Describe the discovered vulnerability...
 
-**漏洞位置：**
+**Vulnerability Location:**
 ```
 http://target.com/vulnerable_page.php
 ```
 
-**漏洞验证：**
+**Vulnerability Verification:**
 ```bash
-# 验证命令或代码
+# Verification command or code
 curl -X POST "http://target.com/login" -d "username=admin' OR 1=1--&password=test"
 ```
 
-**利用截图：**
-![漏洞截图](screenshot.png)
+**Exploitation Screenshot:**
+![Vulnerability Screenshot](screenshot.png)
 
-## 🚀 漏洞利用
+## 🚀 Vulnerability Exploitation
 
-### 利用过程
+### Exploitation Process
 
-1. **第一步：** 描述利用步骤
-2. **第二步：** 继续描述
-3. **第三步：** 最终结果
+1. **Step 1:** Describe exploitation steps
+2. **Step 2:** Continue description
+3. **Step 3:** Final result
 
-**利用代码：**
+**Exploitation Code:**
 ```python
-# Python 利用脚本
+# Python exploitation script
 import requests
 
 def exploit():
-    # 漏洞利用代码
+    # Vulnerability exploitation code
     pass
 ```
 
-## 🔐 权限提升
+## 🔐 Privilege Escalation
 
-### 提权方法
+### Escalation Method
 
-描述权限提升的过程...
+Describe the privilege escalation process...
 
 ```bash
-# 提权命令
+# Privilege escalation commands
 sudo -l
 find / -perm -u=s -type f 2>/dev/null
 ```
 
-## 📊 测试总结
+## 📊 Test Summary
 
-### 发现的漏洞
+### Discovered Vulnerabilities
 
-| 漏洞名称 | 风险等级 | 影响范围 | 修复建议 |
-|---------|---------|---------|---------|
-| SQL注入 | 🔴 高危 | 数据泄露 | 使用参数化查询 |
-| XSS | 🟡 中危 | 用户劫持 | 输入验证和输出编码 |
+| Vulnerability Name | Risk Level | Impact Scope | Fix Recommendation |
+|-------------------|------------|--------------|-------------------|
+| SQL Injection | 🔴 High | Data Leakage | Use parameterized queries |
+| XSS | 🟡 Medium | User Hijacking | Input validation and output encoding |
 
-### 修复建议
+### Fix Recommendations
 
-1. **立即修复：**
-   - 修复 SQL 注入漏洞
-   - 更新过期的软件版本
+1. **Immediate Fix:**
+   - Fix SQL injection vulnerability
+   - Update outdated software versions
 
-2. **近期修复：**
-   - 加强输入验证
-   - 实施安全配置
+2. **Short-term Fix:**
+   - Strengthen input validation
+   - Implement security configuration
 
-3. **长期改进：**
-   - 建立安全开发流程
-   - 定期安全评估
+3. **Long-term Improvement:**
+   - Establish secure development process
+   - Regular security assessments
 
-## 📎 附录
+## 📎 Appendix
 
-### 相关文档
+### Related Documents
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [CVE 详情](https://cve.mitre.org/)
+- [CVE Details](https://cve.mitre.org/)
 
-### 工具清单
+### Tool List
 - Nmap
 - Burp Suite
 - SQLmap
@@ -207,7 +207,7 @@ find / -perm -u=s -type f 2>/dev/null
 
 ---
 
-> **免责声明：** 本报告仅用于授权的安全测试，不得用于非法目的。
+> **Disclaimer:** This report is for authorized security testing only and should not be used for illegal purposes.
 EOT;
     }
 } 

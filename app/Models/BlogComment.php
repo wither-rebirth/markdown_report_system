@@ -45,7 +45,7 @@ class BlogComment extends Model
     // 格式化创建时间
     public function getFormattedCreatedAtAttribute()
     {
-        return $this->created_at->format('Y年m月d日 H:i');
+        return $this->created_at->format('M d, Y H:i');
     }
 
     // 获取相对时间
@@ -63,8 +63,8 @@ class BlogComment extends Model
     // 生成随机用户名
     public static function generateRandomName()
     {
-        $adjectives = ['智慧的', '勇敢的', '神秘的', '优雅的', '聪明的', '机敏的', '风趣的', '幽默的'];
-        $nouns = ['访客', '读者', '路人', '学者', '探索者', '思考者', '观察者', '旅行者'];
+        $adjectives = ['Wise', 'Brave', 'Mysterious', 'Elegant', 'Smart', 'Clever', 'Witty', 'Humorous'];
+        $nouns = ['Visitor', 'Reader', 'Passerby', 'Scholar', 'Explorer', 'Thinker', 'Observer', 'Traveler'];
         
         $adjective = $adjectives[array_rand($adjectives)];
         $noun = $nouns[array_rand($nouns)];

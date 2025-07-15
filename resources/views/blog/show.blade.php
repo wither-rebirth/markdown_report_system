@@ -3,7 +3,7 @@
 @push('meta')
     <!-- SEO Meta Tags -->
     <meta name="description" content="{{ $post['excerpt'] ?? Str::limit(strip_tags($post['content'] ?? ''), 155) }}">
-    <meta name="keywords" content="{{ implode(',', $post['tags'] ?? []) }},{{ $post['category'] }},技术博客,Wither,网络安全,编程技术">
+    <meta name="keywords" content="{{ implode(',', $post['tags'] ?? []) }},{{ $post['category'] }},Tech Blog,Wither,Cybersecurity,Programming Technology">
     <meta name="author" content="{{ $post['author'] }}">
     <meta name="robots" content="index, follow">
     <meta name="revisit-after" content="7 days">
@@ -24,7 +24,7 @@
         <meta property="og:image" content="{{ asset('images/blog-og.jpg') }}">
         <meta property="og:image:alt" content="Wither's Blog - {{ $post['title'] }}">
     @endif
-    <meta property="og:locale" content="zh_CN">
+    <meta property="og:locale" content="en_US">
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
@@ -84,7 +84,7 @@
         "keywords": "{{ implode(',', $post['tags'] ?? []) }}",
         "wordCount": {{ $post['reading_time'] * 200 ?? 800 }},
         "timeRequired": "PT{{ $post['reading_time'] ?? 4 }}M",
-        "inLanguage": "zh-CN",
+        "inLanguage": "en-US",
         "isPartOf": {
             "@type": "Blog",
             "name": "Wither's Blog",
@@ -93,7 +93,7 @@
         "about": {
             "@type": "Thing",
             "name": "{{ $post['category'] }}",
-            "description": "{{ $post['category'] }}相关的技术内容"
+            "description": "{{ $post['category'] }}-related technical content"
         }
     }
     </script>
@@ -107,13 +107,13 @@
             {
                 "@type": "ListItem",
                 "position": 1,
-                "name": "首页",
+                "name": "Home",
                 "item": "{{ route('home.index') }}"
             },
             {
                 "@type": "ListItem",
                 "position": 2,
-                "name": "技术博客",
+                "name": "Tech Blog",
                 "item": "{{ route('blog.index') }}"
             },
             {
@@ -135,22 +135,22 @@
 <div class="blog-post">
     <div class="post-container">
         <!-- 面包屑导航 -->
-        <nav class="breadcrumb-nav" aria-label="面包屑导航">
+        <nav class="breadcrumb-nav" aria-label="Breadcrumb Navigation">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
-                    <a href="{{ route('home.index') }}" title="返回首页">
+                    <a href="{{ route('home.index') }}" title="Back to Home">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
                         </svg>
-                        首页
+                        Home
                     </a>
                 </li>
                 <li class="breadcrumb-item">
-                    <a href="{{ route('blog.index') }}" title="返回博客列表">
+                    <a href="{{ route('blog.index') }}" title="Back to Blog List">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                         </svg>
-                        技术博客
+                        Tech Blog
                     </a>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">{{ $post['title'] }}</li>
@@ -163,7 +163,7 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/>
                 </svg>
-                返回博客
+                Back to Blog
             </a>
         </div>
 
@@ -172,7 +172,7 @@
             @if($post['image'])
                 <div class="post-featured-image">
                     <img src="{{ $post['image'] }}" 
-                         alt="{{ $post['title'] }} - {{ $post['category'] }}技术文章封面图" 
+                         alt="{{ $post['title'] }} - {{ $post['category'] }} tech article cover image" 
                          width="1200" 
                          height="630"
                          decoding="async"
@@ -186,8 +186,8 @@
                 </div>
                 <div class="post-info">
                     <span class="post-author">{{ $post['author'] }}</span>
-                    <span class="post-date">{{ date('Y年m月d日', $post['published_at']) }}</span>
-                    <span class="post-reading-time">{{ $post['reading_time'] }} 分钟阅读</span>
+                    <span class="post-date">{{ date('M d, Y', $post['published_at']) }}</span>
+                    <span class="post-reading-time">{{ $post['reading_time'] }} min read</span>
                 </div>
             </div>
 
@@ -213,19 +213,19 @@
         <footer class="post-footer">
             <div class="post-actions">
                 <div class="post-share">
-                    <span class="share-label">分享文章:</span>
+                    <span class="share-label">Share Article:</span>
                     <div class="share-buttons">
-                        <a href="#" class="share-btn" onclick="shareToWeibo()" title="分享到微博">
+                        <a href="#" class="share-btn" onclick="shareToWeibo()" title="Share to Weibo">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M8.5,8.5A1.5,1.5 0 0,1 10,10A1.5,1.5 0 0,1 8.5,11.5A1.5,1.5 0 0,1 7,10A1.5,1.5 0 0,1 8.5,8.5M15.5,8.5A1.5,1.5 0 0,1 17,10A1.5,1.5 0 0,1 15.5,11.5A1.5,1.5 0 0,1 14,10A1.5,1.5 0 0,1 15.5,8.5M12,17.23C10.25,17.23 8.71,16.5 7.81,15.42L9.23,14C9.68,14.72 10.75,15.17 12,15.17C13.25,15.17 14.32,14.72 14.77,14L16.19,15.42C15.29,16.5 13.75,17.23 12,17.23Z"/>
                             </svg>
                         </a>
-                        <a href="#" class="share-btn" onclick="shareToQQ()" title="分享到QQ">
+                        <a href="#" class="share-btn" onclick="shareToQQ()" title="Share to QQ">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20Z"/>
                             </svg>
                         </a>
-                        <a href="#" class="share-btn" onclick="copyLink()" title="复制链接">
+                        <a href="#" class="share-btn" onclick="copyLink()" title="Copy Link">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M3.9,12C3.9,10.29 5.29,8.9 7,8.9H11V7H7A5,5 0 0,0 2,12A5,5 0 0,0 7,17H11V15.1H7C5.29,15.1 3.9,13.71 3.9,12M8,13H16V11H8V13M17,7H13V8.9H17C18.71,8.9 20.1,10.29 20.1,12C20.1,13.71 18.71,15.1 17,15.1H13V17H17A5,5 0 0,0 22,12A5,5 0 0,0 17,7Z"/>
                             </svg>
@@ -233,7 +233,7 @@
                     </div>
                 </div>
                 <div class="post-updated">
-                    <span class="updated-label">最后更新:</span>
+                    <span class="updated-label">Last Updated:</span>
                     <span class="updated-time">{{ date('Y-m-d H:i', $post['mtime']) }}</span>
                 </div>
             </div>
@@ -242,7 +242,7 @@
         <!-- 相关文章 -->
         @if(count($relatedPosts) > 0)
             <section class="related-posts">
-                <h3 class="section-title">相关文章</h3>
+                <h3 class="section-title">Related Articles</h3>
                 <div class="related-posts-grid">
                     @foreach($relatedPosts as $relatedPost)
                         <a href="{{ route('blog.show', $relatedPost['slug']) }}" class="related-post">
@@ -262,35 +262,33 @@
 
         <!-- 评论区域 -->
         <section class="comments-section">
-            <h3 class="section-title">评论 (<span id="comments-count">{{ count($comments) }}</span>)</h3>
+            <h3 class="section-title">Comments (<span id="comments-count">{{ count($comments) }}</span>)</h3>
             
             <!-- 评论表单 -->
             <div class="comment-form-container">
                 <form id="comment-form" class="comment-form" autocomplete="off">
                     @csrf
                     <div class="form-group">
-                        <label for="author_name">您的名字 (可选)</label>
-                        <input type="text" id="author_name" name="author_name" maxlength="50" placeholder="留空将自动生成随机昵称">
+                        <label for="author_name">Your Name (Optional)</label>
+                        <input type="text" id="author_name" name="author_name" maxlength="50" placeholder="Leave blank to auto-generate random nickname">
                     </div>
                     
                     <div class="form-group">
-                        <label for="content">评论内容 *</label>
+                        <label for="content">Comment Content *</label>
                         <textarea 
                             id="content" 
                             name="content" 
                             rows="4" 
                             maxlength="1000" 
-                            placeholder="请输入您的评论..." 
+                            placeholder="Please enter your comment..." 
                             required
                         ></textarea>
                         <small class="char-count">0/1000</small>
-                        
-
                     </div>
                     
                     <div class="form-actions">
-                        <button type="submit" class="submit-btn">发表评论</button>
-                        <button type="button" class="random-name-btn" onclick="generateRandomName()">随机昵称</button>
+                        <button type="submit" class="submit-btn">Post Comment</button>
+                        <button type="button" class="random-name-btn" onclick="generateRandomName()">Random Name</button>
                     </div>
                 </form>
             </div>
@@ -309,7 +307,7 @@
                     </div>
                 @empty
                     <div class="no-comments">
-                        <p>暂无评论，快来发表第一条评论吧！</p>
+                        <p>No comments yet. Be the first to share your thoughts!</p>
                     </div>
                 @endforelse
             </div>
@@ -321,13 +319,13 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/>
                 </svg>
-                所有文章
+                All Articles
             </a>
             <a href="{{ route('reports.index') }}" class="nav-link">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                 </svg>
-                靶场报告
+                Lab Reports
             </a>
         </nav>
     </div>
@@ -354,19 +352,19 @@ function copyLink() {
         // 显示复制成功提示
         const btn = event.target.closest('.share-btn');
         const originalTitle = btn.title;
-        btn.title = '链接已复制!';
+        btn.title = 'Link copied!';
         setTimeout(() => {
             btn.title = originalTitle;
         }, 2000);
     }).catch(err => {
-        console.error('复制失败:', err);
+        console.error('Copy failed:', err);
     });
 }
 
 // 生成随机昵称
 function generateRandomName() {
-    const adjectives = ['智慧的', '勇敢的', '神秘的', '优雅的', '聪明的', '机敏的', '风趣的', '幽默的'];
-    const nouns = ['访客', '读者', '路人', '学者', '探索者', '思考者', '观察者', '旅行者'];
+    const adjectives = ['Wise', 'Brave', 'Mysterious', 'Elegant', 'Smart', 'Clever', 'Witty', 'Humorous'];
+    const nouns = ['Visitor', 'Reader', 'Passerby', 'Scholar', 'Explorer', 'Thinker', 'Observer', 'Traveler'];
     const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
     const noun = nouns[Math.floor(Math.random() * nouns.length)];
     const number = Math.floor(Math.random() * 900) + 100;
@@ -466,12 +464,12 @@ document.addEventListener('DOMContentLoaded', function() {
     codeBlocks.forEach(function(codeBlock) {
         const button = document.createElement('button');
         button.className = 'copy-code-btn';
-        button.textContent = '复制';
+        button.textContent = 'Copy';
         button.addEventListener('click', function() {
             navigator.clipboard.writeText(codeBlock.textContent).then(() => {
-                button.textContent = '已复制!';
+                button.textContent = 'Copied!';
                 setTimeout(() => {
-                    button.textContent = '复制';
+                    button.textContent = 'Copy';
                 }, 2000);
             });
         });
@@ -490,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const submitBtn = commentForm.querySelector('.submit-btn');
         const originalText = submitBtn.textContent;
         
-        submitBtn.textContent = '提交中...';
+        submitBtn.textContent = 'Submitting...';
         submitBtn.disabled = true;
         
         fetch(`{{ route('blog.comments.store', $post['slug']) }}`, {
@@ -508,12 +506,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 commentForm.reset();
                 updateCharCount();
             } else {
-                showMessage(data.error || '评论发表失败', 'error');
+                showMessage(data.error || 'Failed to post comment', 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showMessage('网络错误，请稍后重试', 'error');
+            showMessage('Network error, please try again later', 'error');
         })
         .finally(() => {
             submitBtn.textContent = originalText;

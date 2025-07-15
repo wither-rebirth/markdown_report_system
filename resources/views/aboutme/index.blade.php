@@ -1,28 +1,28 @@
-@extends('layout', ['title' => '关于我 | Wither\'s Blog', 'hasCanonical' => true])
+@extends('layout', ['title' => 'About Me | Wither\'s Blog', 'hasCanonical' => true])
 
 @push('meta')
     <!-- SEO Meta Tags for About Page -->
-    <meta name="description" content="了解更多关于Wither的信息 - 网络安全研究者，专注于渗透测试、CTF挑战和安全工具开发。分享个人学习经历和技术成长历程。">
-    <meta name="keywords" content="Wither,关于我,网络安全研究者,渗透测试,CTF,技术博客作者,安全工具开发,个人简介">
+    <meta name="description" content="Learn more about Wither - Cybersecurity researcher focusing on penetration testing, CTF challenges, and security tool development. Sharing personal learning experiences and technical growth journey.">
+    <meta name="keywords" content="Wither,About Me,Cybersecurity Researcher,Penetration Testing,CTF,Tech Blog Author,Security Tool Development,Personal Profile">
     <meta name="author" content="Wither">
     <meta name="robots" content="index, follow">
     <meta name="revisit-after" content="30 days">
     <link rel="canonical" href="{{ route('aboutme.index') }}">
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="关于我 | Wither's Blog">
-    <meta property="og:description" content="了解更多关于Wither的信息 - 网络安全研究者，专注于渗透测试、CTF挑战和安全工具开发。">
+    <meta property="og:title" content="About Me | Wither's Blog">
+    <meta property="og:description" content="Learn more about Wither - Cybersecurity researcher focusing on penetration testing, CTF challenges, and security tool development.">
     <meta property="og:type" content="profile">
     <meta property="og:url" content="{{ route('aboutme.index') }}">
     <meta property="og:site_name" content="Wither's Blog">
     <meta property="og:image" content="{{ asset('images/wither.JPG') }}">
-    <meta property="og:image:alt" content="Wither - 网络安全研究者">
-    <meta property="og:locale" content="zh_CN">
+    <meta property="og:image:alt" content="Wither - Cybersecurity Researcher">
+    <meta property="og:locale" content="en_US">
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="关于我 | Wither's Blog">
-    <meta name="twitter:description" content="了解更多关于Wither的信息 - 网络安全研究者，专注于渗透测试、CTF挑战和安全工具开发。">
+    <meta name="twitter:title" content="About Me | Wither's Blog">
+    <meta name="twitter:description" content="Learn more about Wither - Cybersecurity researcher focusing on penetration testing, CTF challenges, and security tool development.">
     <meta name="twitter:image" content="{{ asset('images/wither.JPG') }}">
     <meta name="twitter:site" content="@WitherSec">
     <meta name="twitter:creator" content="@WitherSec">
@@ -33,10 +33,10 @@
         "@context": "https://schema.org",
         "@type": "Person",
         "name": "{{ $personalInfo['name'] ?? 'Wither' }}",
-        "description": "网络安全研究者，专注于渗透测试、CTF挑战和安全工具开发",
+        "description": "Cybersecurity researcher focusing on penetration testing, CTF challenges, and security tool development",
         "url": "{{ route('aboutme.index') }}",
         "image": "{{ asset('images/wither.JPG') }}",
-        "jobTitle": "{{ $personalInfo['title'] ?? '网络安全研究者' }}",
+        "jobTitle": "{{ $personalInfo['title'] ?? 'Cybersecurity Researcher' }}",
         @if(!empty($personalInfo['location']))
         "address": {
             "@type": "PostalAddress",
@@ -52,14 +52,14 @@
             @endif
         ],
         "knowsAbout": [
-            "网络安全",
-            "渗透测试", 
-            "CTF竞赛",
-            "Web安全",
-            "系统安全",
-            "安全工具开发"
+            "Cybersecurity",
+            "Penetration Testing", 
+            "CTF Competitions",
+            "Web Security",
+            "System Security",
+            "Security Tool Development"
         ],
-        "alumniOf": "{{ $personalInfo['education'] ?? '计算机科学' }}",
+        "alumniOf": "{{ $personalInfo['education'] ?? 'Computer Science' }}",
         "worksFor": {
             "@type": "Organization",
             "name": "Wither's Blog",
@@ -217,7 +217,7 @@
 
         <!-- 联系方式 -->
         <div class="contact-section">
-            <h2 class="section-title">联系方式</h2>
+            <h2 class="section-title">Contact Information</h2>
             <div class="contact-info">
                 <div class="contact-item">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -235,7 +235,7 @@
                 @endif
             </div>
             <div class="contact-message">
-                <p>如果您有任何问题或想要合作，欢迎随时与我联系！</p>
+                <p>If you have any questions or would like to collaborate, feel free to contact me anytime!</p>
             </div>
         </div>
     </div>

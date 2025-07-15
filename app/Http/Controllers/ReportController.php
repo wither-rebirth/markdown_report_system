@@ -32,7 +32,7 @@ class ReportController extends Controller
     }
     
     /**
-     * 显示报告列表 - 支持分页和搜索
+     * Display report list - support pagination and search
      */
     public function index(Request $request)
     {
@@ -43,34 +43,34 @@ class ReportController extends Controller
             File::makeDirectory($reportsDir, 0755, true);
         }
         
-        // 获取搜索查询参数
+        // Get search query parameter
         $searchQuery = $request->input('search');
         
-        // 使用更精确的缓存键，包含所有相关文件的最新修改时间
+        // Use more precise cache key with latest modification time of all related files
         $cacheKey = 'all_reports_' . $this->generateReportsCacheKey($reportsDir, $hacktheboxDir);
         $allReports = Cache::remember($cacheKey, 600, function () use ($reportsDir, $hacktheboxDir) {
             $reports = collect();
             
-            // 处理传统的单个 .md 文件
+            // Process traditional single .md files
             $mdFiles = collect(File::glob($reportsDir . '/*.md'))
                 ->map(function ($file) {
                     $filename = pathinfo($file, PATHINFO_FILENAME);
                     $content = File::get($file);
                     
-                    // 提取标题（第一个 # 标题或文件名）
+                    // Extract title (first # heading or filename)
                     $title = $filename;
                     if (preg_match('/^#\s+(.+)$/m', $content, $matches)) {
                         $title = trim($matches[1]);
                     }
                     
-                    // 提取摘要（第一段文字或前100个字符）
+                    // Extract excerpt (first paragraph or first 100 characters)
                     $excerpt = $this->extractExcerpt($content);
                     
                     return [
                         'slug' => $filename,
                         'title' => $title,
                         'excerpt' => $excerpt,
-                        'content' => $content, // 保存完整内容用于搜索
+                        'content' => $content, // Save full content for search
                         'mtime' => File::lastModified($file),
                         'size' => File::size($file),
                         'status' => 'active',
@@ -78,30 +78,30 @@ class ReportController extends Controller
                     ];
                 });
             
-            // 处理 Hackthebox-Walkthrough 文件夹
+            // Process Hackthebox-Walkthrough folder
             if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
                 $hacktheboxReports = $this->getHacktheboxReports($hacktheboxDir);
                 $reports = $reports->merge($hacktheboxReports);
             }
             
-            // 合并并排序
+            // Merge and sort
             return $reports->merge($mdFiles)
                 ->sortByDesc('mtime')
                 ->values()
                 ->toArray();
         });
         
-        // 应用搜索过滤
+        // Apply search filter
         if (!empty($searchQuery)) {
             $allReports = $this->filterReportsBySearch($allReports, $searchQuery);
         }
         
-        // 分页设置 - 固定每页10个
-        $perPage = 10; // 固定每页显示10个
+        // Pagination settings - fixed 10 per page
+        $perPage = 10; // Fixed 10 per page
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $currentItems = array_slice($allReports, ($currentPage - 1) * $perPage, $perPage);
         
-        // 创建分页器
+        // Create paginator
         $reports = new LengthAwarePaginator(
             $currentItems,
             count($allReports),
@@ -113,21 +113,21 @@ class ReportController extends Controller
             ]
         );
         
-        // 保留查询参数
+        // Preserve query parameters
         $reports->appends($request->query());
         
         return view('report.index', compact('reports'));
     }
     
     /**
-     * 生成报告缓存键，基于所有相关文件的最新修改时间
+     * Generate reports cache key based on latest modification time of all related files
      */
     private function generateReportsCacheKey($reportsDir, $hacktheboxDir)
     {
         $latestMtime = 0;
         $fileCount = 0;
         
-        // 检查普通报告文件
+        // Check regular report files
         if (File::exists($reportsDir)) {
             $reportFiles = File::glob($reportsDir . '/*.md');
             foreach ($reportFiles as $file) {
@@ -136,7 +136,7 @@ class ReportController extends Controller
             }
         }
         
-        // 检查 Hackthebox 报告文件
+        // Check Hackthebox report files
         if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
             $directories = File::directories($hacktheboxDir);
             foreach ($directories as $dir) {
@@ -148,39 +148,39 @@ class ReportController extends Controller
             }
         }
         
-        // 组合缓存键：时间戳 + 文件数量
+        // Combine cache key: timestamp + file count
         return $latestMtime . '_' . $fileCount;
     }
     
     /**
-     * 清除所有报告相关缓存
+     * Clear all report-related cache
      */
     public function clearAllReportsCache()
     {
         try {
-            // 清除报告列表缓存
+            // Clear report list cache
             $this->clearReportListCache();
             
-            // 清除单个报告缓存
+            // Clear individual report cache
             $this->clearIndividualReportsCache();
             
-            // 清除首页缓存
+            // Clear homepage cache
             Cache::forget('home_stats');
             Cache::forget('latest_reports_3');
             
-            return response()->json(['message' => '所有报告缓存已清除']);
+            return response()->json(['message' => 'All report cache cleared']);
         } catch (\Exception $e) {
-            Log::error('清除报告缓存失败: ' . $e->getMessage());
-            return response()->json(['error' => '清除缓存失败'], 500);
+            Log::error('Failed to clear report cache: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to clear cache'], 500);
         }
     }
     
     /**
-     * 清除报告列表缓存
+     * Clear report list cache
      */
     private function clearReportListCache()
     {
-        // 使用 Redis keys 命令查找所有相关缓存键
+        // Use Redis keys command to find all related cache keys
         $cacheKeys = Cache::getRedis()->keys('all_reports_*');
         if (!empty($cacheKeys)) {
             Cache::getRedis()->del($cacheKeys);
@@ -188,17 +188,17 @@ class ReportController extends Controller
     }
     
     /**
-     * 清除所有单个报告的缓存
+     * Clear all individual report cache
      */
     private function clearIndividualReportsCache()
     {
-        // 清除普通报告缓存
+        // Clear regular report cache
         $reportKeys = Cache::getRedis()->keys('report.*');
         if (!empty($reportKeys)) {
             Cache::getRedis()->del($reportKeys);
         }
         
-        // 清除 HackTheBox 报告缓存
+        // Clear HackTheBox report cache
         $htbKeys = Cache::getRedis()->keys('htb.report.*');
         if (!empty($htbKeys)) {
             Cache::getRedis()->del($htbKeys);
@@ -206,7 +206,7 @@ class ReportController extends Controller
     }
     
     /**
-     * 根据搜索查询过滤报告
+     * Filter reports by search query
      */
     private function filterReportsBySearch($reports, $searchQuery)
     {
@@ -216,25 +216,25 @@ class ReportController extends Controller
         }
         
         return collect($reports)->filter(function ($report) use ($searchQuery) {
-            // 搜索标题
+            // Search title
             $title = mb_strtolower($report['title']);
             if (mb_strpos($title, $searchQuery) !== false) {
                 return true;
             }
             
-            // 搜索摘要
+            // Search excerpt
             $excerpt = mb_strtolower($report['excerpt'] ?? '');
             if (mb_strpos($excerpt, $searchQuery) !== false) {
                 return true;
             }
             
-            // 搜索内容（如果有）
+            // Search content (if available)
             $content = mb_strtolower($report['content'] ?? '');
             if (mb_strpos($content, $searchQuery) !== false) {
                 return true;
             }
             
-            // 搜索文件夹名（用于Hackthebox报告）
+            // Search folder name (for Hackthebox reports)
             if (isset($report['folder_name'])) {
                 $folderName = mb_strtolower($report['folder_name']);
                 if (mb_strpos($folderName, $searchQuery) !== false) {
@@ -247,13 +247,13 @@ class ReportController extends Controller
     }
 
     /**
-     * 获取 Hackthebox-Walkthrough 文件夹中的报告
+     * Get reports from Hackthebox-Walkthrough folder
      */
     private function getHacktheboxReports($hacktheboxDir)
     {
         $reports = collect();
         
-        // 读取所有子文件夹
+        // Read all subfolders
         $directories = File::directories($hacktheboxDir);
         
         foreach ($directories as $dir) {
@@ -261,14 +261,14 @@ class ReportController extends Controller
             $walkthroughFile = $dir . '/Walkthrough.md';
             $imagesDir = $dir . '/images';
             
-            // 检查是否存在 Walkthrough.md 文件
+            // Check if Walkthrough.md file exists
             if (File::exists($walkthroughFile)) {
                 $content = File::get($walkthroughFile);
                 $excerpt = $this->extractExcerpt($content);
                 $mtime = $this->extractModificationTime($content, $walkthroughFile);
                 $size = File::size($walkthroughFile);
                 
-                // 统计图片数量
+                // Count images
                 $imageCount = 0;
                 if (File::exists($imagesDir) && File::isDirectory($imagesDir)) {
                     $imageFiles = File::glob($imagesDir . '/*.{jpg,jpeg,png,gif,bmp,webp}', GLOB_BRACE);
@@ -279,7 +279,7 @@ class ReportController extends Controller
                     'slug' => 'htb-' . $dirName,
                     'title' => $dirName,
                     'excerpt' => $excerpt,
-                    'content' => $content, // 保存完整内容用于搜索
+                    'content' => $content, // Save full content for search
                     'mtime' => $mtime,
                     'size' => $size,
                     'status' => 'active',
@@ -294,14 +294,12 @@ class ReportController extends Controller
         return $reports;
     }
     
-
-    
     /**
-     * 显示单个报告
+     * Display single report
      */
     public function show($slug)
     {
-        // 检查是否是 Hackthebox 报告
+        // Check if it's a Hackthebox report
         if (str_starts_with($slug, 'htb-')) {
             return $this->showHacktheboxReport($slug);
         }
@@ -309,28 +307,28 @@ class ReportController extends Controller
         $filePath = storage_path("reports/{$slug}.md");
         
         if (!File::exists($filePath)) {
-            abort(404, '报告不存在');
+            abort(404, 'Report not found');
         }
         
-        // 使用缓存提高性能
+        // Use cache for performance
         $cacheKey = "report.{$slug}." . File::lastModified($filePath) . '.v2';
         
         $data = Cache::remember($cacheKey, 3600, function () use ($filePath, $slug) {
             $content = File::get($filePath);
             
-            // 移除元数据注释
+            // Remove metadata comments
             $content = preg_replace('/<!--.*?-->/s', '', $content);
             
-            // 转换 Markdown 为 HTML
+            // Convert Markdown to HTML
             $html = $this->markdownConverter->convert($content);
             
-            // 提取标题
+            // Extract title
             $title = $slug;
             if (preg_match('/^#\s+(.+)$/m', $content, $matches)) {
                 $title = trim($matches[1]);
             }
             
-            // 提取SEO数据
+            // Extract SEO data
             $excerpt = $this->extractExcerpt($content);
             $keywords = $this->extractKeywords($content, $title);
             
@@ -352,32 +350,32 @@ class ReportController extends Controller
     }
     
     /**
-     * 显示 Hackthebox 报告
+     * Display Hackthebox report
      */
     private function showHacktheboxReport($slug)
     {
-        // 提取文件夹名（去掉 htb- 前缀）
+        // Extract folder name (remove htb- prefix)
         $folderName = substr($slug, 4);
         $reportDir = storage_path("reports/Hackthebox-Walkthrough/{$folderName}");
         $walkthroughFile = $reportDir . '/Walkthrough.md';
         
         if (!File::exists($walkthroughFile)) {
-            abort(404, '报告不存在');
+            abort(404, 'Report not found');
         }
         
-        // 使用缓存提高性能
+        // Use cache for performance
         $cacheKey = "htb.report.{$slug}." . File::lastModified($walkthroughFile) . '.v2';
         
         $data = Cache::remember($cacheKey, 3600, function () use ($walkthroughFile, $slug, $folderName, $reportDir) {
             $content = File::get($walkthroughFile);
             
-            // 处理图片链接 - 将相对路径转换为可访问的URL
+            // Process image links - convert relative paths to accessible URLs
             $content = $this->processHacktheboxImages($content, $folderName);
             
-            // 转换 Markdown 为 HTML
+            // Convert Markdown to HTML
             $html = $this->markdownConverter->convert($content);
             
-            // 统计图片数量
+            // Count images
             $imagesDir = $reportDir . '/images';
             $imageCount = 0;
             if (File::exists($imagesDir) && File::isDirectory($imagesDir)) {
@@ -385,7 +383,7 @@ class ReportController extends Controller
                 $imageCount = count($imageFiles);
             }
             
-            // 提取SEO数据
+            // Extract SEO data
             $excerpt = $this->extractExcerpt($content);
             $keywords = $this->extractKeywords($content, $folderName);
             
@@ -409,11 +407,11 @@ class ReportController extends Controller
     }
     
     /**
-     * 处理 Hackthebox 报告中的图片链接
+     * Process image links in Hackthebox reports
      */
     private function processHacktheboxImages($content, $folderName)
     {
-        // 处理 Markdown 图片语法 ![alt](images/filename.ext)
+        // Process Markdown image syntax ![alt](images/filename.ext)
         $content = preg_replace_callback(
             '/!\[([^\]]*)\]\(images\/([^)]+)\)/',
             function ($matches) use ($folderName) {
@@ -425,7 +423,7 @@ class ReportController extends Controller
             $content
         );
         
-        // 处理 HTML img 标签 <img src="images/filename.ext">
+        // Process HTML img tags <img src="images/filename.ext">
         $content = preg_replace_callback(
             '/<img([^>]*?)src=["\']images\/([^"\']+)["\']([^>]*?)>/i',
             function ($matches) use ($folderName) {
@@ -442,29 +440,29 @@ class ReportController extends Controller
     }
     
     /**
-     * 提供 Hackthebox 报告图片
+     * Serve Hackthebox report images
      */
     public function getHacktheboxImage($folder, $filename)
     {
-        // URL解码文件名
+        // URL decode filename
         $decodedFilename = urldecode($filename);
         $imagePath = storage_path("reports/Hackthebox-Walkthrough/{$folder}/images/{$decodedFilename}");
         
         if (!File::exists($imagePath)) {
-            abort(404, '图片不存在');
+            abort(404, 'Image not found');
         }
         
-        // 检查文件类型
+        // Check file type
         $mimeType = mime_content_type($imagePath);
         if (!str_starts_with($mimeType, 'image/')) {
-            abort(403, '文件类型不支持');
+            abort(403, 'File type not supported');
         }
         
         return response()->file($imagePath);
     }
     
     /**
-     * 删除报告
+     * Delete report
      */
     public function destroy($slug)
     {
@@ -473,30 +471,30 @@ class ReportController extends Controller
             $htmlPath = public_path("{$slug}.html");
             
             if (!File::exists($filePath)) {
-                return response()->json(['error' => '报告不存在'], 404);
+                return response()->json(['error' => 'Report not found'], 404);
             }
             
-            // 删除markdown文件
+            // Delete markdown file
             File::delete($filePath);
             
-            // 删除HTML文件（如果存在）
+            // Delete HTML file (if exists)
             if (File::exists($htmlPath)) {
                 File::delete($htmlPath);
             }
             
-            // 清除缓存
+            // Clear cache
             $this->clearReportCache($slug);
             
-            return response()->json(['message' => '报告删除成功']);
+            return response()->json(['message' => 'Report deleted successfully']);
             
         } catch (\Exception $e) {
-            Log::error('删除报告失败: ' . $e->getMessage());
-            return response()->json(['error' => '删除失败'], 500);
+            Log::error('Failed to delete report: ' . $e->getMessage());
+            return response()->json(['error' => 'Delete failed'], 500);
         }
     }
     
     /**
-     * 批量删除报告
+     * Batch delete reports
      */
     public function destroyMultiple(Request $request)
     {
@@ -520,26 +518,26 @@ class ReportController extends Controller
         return response()->json([
             'deleted' => $deleted,
             'errors' => $errors,
-            'message' => count($deleted) . ' 个报告删除成功'
+            'message' => count($deleted) . ' reports deleted successfully'
         ]);
     }
     
     /**
-     * 清除报告缓存
+     * Clear report cache
      */
     public function clearCache($slug = null)
     {
         if ($slug) {
             $this->clearReportCache($slug);
-            return response()->json(['message' => "报告 {$slug} 缓存已清除"]);
+            return response()->json(['message' => "Report {$slug} cache cleared"]);
         } else {
             Cache::flush();
-            return response()->json(['message' => '所有缓存已清除']);
+            return response()->json(['message' => 'All cache cleared']);
         }
     }
     
     /**
-     * 获取报告统计信息
+     * Get report statistics
      */
     public function stats()
     {
@@ -575,14 +573,14 @@ class ReportController extends Controller
         ]);
     }
     
-    // 私有辅助方法
+    // Private helper methods
     
     /**
-     * 从内容生成slug
+     * Generate slug from content
      */
     private function generateSlugFromContent($content, $originalName)
     {
-        // 尝试从标题生成
+        // Try to generate from title
         if (preg_match('/^#\s+(.+)$/m', $content, $matches)) {
             $title = trim($matches[1]);
             $slug = $this->slugify($title);
@@ -591,13 +589,13 @@ class ReportController extends Controller
             }
         }
         
-        // 使用原文件名
+        // Use original filename
         $filename = pathinfo($originalName, PATHINFO_FILENAME);
         return $this->slugify($filename) ?: 'report-' . time();
     }
     
     /**
-     * 生成URL友好的slug
+     * Generate URL-friendly slug
      */
     private function slugify($text)
     {
@@ -608,11 +606,11 @@ class ReportController extends Controller
     }
     
     /**
-     * 提取摘要
+     * Extract excerpt
      */
     private function extractExcerpt($content)
     {
-        // 1. 优先检查YAML front matter中的description
+        // 1. Priority check for description in YAML front matter
         if (preg_match('/^---\s*\n.*?description:\s*[\'"]?(.*?)[\'"]?\s*\n.*?---\s*\n/s', $content, $matches)) {
             $description = trim($matches[1]);
             if (!empty($description)) {
@@ -620,11 +618,11 @@ class ReportController extends Controller
             }
         }
         
-        // 2. 检查markdown中的Description章节
+        // 2. Check for Description section in markdown
         if (preg_match('/^#{1,6}\s*Description\s*\n(.*?)(?=\n#{1,6}|\n\n|\Z)/sim', $content, $matches)) {
             $description = trim($matches[1]);
             if (!empty($description)) {
-                // 移除markdown语法并限制长度
+                // Remove markdown syntax and limit length
                 $description = strip_tags($description);
                 $description = preg_replace('/\*\*(.*?)\*\*/', '$1', $description);
                 $description = preg_replace('/\*(.*?)\*/', '$1', $description);
@@ -637,7 +635,7 @@ class ReportController extends Controller
             }
         }
         
-        // 3. 检查特定的description块（如果有特殊格式）
+        // 3. Check for specific description block (if special format exists)
         if (preg_match('/^description:\s*(.+)$/m', $content, $matches)) {
             $description = trim($matches[1]);
             if (!empty($description)) {
@@ -645,16 +643,16 @@ class ReportController extends Controller
             }
         }
         
-        // 4. 如果没有找到description块，则使用原有的excerpt逻辑
+        // 4. If no description block found, use original excerpt logic
         $processedContent = $content;
         
-        // 移除标题和元数据
+        // Remove titles and metadata
         $processedContent = preg_replace('/^#.*$/m', '', $processedContent);
         $processedContent = preg_replace('/<!--.*?-->/s', '', $processedContent);
         $processedContent = preg_replace('/^---\s*\n.*?---\s*\n/s', '', $processedContent);
         $processedContent = trim($processedContent);
         
-        // 获取第一段或前150个字符
+        // Get first paragraph or first 150 characters
         $paragraphs = explode("\n\n", $processedContent);
         $firstParagraph = trim($paragraphs[0]);
         
@@ -662,28 +660,28 @@ class ReportController extends Controller
             return mb_substr($firstParagraph, 0, 150) . '...';
         }
         
-        // 5. 最后兜底，如果什么都没有，返回null而不是默认描述
+        // 5. Final fallback, if nothing found, return null instead of default description
         return !empty($firstParagraph) ? $firstParagraph : null;
     }
     
     /**
-     * 提取关键词
+     * Extract keywords
      */
     private function extractKeywords($content, $title)
     {
         $keywords = [];
         
-        // 基础关键词
+        // Basic keywords
         $keywords[] = 'Wither';
         $keywords[] = 'Penetration Testing';
         $keywords[] = 'Cybersecurity';
         $keywords[] = 'Security Research';
         
-        // 根据类型添加关键词
+        // Add keywords based on type
         $lowerContent = mb_strtolower($content);
         $lowerTitle = mb_strtolower($title);
         
-        // HackTheBox 相关
+        // HackTheBox related
         if (strpos($lowerContent, 'hackthebox') !== false || strpos($lowerTitle, 'hackthebox') !== false) {
             $keywords[] = 'HackTheBox';
             $keywords[] = 'HTB';
@@ -692,7 +690,7 @@ class ReportController extends Controller
             $keywords[] = 'CTF';
         }
         
-        // 常见安全术语
+        // Common security terms
         $securityTerms = [
             'sql injection' => 'SQL Injection',
             'xss' => 'XSS',
@@ -728,7 +726,7 @@ class ReportController extends Controller
             }
         }
         
-        // 添加标题中的关键词
+        // Add keywords from title
         $titleWords = explode(' ', $title);
         foreach ($titleWords as $word) {
             $cleanWord = preg_replace('/[^a-zA-Z0-9\-]/', '', $word);
@@ -737,12 +735,12 @@ class ReportController extends Controller
             }
         }
         
-        // 去重并返回
+        // Remove duplicates and return
         return implode(', ', array_unique($keywords));
     }
     
     /**
-     * 格式化文件大小
+     * Format file size
      */
     private function formatFileSize($bytes)
     {
@@ -758,7 +756,7 @@ class ReportController extends Controller
     }
     
     /**
-     * 清除特定报告的缓存
+     * Clear specific report cache
      */
     private function clearReportCache($slug)
     {
@@ -769,7 +767,7 @@ class ReportController extends Controller
     }
     
     /**
-     * 生成HTML预览文件
+     * Generate HTML preview file
      */
     private function generateHtmlPreview($slug, $content)
     {
@@ -777,7 +775,7 @@ class ReportController extends Controller
             $html = $this->markdownConverter->convert($content);
             
             $htmlContent = "<!DOCTYPE html>
-<html lang=\"zh-CN\">
+<html lang=\"en\">
 <head>
     <meta charset=\"UTF-8\">
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
@@ -800,21 +798,21 @@ class ReportController extends Controller
             
             File::put(public_path("{$slug}.html"), $htmlContent);
         } catch (\Exception $e) {
-            Log::warning("无法生成HTML预览: " . $e->getMessage());
+            Log::warning("Unable to generate HTML preview: " . $e->getMessage());
         }
     }
 
     /**
-     * 从文件内容中提取修改时间
+     * Extract modification time from file content
      */
     private function extractModificationTime($content, $filePath)
     {
         $dates = [];
         
-        // 首先查找图片文件名中的时间戳格式 (YYYYMMDDHHMMSS)
+        // First look for timestamp format in image filenames (YYYYMMDDHHMMSS)
         if (preg_match_all('/Pasted%20image%20(\d{14})/', $content, $matches)) {
             foreach ($matches[1] as $timestamp) {
-                // 解析 YYYYMMDDHHMMSS 格式
+                // Parse YYYYMMDDHHMMSS format
                 $year = substr($timestamp, 0, 4);
                 $month = substr($timestamp, 4, 2);
                 $day = substr($timestamp, 6, 2);
@@ -822,7 +820,7 @@ class ReportController extends Controller
                 $minute = substr($timestamp, 10, 2);
                 $second = substr($timestamp, 12, 2);
                 
-                // 验证日期有效性
+                // Validate date
                 if (checkdate($month, $day, $year)) {
                     $dateTime = mktime($hour, $minute, $second, $month, $day, $year);
                     if ($dateTime !== false) {
@@ -832,22 +830,22 @@ class ReportController extends Controller
             }
         }
         
-        // 如果找到了图片时间戳，返回最新的一个（这是最准确的时间）
+        // If image timestamps found, return the latest one (most accurate time)
         if (!empty($dates)) {
             return max($dates);
         }
         
-        // 备选方案：尝试其他日期格式
+        // Alternative: try other date formats
         $patterns = [
-            // YYYY-MM-DD 格式
+            // YYYY-MM-DD format
             '/(\d{4}-\d{1,2}-\d{1,2})/',
-            // DD/MM/YYYY 或 MM/DD/YYYY 格式
+            // DD/MM/YYYY or MM/DD/YYYY format
             '/(\d{1,2}\/\d{1,2}\/\d{4})/',
-            // Mon May 14 2018 格式
+            // Mon May 14 2018 format
             '/([A-Za-z]{3}\s+[A-Za-z]{3}\s+\d{1,2}\s+\d{4})/',
-            // Nov 20, 2018 格式
+            // Nov 20, 2018 format
             '/([A-Za-z]{3}\s+\d{1,2},?\s+\d{4})/',
-            // 2018-11-20 11:57 格式
+            // 2018-11-20 11:57 format
             '/(\d{4}-\d{1,2}-\d{1,2}\s+\d{1,2}:\d{2})/',
         ];
         
@@ -860,18 +858,18 @@ class ReportController extends Controller
                             $dates[] = $timestamp;
                         }
                     } catch (\Exception $e) {
-                        // 忽略无效日期
+                        // Ignore invalid dates
                     }
                 }
             }
         }
         
-        // 如果找到了其他格式的日期，返回最新的日期
+        // If other format dates found, return the latest date
         if (!empty($dates)) {
             return max($dates);
         }
         
-        // 最后的备选方案：从文件夹名称中提取日期信息
+        // Final fallback: extract date information from folder name
         $folderName = basename(dirname($filePath));
         if (preg_match('/(\d{4})[_-]?(\d{1,2})[_-]?(\d{1,2})/', $folderName, $matches)) {
             $timestamp = mktime(0, 0, 0, $matches[2], $matches[3], $matches[1]);
@@ -880,12 +878,12 @@ class ReportController extends Controller
             }
         }
         
-        // 如果都没有找到，返回文件的系统修改时间
+        // If nothing found, return system modification time
         return File::lastModified($filePath);
     }
     
     /**
-     * 生成XML sitemap
+     * Generate XML sitemap
      */
     public function sitemap()
     {
@@ -894,7 +892,7 @@ class ReportController extends Controller
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
         
-        // 添加主页
+        // Add homepage
         $xml .= '  <url>' . "\n";
         $xml .= '    <loc>' . route('home.index') . '</loc>' . "\n";
         $xml .= '    <lastmod>' . date('Y-m-d\TH:i:s\Z') . '</lastmod>' . "\n";
@@ -902,7 +900,7 @@ class ReportController extends Controller
         $xml .= '    <priority>1.0</priority>' . "\n";
         $xml .= '  </url>' . "\n";
         
-        // 添加报告列表页
+        // Add report list page
         $xml .= '  <url>' . "\n";
         $xml .= '    <loc>' . route('reports.index') . '</loc>' . "\n";
         $xml .= '    <lastmod>' . date('Y-m-d\TH:i:s\Z') . '</lastmod>' . "\n";
@@ -910,7 +908,7 @@ class ReportController extends Controller
         $xml .= '    <priority>0.9</priority>' . "\n";
         $xml .= '  </url>' . "\n";
         
-        // 添加博客页
+        // Add blog page
         $xml .= '  <url>' . "\n";
         $xml .= '    <loc>' . route('blog.index') . '</loc>' . "\n";
         $xml .= '    <lastmod>' . date('Y-m-d\TH:i:s\Z') . '</lastmod>' . "\n";
@@ -918,7 +916,7 @@ class ReportController extends Controller
         $xml .= '    <priority>0.9</priority>' . "\n";
         $xml .= '  </url>' . "\n";
         
-        // 添加关于我页
+        // Add about me page
         $xml .= '  <url>' . "\n";
         $xml .= '    <loc>' . route('aboutme.index') . '</loc>' . "\n";
         $xml .= '    <lastmod>' . date('Y-m-d\TH:i:s\Z') . '</lastmod>' . "\n";
@@ -926,7 +924,7 @@ class ReportController extends Controller
         $xml .= '    <priority>0.8</priority>' . "\n";
         $xml .= '  </url>' . "\n";
         
-        // 添加所有报告
+        // Add all reports
         foreach ($reports as $report) {
             $xml .= '  <url>' . "\n";
             $xml .= '    <loc>' . route('reports.show', $report['slug']) . '</loc>' . "\n";
@@ -942,7 +940,7 @@ class ReportController extends Controller
     }
     
     /**
-     * 获取所有报告用于sitemap
+     * Get all reports for sitemap
      */
     private function getAllReportsForSitemap()
     {
@@ -955,7 +953,7 @@ class ReportController extends Controller
         
         $reports = collect();
         
-        // 处理传统的单个 .md 文件
+        // Process traditional single .md files
         $mdFiles = collect(File::glob($reportsDir . '/*.md'))
             ->map(function ($file) {
                 $filename = pathinfo($file, PATHINFO_FILENAME);
@@ -965,7 +963,7 @@ class ReportController extends Controller
                 ];
             });
         
-        // 处理 Hackthebox-Walkthrough 文件夹
+        // Process Hackthebox-Walkthrough folder
         if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
             $directories = File::directories($hacktheboxDir);
             

@@ -2,27 +2,27 @@
 
 @push('meta')
     <!-- SEO Meta Tags for Home Page -->
-    <meta name="description" content="Wither's Blog - 专注于网络安全、渗透测试、CTF挑战的个人技术博客。分享HackTheBox writeup、安全工具使用、编程技术等原创内容。">
-    <meta name="keywords" content="wither,blog,网络安全,渗透测试,HackTheBox,CTF,技术分享,靶场报告,Writeup,安全研究,编程开发">
+    <meta name="description" content="Wither's Blog - Personal tech blog focused on cybersecurity, penetration testing, and CTF challenges. Sharing HackTheBox writeups, security tools usage, and programming techniques.">
+    <meta name="keywords" content="wither,blog,cybersecurity,penetration testing,HackTheBox,CTF,tech sharing,lab reports,writeup,security research,programming">
     <meta name="author" content="Wither">
     <meta name="robots" content="index, follow">
     <meta name="revisit-after" content="3 days">
     <link rel="canonical" href="{{ route('home.index') }}">
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Wither's Blog - 网络安全技术博客">
-    <meta property="og:description" content="专注于网络安全、渗透测试、CTF挑战的个人技术博客。分享HackTheBox writeup、安全工具使用、编程技术等原创内容。">
+    <meta property="og:title" content="Wither's Blog - Cybersecurity Tech Blog">
+    <meta property="og:description" content="Personal tech blog focused on cybersecurity, penetration testing, and CTF challenges. Sharing HackTheBox writeups, security tools usage, and programming techniques.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ route('home.index') }}">
     <meta property="og:site_name" content="Wither's Blog">
     <meta property="og:image" content="{{ asset('images/wither-og.jpg') }}">
-    <meta property="og:image:alt" content="Wither's Blog - 网络安全技术博客">
-    <meta property="og:locale" content="zh_CN">
+    <meta property="og:image:alt" content="Wither's Blog - Cybersecurity Tech Blog">
+    <meta property="og:locale" content="en_US">
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Wither's Blog - 网络安全技术博客">
-    <meta name="twitter:description" content="专注于网络安全、渗透测试、CTF挑战的个人技术博客。分享HackTheBox writeup、安全工具使用、编程技术等原创内容。">
+    <meta name="twitter:title" content="Wither's Blog - Cybersecurity Tech Blog">
+    <meta name="twitter:description" content="Personal tech blog focused on cybersecurity, penetration testing, and CTF challenges. Sharing HackTheBox writeups, security tools usage, and programming techniques.">
     <meta name="twitter:image" content="{{ asset('images/wither-og.jpg') }}">
     <meta name="twitter:site" content="@WitherSec">
     <meta name="twitter:creator" content="@WitherSec">
@@ -91,19 +91,19 @@
             
             <div class="hero-text">
                 <h1 class="hero-title">
-                    <span class="greeting">你好，我是</span>
+                    <span class="greeting">Hello, I'm</span>
                     <span class="name typing-text" data-text="wither">wither</span>
                 </h1>
                 
                 <div class="hero-subtitle">
-                    <span class="subtitle-text typewriter" data-text="网络安全研究者 | 渗透测试爱好者 | 技术分享者">
-                        网络安全研究者 | 渗透测试爱好者 | 技术分享者
+                    <span class="subtitle-text typewriter" data-text="Cybersecurity Researcher | Penetration Testing Enthusiast | Tech Sharer">
+                        Cybersecurity Researcher | Penetration Testing Enthusiast | Tech Sharer
                     </span>
                 </div>
                 
                 <p class="hero-description">
-                    专注于网络安全学习和技术分享，热爱CTF竞赛和靶场挑战。
-                    在这里记录学习历程，分享技术心得，与大家一起成长。
+                    Focused on cybersecurity learning and technology sharing, passionate about CTF competitions and lab challenges.
+                    Recording my learning journey here, sharing technical insights, and growing together with everyone.
                 </p>
                 
                 <div class="hero-actions">
@@ -111,13 +111,13 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
                         </svg>
-                        浏览博客
+                        Browse Blog
                     </a>
                     <a href="{{ route('reports.index') }}" class="btn btn-secondary">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                         </svg>
-                        查看报告
+                        View Reports
                     </a>
                 </div>
             </div>
@@ -125,7 +125,7 @@
         
         <div class="hero-scroll">
             <div class="scroll-indicator">
-                <span>向下滚动探索更多</span>
+                <span>Scroll down to explore more</span>
                 <div class="scroll-arrow">↓</div>
             </div>
         </div>
@@ -143,7 +143,7 @@
                     </div>
                     <div class="stat-content">
                         <div class="stat-number" data-count="{{ $stats['total_posts'] }}">0</div>
-                        <div class="stat-label">技术文章</div>
+                        <div class="stat-label">Technical Articles</div>
                     </div>
                 </div>
                 
@@ -155,7 +155,7 @@
                     </div>
                     <div class="stat-content">
                         <div class="stat-number" data-count="{{ $stats['total_reports'] }}">0</div>
-                        <div class="stat-label">靶场报告</div>
+                        <div class="stat-label">Lab Reports</div>
                     </div>
                 </div>
                 
@@ -167,7 +167,7 @@
                     </div>
                     <div class="stat-content">
                         <div class="stat-number" data-count="{{ $stats['total_views'] }}">0</div>
-                        <div class="stat-label">访问量</div>
+                        <div class="stat-label">Total Views</div>
                     </div>
                 </div>
                 
@@ -185,7 +185,7 @@
                                 0
                             @endif
                         </div>
-                        <div class="stat-label">天前更新</div>
+                        <div class="stat-label">Days ago updated</div>
                     </div>
                 </div>
             </div>
@@ -196,8 +196,8 @@
     <section class="latest-content-section">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">最新内容</h2>
-                <p class="section-subtitle">探索我的最新技术文章和靶场报告</p>
+                <h2 class="section-title">Latest Content</h2>
+                <p class="section-subtitle">Explore my latest technical articles and lab reports</p>
             </div>
             
             <div class="content-tabs">
@@ -206,13 +206,13 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
                         </svg>
-                        技术博客
+                        Tech Blog
                     </button>
                     <button class="tab-button" data-tab="reports">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                         </svg>
-                        靶场报告
+                        Lab Reports
                     </button>
                 </div>
                 
@@ -236,14 +236,14 @@
                                         </h3>
                                         <p class="card-excerpt">{{ $post['excerpt'] }}</p>
                                         <div class="card-footer">
-                                            <div class="reading-time">{{ $post['reading_time'] }}分钟阅读</div>
-                                            <a href="{{ route('blog.show', $post['slug']) }}" class="read-more">阅读全文 →</a>
+                                            <div class="reading-time">{{ $post['reading_time'] }} min read</div>
+                                            <a href="{{ route('blog.show', $post['slug']) }}" class="read-more">Read More →</a>
                                         </div>
                                     </div>
                                 </div>
                             @empty
                                 <div class="empty-state">
-                                    <p>暂无博客文章</p>
+                                    <p>No blog articles</p>
                                 </div>
                             @endforelse
                         </div>
@@ -251,7 +251,7 @@
                         @if(count($latestBlogPosts) > 0)
                             <div class="section-footer">
                                 <a href="{{ route('blog.index') }}" class="btn btn-outline">
-                                    查看所有文章
+                                    View All Articles
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
                                     </svg>
@@ -269,7 +269,7 @@
                                             @if(isset($report['type']) && $report['type'] === 'hackthebox')
                                                 <span class="card-category hackthebox">HackTheBox</span>
                                             @else
-                                                <span class="card-category">报告</span>
+                                                <span class="card-category">Report</span>
                                             @endif
                                             <span class="card-date">{{ date('m-d', $report['mtime']) }}</span>
                                         </div>
@@ -279,13 +279,13 @@
                                         <p class="card-excerpt">{{ $report['excerpt'] }}</p>
                                         <div class="card-footer">
                                             <div class="file-size">{{ number_format($report['size'] / 1024, 1) }} KB</div>
-                                            <a href="{{ route('reports.show', $report['slug']) }}" class="read-more">查看报告 →</a>
+                                            <a href="{{ route('reports.show', $report['slug']) }}" class="read-more">View Report →</a>
                                         </div>
                                     </div>
                                 </div>
                             @empty
                                 <div class="empty-state">
-                                    <p>暂无报告</p>
+                                    <p>No reports</p>
                                 </div>
                             @endforelse
                         </div>
@@ -293,7 +293,7 @@
                         @if(count($latestReports) > 0)
                             <div class="section-footer">
                                 <a href="{{ route('reports.index') }}" class="btn btn-outline">
-                                    查看所有报告
+                                    View All Reports
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
                                     </svg>
@@ -310,13 +310,13 @@
     <section class="tech-stack-section">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">技术栈</h2>
-                <p class="section-subtitle">我熟悉的技术和工具</p>
+                <h2 class="section-title">Tech Stack</h2>
+                <p class="section-subtitle">Technologies and tools I'm familiar with</p>
             </div>
             
             <div class="tech-categories">
                 <div class="tech-category" data-aos="fade-up" data-aos-delay="0">
-                    <h3 class="category-title">编程语言</h3>
+                    <h3 class="category-title">Programming Languages</h3>
                     <div class="tech-skills">
                         @foreach($techStack['languages'] as $skill)
                             <div class="skill-item">
@@ -335,7 +335,7 @@
                 </div>
                 
                 <div class="tech-category" data-aos="fade-up" data-aos-delay="200">
-                    <h3 class="category-title">框架</h3>
+                    <h3 class="category-title">Frameworks</h3>
                     <div class="tech-skills">
                         @foreach($techStack['frameworks'] as $skill)
                             <div class="skill-item">
@@ -354,7 +354,7 @@
                 </div>
                 
                 <div class="tech-category" data-aos="fade-up" data-aos-delay="400">
-                    <h3 class="category-title">安全工具</h3>
+                    <h3 class="category-title">Security Tools</h3>
                     <div class="tech-skills">
                         @foreach($techStack['tools'] as $skill)
                             <div class="skill-item">
@@ -379,8 +379,8 @@
     <section class="activity-section">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">最近活动</h2>
-                <p class="section-subtitle">我的学习和创作动态</p>
+                <h2 class="section-title">Recent Activity</h2>
+                <p class="section-subtitle">My learning and creation dynamics</p>
             </div>
             
             <div class="activity-timeline">
@@ -398,7 +398,7 @@
                             @endif
                         </div>
                         <div class="activity-content">
-                            <div class="activity-title">{{ $activity['action'] }}了{{ $activity['type'] === 'blog' ? '博客' : '报告' }} "{{ $activity['name'] }}"</div>
+                            <div class="activity-title">{{ $activity['action'] }} {{ $activity['type'] === 'blog' ? 'blog' : 'report' }} "{{ $activity['name'] }}"</div>
                             <div class="activity-time">{{ $activity['time_ago'] }}</div>
                         </div>
                     </div>
@@ -412,8 +412,8 @@
         <div class="container">
             <div class="contact-content">
                 <div class="contact-info">
-                    <h2 class="section-title">联系我</h2>
-                    <p class="section-subtitle">如果您有任何问题或想要合作交流，欢迎联系我</p>
+                    <h2 class="section-title">Contact Me</h2>
+                    <p class="section-subtitle">If you have any questions or want to collaborate, feel free to contact me</p>
                     
                     <div class="contact-links">
                         <a href="mailto:wither2rebirth@gmail.com" class="contact-link">
@@ -432,7 +432,7 @@
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
                             </svg>
-                            <span>了解更多</span>
+                            <span>Learn More</span>
                         </a>
                     </div>
                 </div>
@@ -448,11 +448,11 @@
                             <div class="editor-title">contact.js</div>
                         </div>
                         <div class="editor-content">
-                            <pre><code><span class="comment">// 联系我</span>
+                            <pre><code><span class="comment">// Contact Me</span>
 <span class="keyword">const</span> <span class="variable">contact</span> = {
     <span class="property">name</span>: <span class="string">'wither'</span>,
     <span class="property">email</span>: <span class="string">'wither2rebirth@gmail.com'</span>,
-    <span class="property">skills</span>: [<span class="string">'网络安全'</span>, <span class="string">'渗透测试'</span>],
+    <span class="property">skills</span>: [<span class="string">'Cybersecurity'</span>, <span class="string">'Penetration Testing'</span>],
     <span class="property">motto</span>: <span class="string">'from wither to rebirth'</span>
 };</code></pre>
                         </div>

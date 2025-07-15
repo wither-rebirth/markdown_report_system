@@ -341,7 +341,7 @@ class HomeController extends Controller
         foreach (array_slice($allFiles, 0, $limit) as $file) {
             $activities[] = [
                 'type' => $file['type'],
-                'action' => '更新',
+                'action' => 'Updated',
                 'name' => $file['name'],
                 'time' => $file['modified'],
                 'time_ago' => $this->timeAgo($file['modified'])
@@ -419,7 +419,7 @@ class HomeController extends Controller
             // 如果文件名是index，使用父目录名
             if ($filename === 'index') {
                 $dirname = basename(dirname($filePath));
-                return $dirname !== 'blog' && $dirname !== 'reports' ? $dirname : '首页';
+                return $dirname !== 'blog' && $dirname !== 'reports' ? $dirname : 'Home';
             }
             
             // 美化文件名（将连字符和下划线替换为空格，首字母大写）
@@ -439,17 +439,17 @@ class HomeController extends Controller
         $time = time() - $timestamp;
         
         if ($time < 60) {
-            return '刚刚';
+            return 'Just now';
         } elseif ($time < 3600) {
-            return floor($time / 60) . '分钟前';
+            return floor($time / 60) . ' minutes ago';
         } elseif ($time < 86400) {
-            return floor($time / 3600) . '小时前';
+            return floor($time / 3600) . ' hours ago';
         } elseif ($time < 2592000) {
-            return floor($time / 86400) . '天前';
+            return floor($time / 86400) . ' days ago';
         } elseif ($time < 31536000) {
-            return floor($time / 2592000) . '个月前';
+            return floor($time / 2592000) . ' months ago';
         } else {
-            return floor($time / 31536000) . '年前';
+            return floor($time / 31536000) . ' years ago';
         }
     }
     
@@ -513,7 +513,7 @@ class HomeController extends Controller
         // 获取前150个字符
         $excerpt = mb_substr(trim($content), 0, 150);
         
-        return $excerpt ? $excerpt . '...' : '暂无摘要';
+        return $excerpt ? $excerpt . '...' : 'No excerpt available';
     }
     
     /**
