@@ -21,34 +21,55 @@ function generateTableOfContents() {
     const tocContainer = document.getElementById('table-of-contents');
     if (!tocContainer) return;
     
-    // 检查报告内容中是否已经包含目录
+        // 检查报告内容中是否已经包含目录 - 改进的检测逻辑
     const reportContent = document.querySelector('.report-content');
     if (reportContent) {
-        const existingToc = reportContent.querySelector('ul, ol');
-        const tocKeywords = ['目录', '目次', 'table of contents', 'toc', 'contents'];
+        // 查找可能的目录区域
+        const possibleTocElements = reportContent.querySelectorAll('ul, ol');
+        // 更严格的目录关键词
+        const tocKeywords = ['table of contents', 'toc', '目录', '目次'];
         
-        if (existingToc) {
-            const tocText = existingToc.textContent.toLowerCase();
-            const parentText = existingToc.parentElement ? existingToc.parentElement.textContent.toLowerCase() : '';
+        let foundActualToc = false;
+        
+        for (const element of possibleTocElements) {
+            const elementText = element.textContent.toLowerCase();
+            const parentText = element.parentElement ? element.parentElement.textContent.toLowerCase() : '';
+            const prevSiblingText = element.previousElementSibling ? element.previousElementSibling.textContent.toLowerCase() : '';
             
-            // 如果找到了可能的目录，检查是否包含目录关键词
-            const hasKeywords = tocKeywords.some(keyword => 
-                tocText.includes(keyword) || parentText.includes(keyword)
+            // 检查是否有明确的目录关键词
+            const hasExplicitTocKeywords = tocKeywords.some(keyword => 
+                elementText.includes(keyword) || parentText.includes(keyword) || prevSiblingText.includes(keyword)
             );
             
-            if (hasKeywords) {
-                console.log('Detected existing table of contents, skipping auto-generation');
-                const sidebar = document.querySelector('.report-sidebar');
-                if (sidebar) {
-                    sidebar.style.display = 'none';
-                    const mainContent = document.querySelector('.report-main');
-                    if (mainContent) {
-                        mainContent.classList.add('report-main-centered');
-                    }
+            // 检查是否包含多个内部链接（指向同一页面的链接）
+            const links = element.querySelectorAll('a[href^="#"]');
+            const hasMultipleInternalLinks = links.length >= 3;
+            
+            // 检查是否有明确的章节编号结构
+            const hasChapterStructure = /^\s*(\d+\.|\d+\.\d+\.|\w+\.\s|\d+\s)/.test(elementText);
+            
+            // 排除看起来像命令输出或技术内容的列表
+            const looksLikeTechnicalOutput = /\b(tcp|udp|http|https|ssh|port|service|version|nmap|scan|exploit|payload|shell)\b/i.test(elementText);
+            
+                         // 只有在有明确的目录关键词，且有多个内部链接或章节结构，且不像技术输出时才认为是目录
+             if (hasExplicitTocKeywords && (hasMultipleInternalLinks || hasChapterStructure) && !looksLikeTechnicalOutput) {
+                 console.log('Found existing table of contents, skipping auto-generation');
+                 foundActualToc = true;
+                 break;
+             }
+         }
+         
+         if (foundActualToc) {
+            const sidebar = document.querySelector('.report-sidebar');
+            if (sidebar) {
+                sidebar.style.display = 'none';
+                const mainContent = document.querySelector('.report-main');
+                if (mainContent) {
+                    mainContent.classList.add('report-main-centered');
                 }
-                return;
             }
-        }
+            return;
+                 }
     }
     
     // 创建目录列表
@@ -97,6 +118,21 @@ function generateTableOfContents() {
     });
     
     tocContainer.appendChild(tocList);
+    
+    // 检查侧边栏是否可见并处理移动端显示
+    const sidebar = document.querySelector('.report-sidebar');
+    if (sidebar) {
+        // 检查是否为移动端，确保侧边栏正确显示
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            // 在移动端，侧边栏通过按钮控制显示，但要确保没有被collapsed类隐藏
+            sidebar.classList.remove('collapsed');
+        } else {
+            // 在桌面端，直接显示侧边栏
+            sidebar.classList.remove('collapsed');
+            sidebar.style.display = 'block';
+        }
+    }
     
     // 初始化滚动监听
     initScrollSpy();
