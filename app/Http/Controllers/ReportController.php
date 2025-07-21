@@ -991,7 +991,7 @@ class ReportController extends Controller
     }
     
     /**
-     * Check if report requires password protection (after July 13, 2025)
+     * Check if report requires password protection (after July 11, 2025)
      */
     private function checkIfPasswordRequired($slug)
     {
@@ -1002,8 +1002,8 @@ class ReportController extends Controller
             return false;
         }
         
-        // July 13, 2025 timestamp
-        $cutoffDate = mktime(0, 0, 0, 7, 13, 2025);
+        // July 11, 2025 timestamp (end of day)
+        $cutoffDate = mktime(23, 59, 59, 7, 11, 2025);
         
         return $mtime > $cutoffDate;
     }
@@ -1014,15 +1014,17 @@ class ReportController extends Controller
     private function getReportModificationTime($slug)
     {
         if (str_starts_with($slug, 'htb-')) {
-            // HackTheBox report
+            // HackTheBox report - extract creation time from content
             $folderName = substr($slug, 4);
             $walkthroughFile = storage_path("reports/Hackthebox-Walkthrough/{$folderName}/Walkthrough.md");
             
             if (File::exists($walkthroughFile)) {
-                return File::lastModified($walkthroughFile);
+                $content = File::get($walkthroughFile);
+                // Use extractModificationTime to get the actual creation time from content
+                return $this->extractModificationTime($content, $walkthroughFile);
             }
         } else {
-            // Regular report
+            // Regular report - use file modification time
             $filePath = storage_path("reports/{$slug}.md");
             
             if (File::exists($filePath)) {

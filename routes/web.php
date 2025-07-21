@@ -44,19 +44,19 @@ Route::prefix('reports')->group(function () {
     
     // 显示单个报告
     Route::get('/{slug}', [ReportController::class, 'show'])->name('reports.show');
-
+    
     // 删除报告
     Route::delete('/{slug}', [ReportController::class, 'destroy'])->name('reports.destroy');
-
+    
     // 批量删除报告
     Route::post('/batch-delete', [ReportController::class, 'destroyMultiple'])->name('reports.batch-delete');
-
+    
     // 清除缓存
     Route::post('/clear-cache/{slug?}', [ReportController::class, 'clearCache'])->name('reports.clear-cache');
-
+    
     // 清除全部缓存
     Route::post('/clear-all-cache', [ReportController::class, 'clearAllReportsCache'])->name('reports.clear-all-cache');
-
+    
     // 获取报告统计
     Route::get('/api/stats', [ReportController::class, 'stats'])->name('reports.stats');
 

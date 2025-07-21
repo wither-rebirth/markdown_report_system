@@ -123,9 +123,9 @@
                     <div class="card-content">
                         <h3 class="report-title">
                             @php
-                                // Check if report needs password (after July 13, 2025)
+                                // Check if report needs password (after July 11, 2025)
                                 $mtime = $report['mtime'];
-                                $cutoffDate = mktime(0, 0, 0, 7, 13, 2025);
+                                $cutoffDate = mktime(23, 59, 59, 7, 11, 2025);
                                 $needsPassword = $mtime > $cutoffDate;
                             @endphp
                             @if($needsPassword)

@@ -129,7 +129,7 @@ return [
     | Report Password
     |--------------------------------------------------------------------------
     |
-    | This password is used to protect reports created after July 13, 2025.
+    | This password is used to protect reports created after July 11, 2025.
     | You can set this in your .env file using REPORT_PASSWORD.
     |
     */
