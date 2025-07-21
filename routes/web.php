@@ -36,34 +36,35 @@ Route::get('/aboutme', [AboutMeController::class, 'index'])->name('aboutme.index
 
 // 靶场报告路由组
 Route::prefix('reports')->group(function () {
-    // 报告列表页面
+    // 显示报告列表
     Route::get('/', [ReportController::class, 'index'])->name('reports.index');
     
-
+    // 密码验证路由 - 放在 show 路由之前
+    Route::post('/{slug}/verify-password', [ReportController::class, 'verifyPassword'])->name('reports.verify-password');
     
     // 显示单个报告
     Route::get('/{slug}', [ReportController::class, 'show'])->name('reports.show');
-    
+
     // 删除报告
     Route::delete('/{slug}', [ReportController::class, 'destroy'])->name('reports.destroy');
-    
+
     // 批量删除报告
     Route::post('/batch-delete', [ReportController::class, 'destroyMultiple'])->name('reports.batch-delete');
-    
+
     // 清除缓存
     Route::post('/clear-cache/{slug?}', [ReportController::class, 'clearCache'])->name('reports.clear-cache');
-    
-    // 清除所有报告缓存
-    Route::post('/clear-all-cache', [ReportController::class, 'clearAllReportsCache'])->name('reports.clear-all-cache');
-    
-    // 获取统计信息
-    Route::get('/api/stats', [ReportController::class, 'stats'])->name('reports.stats');
-});
 
-// Hackthebox 报告图片访问
-Route::get('/htb-images/{folder}/{filename}', [ReportController::class, 'getHacktheboxImage'])
-    ->name('reports.htb-image')
-    ->where(['folder' => '[a-zA-Z0-9\-_]+', 'filename' => '.+']);
+    // 清除全部缓存
+    Route::post('/clear-all-cache', [ReportController::class, 'clearAllReportsCache'])->name('reports.clear-all-cache');
+
+    // 获取报告统计
+    Route::get('/api/stats', [ReportController::class, 'stats'])->name('reports.stats');
+
+    // HackTheBox 图片服务路由
+    Route::get('/htb-images/{folder}/{filename}', [ReportController::class, 'getHacktheboxImage'])
+        ->name('reports.htb-image')
+        ->where('filename', '.*'); // 允许文件名包含特殊字符
+});
 
 // 兼容性路由 - 直接访问HTML文件
 Route::get('/{slug}.html', function ($slug) {

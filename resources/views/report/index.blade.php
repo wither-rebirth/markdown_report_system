@@ -121,7 +121,18 @@
                     </div>
                     
                     <div class="card-content">
-                        <h3 class="report-title">{{ $report['title'] }}</h3>
+                        <h3 class="report-title">
+                            @php
+                                // Check if report needs password (after July 13, 2025)
+                                $mtime = $report['mtime'];
+                                $cutoffDate = mktime(0, 0, 0, 7, 13, 2025);
+                                $needsPassword = $mtime > $cutoffDate;
+                            @endphp
+                            @if($needsPassword)
+                                <span class="lock-icon" title="This report requires password access">🔒</span>
+                            @endif
+                            {{ $report['title'] }}
+                        </h3>
                         <p class="report-excerpt">{{ $report['excerpt'] ?? 'Click to view full content...' }}</p>
                         
                         <div class="report-meta">

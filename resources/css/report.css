@@ -909,3 +909,22 @@
         font-size: 0.75rem;
     }
 }
+
+/* 报告标题中的锁定图标 */
+.lock-icon {
+    color: #f39c12;
+    font-size: 0.9em;
+    margin-right: 0.5rem;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.report-card:hover .lock-icon {
+    opacity: 1;
+}
+
+/* 密码表单错误状态 */
+.form-input.error {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}

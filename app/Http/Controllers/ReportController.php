@@ -299,6 +299,13 @@ class ReportController extends Controller
      */
     public function show($slug)
     {
+        // Check if password protection is required (for reports after July 13, 2025)
+        $needsPassword = $this->checkIfPasswordRequired($slug);
+        
+        if ($needsPassword && !$this->isPasswordVerified($slug)) {
+            return $this->showPasswordForm($slug);
+        }
+
         // Check if it's a Hackthebox report
         if (str_starts_with($slug, 'htb-')) {
             return $this->showHacktheboxReport($slug);
@@ -981,5 +988,146 @@ class ReportController extends Controller
         }
         
         return $reports->merge($mdFiles)->sortByDesc('mtime')->toArray();
+    }
+    
+    /**
+     * Check if report requires password protection (after July 13, 2025)
+     */
+    private function checkIfPasswordRequired($slug)
+    {
+        // Get report modification time
+        $mtime = $this->getReportModificationTime($slug);
+        
+        if (!$mtime) {
+            return false;
+        }
+        
+        // July 13, 2025 timestamp
+        $cutoffDate = mktime(0, 0, 0, 7, 13, 2025);
+        
+        return $mtime > $cutoffDate;
+    }
+    
+    /**
+     * Get report modification time
+     */
+    private function getReportModificationTime($slug)
+    {
+        if (str_starts_with($slug, 'htb-')) {
+            // HackTheBox report
+            $folderName = substr($slug, 4);
+            $walkthroughFile = storage_path("reports/Hackthebox-Walkthrough/{$folderName}/Walkthrough.md");
+            
+            if (File::exists($walkthroughFile)) {
+                return File::lastModified($walkthroughFile);
+            }
+        } else {
+            // Regular report
+            $filePath = storage_path("reports/{$slug}.md");
+            
+            if (File::exists($filePath)) {
+                return File::lastModified($filePath);
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Check if password has been verified for this report
+     */
+    private function isPasswordVerified($slug)
+    {
+        return session()->has("report_unlocked_{$slug}");
+    }
+    
+    /**
+     * Show password form for protected report
+     */
+    private function showPasswordForm($slug)
+    {
+        // Get basic report info for the password form
+        $reportInfo = $this->getBasicReportInfo($slug);
+        
+        if (!$reportInfo) {
+            abort(404, 'Report not found');
+        }
+        
+        return view('report.password', [
+            'slug' => $slug,
+            'title' => $reportInfo['title'],
+            'mtime' => $reportInfo['mtime']
+        ]);
+    }
+    
+    /**
+     * Get basic report information without full content
+     */
+    private function getBasicReportInfo($slug)
+    {
+        if (str_starts_with($slug, 'htb-')) {
+            // HackTheBox report
+            $folderName = substr($slug, 4);
+            $walkthroughFile = storage_path("reports/Hackthebox-Walkthrough/{$folderName}/Walkthrough.md");
+            
+            if (File::exists($walkthroughFile)) {
+                return [
+                    'title' => $folderName,
+                    'mtime' => File::lastModified($walkthroughFile),
+                    'type' => 'hackthebox'
+                ];
+            }
+        } else {
+            // Regular report
+            $filePath = storage_path("reports/{$slug}.md");
+            
+            if (File::exists($filePath)) {
+                $content = File::get($filePath);
+                
+                // Extract title
+                $title = $slug;
+                if (preg_match('/^#\s+(.+)$/m', $content, $matches)) {
+                    $title = trim($matches[1]);
+                }
+                
+                return [
+                    'title' => $title,
+                    'mtime' => File::lastModified($filePath),
+                    'type' => 'report'
+                ];
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Verify report password
+     */
+    public function verifyPassword(Request $request, $slug)
+    {
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string'
+        ]);
+        
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+        
+        // Check the password (you should set your own password)
+        $correctPassword = config('app.report_password', 'your_secure_password_here');
+        
+        if ($request->password === $correctPassword) {
+            // Store in session that this report is unlocked
+            session()->put("report_unlocked_{$slug}", true);
+            
+            return redirect()->route('reports.show', $slug);
+        } else {
+            return redirect()->back()
+                ->withErrors(['password' => 'Incorrect password. Please try again.'])
+                ->withInput();
+        }
     }
 } 

@@ -126,6 +126,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Report Password
+    |--------------------------------------------------------------------------
+    |
+    | This password is used to protect reports created after July 13, 2025.
+    | You can set this in your .env file using REPORT_PASSWORD.
+    |
+    */
+
+    'report_password' => env('REPORT_PASSWORD', 'wither2025'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Maintenance Mode Driver
     |--------------------------------------------------------------------------
     |
