@@ -52,7 +52,8 @@ const app = createApp({
             const reportCards = document.querySelectorAll('.report-card');
             this.reports = Array.from(reportCards).map(card => ({
                 element: card,
-                title: card.querySelector('.report-title')?.textContent?.toLowerCase() || '',
+                title: card.querySelector('.title-text')?.textContent?.toLowerCase() || 
+                       card.querySelector('.report-title')?.textContent?.toLowerCase() || '',
                 meta: card.querySelector('.report-meta')?.textContent?.toLowerCase() || '',
                 visible: true
             }));

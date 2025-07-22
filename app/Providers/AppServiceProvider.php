@@ -25,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // 设置默认分页视图
+        \Illuminate\Pagination\Paginator::defaultView('pagination.default');
+        \Illuminate\Pagination\Paginator::defaultSimpleView('pagination.simple-default');
     }
 } 

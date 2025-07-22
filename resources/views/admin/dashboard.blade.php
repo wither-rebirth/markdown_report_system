@@ -144,6 +144,62 @@
                     </a>
                 </div>
             </div>
+
+            <div class="stat-card report-locks-stat">
+                <div class="stat-card-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="stat-menu">
+                        <button class="stat-menu-btn">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="stat-card-body">
+                    <div class="stat-number">{{ $reportLockStats['total'] }}</div>
+                    <div class="stat-label">报告锁定</div>
+                    <div class="stat-detail">
+                        <span class="stat-detail-item success">
+                            <i class="fas fa-check"></i>
+                            启用 {{ $reportLockStats['enabled'] }}
+                        </span>
+                    </div>
+                </div>
+                <div class="stat-card-footer">
+                    <a href="{{ route('admin.report-locks.index') }}" class="stat-link">
+                        管理锁定 <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="stat-card analytics-stat">
+                <div class="stat-card-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-menu">
+                        <button class="stat-menu-btn">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="stat-card-body">
+                    <div class="stat-number">{{ $analyticsStats['pageviews'] }}</div>
+                    <div class="stat-label">页面浏览量</div>
+                    <div class="stat-detail">
+                        <span class="stat-detail-item warning">
+                            <i class="fas fa-users"></i>
+                            访客 {{ $analyticsStats['visitors'] }}
+                        </span>
+                    </div>
+                </div>
+                <div class="stat-card-footer">
+                    <a href="{{ route('admin.analytics.index') }}" class="stat-link">
+                        查看分析 <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 

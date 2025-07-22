@@ -144,6 +144,81 @@
     border-color: rgba(0, 255, 65, 0.4);
 }
 
+/* 锁定状态样式 */
+.locked-badge {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    border: 1px solid rgba(255, 107, 107, 0.2);
+    transition: all 0.3s ease;
+}
+
+.locked-badge:hover {
+    background: linear-gradient(135deg, #ff5252, #e57373);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+    transform: translateY(-1px);
+}
+
+[data-theme="dark"] .locked-badge {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+    border-color: rgba(244, 67, 54, 0.3);
+}
+
+[data-theme="dark"] .locked-badge:hover {
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.6);
+    border-color: rgba(244, 67, 54, 0.4);
+}
+
+.lock-icon {
+    color: #ff6b6b;
+    margin-right: 0.5rem;
+    font-size: 1rem;
+    filter: drop-shadow(0 2px 4px rgba(255, 107, 107, 0.3));
+    display: inline-block;
+}
+
+[data-theme="dark"] .lock-icon {
+    color: #ff7043;
+    filter: drop-shadow(0 2px 4px rgba(255, 112, 67, 0.4));
+}
+
+.title-text {
+    display: inline;
+}
+
+.locked-excerpt {
+    color: #856404;
+    background: linear-gradient(135deg, #fff3cd, #fef9e7);
+    padding: 0.75rem;
+    border-radius: 8px;
+    border-left: 4px solid #ffc107;
+    font-style: italic;
+    display: block;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.locked-excerpt::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #ffc107, #ffca2c);
+}
+
+[data-theme="dark"] .locked-excerpt {
+    color: #ffd54f;
+    background: linear-gradient(135deg, #3e2723, #4e342e);
+    border-left-color: #ffb300;
+}
+
 /* 分页相关样式 */
 .page-header {
     display: flex;

@@ -14,6 +14,7 @@ use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
+use App\Models\ReportLock;
 
 class ReportController extends Controller
 {
@@ -96,6 +97,9 @@ class ReportController extends Controller
             $allReports = $this->filterReportsBySearch($allReports, $searchQuery);
         }
         
+        // Add lock status to reports
+        $allReports = $this->addLockStatusToReports($allReports);
+        
         // Pagination settings - fixed 10 per page
         $perPage = 10; // Fixed 10 per page
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
@@ -117,6 +121,28 @@ class ReportController extends Controller
         $reports->appends($request->query());
         
         return view('report.index', compact('reports'));
+    }
+    
+    /**
+     * Add lock status information to reports
+     */
+    private function addLockStatusToReports($reports)
+    {
+        // Get all report locks in one query for efficiency
+        $locks = ReportLock::where('is_enabled', true)->get()->keyBy('slug');
+        
+        return array_map(function ($report) use ($locks) {
+            $lock = $locks->get($report['slug']);
+            
+            $report['is_locked'] = $lock ? true : false;
+            $report['lock_info'] = $lock ? [
+                'description' => $lock->description,
+                'locked_at' => $lock->locked_at,
+                'label' => $lock->label
+            ] : null;
+            
+            return $report;
+        }, $reports);
     }
     
     /**
@@ -299,8 +325,8 @@ class ReportController extends Controller
      */
     public function show($slug)
     {
-        // Check if password protection is required (for reports after July 13, 2025)
-        $needsPassword = $this->checkIfPasswordRequired($slug);
+        // Check if password protection is required using database
+        $needsPassword = ReportLock::isLocked($slug);
         
         if ($needsPassword && !$this->isPasswordVerified($slug)) {
             return $this->showPasswordForm($slug);
@@ -991,21 +1017,11 @@ class ReportController extends Controller
     }
     
     /**
-     * Check if report requires password protection (after July 11, 2025)
+     * Check if report requires password protection using database
      */
     private function checkIfPasswordRequired($slug)
     {
-        // Get report modification time
-        $mtime = $this->getReportModificationTime($slug);
-        
-        if (!$mtime) {
-            return false;
-        }
-        
-        // July 11, 2025 timestamp (end of day)
-        $cutoffDate = mktime(23, 59, 59, 7, 11, 2025);
-        
-        return $mtime > $cutoffDate;
+        return ReportLock::isLocked($slug);
     }
     
     /**
@@ -1048,17 +1064,21 @@ class ReportController extends Controller
      */
     private function showPasswordForm($slug)
     {
-        // Get basic report info for the password form
+        // Get basic report info for meta tags and content
         $reportInfo = $this->getBasicReportInfo($slug);
-        
         if (!$reportInfo) {
             abort(404, 'Report not found');
         }
         
+        // Get lock info from database for additional details
+        $lockInfo = ReportLock::getLockInfo($slug);
+        
         return view('report.password', [
             'slug' => $slug,
             'title' => $reportInfo['title'],
-            'mtime' => $reportInfo['mtime']
+            'mtime' => $reportInfo['mtime'],
+            'excerpt' => $reportInfo['excerpt'] ?? null, // 传递摘要用于SEO，如果不存在则为null
+            'description' => null // Don't show description in password hint
         ]);
     }
     
@@ -1073,8 +1093,17 @@ class ReportController extends Controller
             $walkthroughFile = storage_path("reports/Hackthebox-Walkthrough/{$folderName}/Walkthrough.md");
             
             if (File::exists($walkthroughFile)) {
+                $content = File::get($walkthroughFile);
+                
+                // For HTB reports, format as "Machine - HackTheBox Writeup"
+                $title = $folderName . ' - HackTheBox Writeup';
+                
+                // Extract excerpt from content
+                $excerpt = $this->extractExcerpt($content);
+                
                 return [
-                    'title' => $folderName,
+                    'title' => $title,
+                    'excerpt' => $excerpt,
                     'mtime' => File::lastModified($walkthroughFile),
                     'type' => 'hackthebox'
                 ];
@@ -1086,14 +1115,15 @@ class ReportController extends Controller
             if (File::exists($filePath)) {
                 $content = File::get($filePath);
                 
-                // Extract title
+                // For regular reports, also use slug as title for consistency
                 $title = $slug;
-                if (preg_match('/^#\s+(.+)$/m', $content, $matches)) {
-                    $title = trim($matches[1]);
-                }
+                
+                // Extract excerpt from content
+                $excerpt = $this->extractExcerpt($content);
                 
                 return [
                     'title' => $title,
+                    'excerpt' => $excerpt,
                     'mtime' => File::lastModified($filePath),
                     'type' => 'report'
                 ];
@@ -1118,10 +1148,17 @@ class ReportController extends Controller
                 ->withInput();
         }
         
-        // Check the password (you should set your own password)
-        $correctPassword = config('app.report_password', 'your_secure_password_here');
+        // Get lock info from database
+        $lockInfo = ReportLock::getLockInfo($slug);
         
-        if ($request->password === $correctPassword) {
+        if (!$lockInfo) {
+            return redirect()->back()
+                ->withErrors(['password' => 'Report lock configuration not found.'])
+                ->withInput();
+        }
+        
+        // Verify password using model method (raw comparison, no escaping)
+        if ($lockInfo->verifyPassword($request->password)) {
             // Store in session that this report is unlocked
             session()->put("report_unlocked_{$slug}", true);
             

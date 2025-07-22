@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ReportController;
+use App\Models\ReportLock;
 
 class HomeController extends Controller
 {
@@ -259,8 +260,31 @@ class HomeController extends Controller
                 }
             }
             
-            return $reports;
+            // 添加锁定状态信息
+            return $this->addLockStatusToReports($reports);
         });
+    }
+    
+    /**
+     * 添加锁定状态信息到报告
+     */
+    private function addLockStatusToReports($reports)
+    {
+        // 获取所有启用的锁定
+        $locks = ReportLock::where('is_enabled', true)->get()->keyBy('slug');
+        
+        return array_map(function ($report) use ($locks) {
+            $lock = $locks->get($report['slug']);
+            
+            $report['is_locked'] = $lock ? true : false;
+            $report['lock_info'] = $lock ? [
+                'description' => $lock->description,
+                'locked_at' => $lock->locked_at,
+                'label' => $lock->label
+            ] : null;
+            
+            return $report;
+        }, $reports);
     }
     
     /**

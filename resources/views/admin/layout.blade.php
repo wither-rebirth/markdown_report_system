@@ -87,6 +87,13 @@
                         </a>
                     </li>
                     
+                    <li class="menu-item">
+                        <a href="{{ route('admin.report-locks.index') }}" class="menu-link {{ request()->routeIs('admin.report-locks*') ? 'active' : '' }}">
+                            <i class="fas fa-lock"></i>
+                            <span class="menu-text">Report锁定</span>
+                        </a>
+                    </li>
+                    
                     <li class="menu-divider"></li>
                     
                     <li class="menu-section">
@@ -160,6 +167,9 @@
                                         break;
                                     case '评论管理':
                                         $pageIcon = 'fas fa-comments';
+                                        break;
+                                    case 'Report锁定管理':
+                                        $pageIcon = 'fas fa-lock';
                                         break;
                                     case '数据分析':
                                         $pageIcon = 'fas fa-chart-line';

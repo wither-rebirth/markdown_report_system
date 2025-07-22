@@ -274,9 +274,16 @@
                                             <span class="card-date">{{ date('m-d', $report['mtime']) }}</span>
                                         </div>
                                         <h3 class="card-title">
-                                            <a href="{{ route('reports.show', $report['slug']) }}">{{ $report['title'] }}</a>
+                                            <a href="{{ route('reports.show', $report['slug']) }}">
+                                                @if($report['is_locked'] ?? false)
+                                                    <span class="lock-icon" title="This report requires password access">🔒</span>
+                                                @endif
+                                                <span class="title-text">{{ $report['title'] }}</span>
+                                            </a>
                                         </h3>
-                                        <p class="card-excerpt">{{ $report['excerpt'] }}</p>
+                                                    <p class="card-excerpt">
+                {{ $report['excerpt'] }}
+            </p>
                                         <div class="card-footer">
                                             <div class="file-size">{{ number_format($report['size'] / 1024, 1) }} KB</div>
                                             <a href="{{ route('reports.show', $report['slug']) }}" class="read-more">View Report →</a>

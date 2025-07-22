@@ -11,6 +11,7 @@ export default defineConfig({
                 'resources/css/layout.css',
                 'resources/css/index.css',
                 'resources/css/report.css',
+                'resources/css/report-password.css',
                 'resources/css/blog.css',
                 'resources/css/aboutme.css',
                 'resources/css/home.css',
@@ -18,6 +19,7 @@ export default defineConfig({
                 'resources/js/layout.js',
                 'resources/js/index.js',
                 'resources/js/report.js',
+                'resources/js/report-password.js',
                 'resources/js/home.js',
                 
                 // 管理后台基础资源
@@ -34,12 +36,14 @@ export default defineConfig({
             'resources/css/admin/categories.css',
             'resources/css/admin/tags.css',
             'resources/css/admin/comments.css',
+            'resources/css/admin/report-locks.css',
             'resources/js/admin/blog.js',
             'resources/js/admin/analytics.js',
             'resources/js/admin/backup.js',
             'resources/js/admin/categories.js',
             'resources/js/admin/tags.js',
             'resources/js/admin/comments.js',
+            'resources/js/admin/report-locks.js',
                 'resources/js/modules/dashboard.js',
                 'resources/js/modules/charts.js'
             ],

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 use App\Models\BlogComment;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Models\ReportLock;
 
 class DashboardController extends Controller
 {
@@ -26,6 +27,12 @@ class DashboardController extends Controller
         $categoryCount = Category::count();
         $tagCount = Tag::count();
         
+        // 获取report锁定统计
+        $reportLockStats = $this->getReportLockStats();
+        
+        // 获取分析统计
+        $analyticsStats = $this->getAnalyticsStats();
+        
         // 获取最新评论
         $latestComments = BlogComment::latest()
             ->take(5)
@@ -36,6 +43,8 @@ class DashboardController extends Controller
             'commentStats',
             'categoryCount',
             'tagCount',
+            'reportLockStats',
+            'analyticsStats',
             'latestComments'
         ));
     }
@@ -93,6 +102,30 @@ class DashboardController extends Controller
             'approved' => BlogComment::where('is_approved', true)->count(),
             'pending' => BlogComment::where('is_approved', false)->count(),
             'today' => BlogComment::whereDate('created_at', today())->count(),
+        ];
+    }
+
+    /**
+     * 获取report锁定统计
+     */
+    private function getReportLockStats()
+    {
+        return [
+            'total' => ReportLock::count(),
+            'enabled' => ReportLock::where('is_enabled', true)->count(),
+            'disabled' => ReportLock::where('is_enabled', false)->count(),
+        ];
+    }
+
+    /**
+     * 获取分析统计
+     */
+    private function getAnalyticsStats()
+    {
+        // 这里可以添加真实的分析数据，暂时使用假数据
+        return [
+            'pageviews' => 1234,
+            'visitors' => 456,
         ];
     }
 }

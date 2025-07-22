@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             AdminUserSeeder::class,
+            // ReportLockSeeder::class, // 按需手动运行：php artisan db:seed --class=ReportLockSeeder
         ]);
     }
 } 

@@ -73,7 +73,7 @@ class BlogController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $slug = $request->slug;
+        $slug = $request->input('slug');
         $blogDir = storage_path('blog');
         
         // 确保博客目录存在
@@ -88,7 +88,7 @@ class BlogController extends Controller
 
         // 准备文章内容
         $frontMatter = $this->prepareFrontMatter($request);
-        $content = $frontMatter . "\n\n" . $request->content;
+        $content = $frontMatter . "\n\n" . $request->input('content');
 
         // 保存文件
         $filePath = $blogDir . '/' . $slug . '.md';
@@ -96,7 +96,7 @@ class BlogController extends Controller
 
         // 处理标签关联
         if ($request->has('tags')) {
-            $this->syncBlogTags($slug, $request->tags);
+            $this->syncBlogTags($slug, $request->input('tags'));
         }
 
         return redirect()->route('admin.blog.index')->with('success', '博客文章创建成功！');
@@ -163,7 +163,7 @@ class BlogController extends Controller
 
         // 准备文章内容
         $frontMatter = $this->prepareFrontMatter($request);
-        $content = $frontMatter . "\n\n" . $request->content;
+        $content = $frontMatter . "\n\n" . $request->input('content');
 
         // 更新文件
         $filePath = $this->getPostFilePath($slug);
@@ -332,19 +332,19 @@ class BlogController extends Controller
     private function prepareFrontMatter($request)
     {
         $category = null;
-        if ($request->category_id) {
-            $categoryModel = Category::find($request->category_id);
+        if ($request->input('category_id')) {
+            $categoryModel = Category::find($request->input('category_id'));
             $category = $categoryModel ? $categoryModel->name : null;
         }
 
         $frontMatter = "---\n";
-        $frontMatter .= "title: \"" . $request->title . "\"\n";
-        $frontMatter .= "excerpt: \"" . ($request->excerpt ?: '') . "\"\n";
-        $frontMatter .= "author: \"" . $request->author . "\"\n";
+        $frontMatter .= "title: \"" . $request->input('title') . "\"\n";
+        $frontMatter .= "excerpt: \"" . ($request->input('excerpt') ?: '') . "\"\n";
+        $frontMatter .= "author: \"" . $request->input('author') . "\"\n";
         $frontMatter .= "category: \"" . ($category ?: '') . "\"\n";
         
-        if ($request->image) {
-            $frontMatter .= "image: \"" . $request->image . "\"\n";
+        if ($request->input('image')) {
+            $frontMatter .= "image: \"" . $request->input('image') . "\"\n";
         }
         
         $frontMatter .= "date: \"" . now()->format('Y-m-d H:i:s') . "\"\n";

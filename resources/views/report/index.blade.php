@@ -122,18 +122,14 @@
                     
                     <div class="card-content">
                         <h3 class="report-title">
-                            @php
-                                // Check if report needs password (after July 11, 2025)
-                                $mtime = $report['mtime'];
-                                $cutoffDate = mktime(23, 59, 59, 7, 11, 2025);
-                                $needsPassword = $mtime > $cutoffDate;
-                            @endphp
-                            @if($needsPassword)
+                            @if($report['is_locked'] ?? false)
                                 <span class="lock-icon" title="This report requires password access">🔒</span>
                             @endif
-                            {{ $report['title'] }}
+                            <span class="title-text">{{ $report['title'] }}</span>
                         </h3>
-                        <p class="report-excerpt">{{ $report['excerpt'] ?? 'Click to view full content...' }}</p>
+                                        <p class="report-excerpt">
+                    {{ $report['excerpt'] ?? 'Click to view full content...' }}
+                </p>
                         
                         <div class="report-meta">
                             <span class="meta-item">
@@ -162,6 +158,14 @@
                                     <path d="M11.996 2l7.071 4.001v8l-7.071 4.001-7.071-4.001v-8l7.071-4.001z"/>
                                 </svg>
                                 HTB
+                            </span>
+                            @endif
+                            @if($report['is_locked'] ?? false)
+                            <span class="meta-item locked-badge">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10A2,2 0 0,1 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/>
+                                </svg>
+                                LOCKED
                             </span>
                             @endif
                         </div>

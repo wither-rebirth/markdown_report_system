@@ -78,8 +78,8 @@ class CommentController extends Controller
         ]);
 
         $comment->update([
-            'content' => $request->content,
-            'author_name' => $request->author_name,
+            'content' => $request->input('content'),
+            'author_name' => $request->input('author_name'),
             'is_approved' => $request->boolean('is_approved'),
         ]);
 

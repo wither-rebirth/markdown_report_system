@@ -123,6 +123,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('backup/download/{filename}', [App\Http\Controllers\Admin\BackupController::class, 'download'])->name('backup.download');
         Route::delete('backup/{filename}', [App\Http\Controllers\Admin\BackupController::class, 'delete'])->name('backup.delete');
         Route::post('backup/cleanup', [App\Http\Controllers\Admin\BackupController::class, 'cleanup'])->name('backup.cleanup');
+        
+        // Report锁定管理
+        Route::resource('report-locks', App\Http\Controllers\Admin\ReportLockController::class);
+        Route::post('report-locks/{reportLock}/toggle-status', [App\Http\Controllers\Admin\ReportLockController::class, 'toggleStatus'])->name('report-locks.toggle-status');
+        Route::post('report-locks/bulk-action', [App\Http\Controllers\Admin\ReportLockController::class, 'bulkAction'])->name('report-locks.bulk-action');
     });
 });
 
