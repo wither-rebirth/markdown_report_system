@@ -56,7 +56,7 @@
 
 /* 博客首页样式 */
 .blog-index {
-    max-width: 1200px;
+    max-width: 1440px;
     margin: 0 auto;
     padding: 2rem;
 }
@@ -217,7 +217,7 @@
 /* 博客内容区域 */
 .blog-content {
     display: grid;
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: 1fr 320px;
     gap: 3rem;
     align-items: start;
 }
@@ -229,7 +229,7 @@
 /* 文章网格 */
 .posts-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
     gap: 2rem;
     margin-bottom: 3rem;
 }
@@ -378,7 +378,7 @@
 .blog-sidebar {
     background: var(--bg-surface);
     border-radius: 1rem;
-    padding: 2rem;
+    padding: 2.5rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     border: 1px solid var(--border-color);
     height: fit-content;
