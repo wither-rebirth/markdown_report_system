@@ -264,8 +264,8 @@ class SitemapController extends Controller
                         // 解析front matter
                         $frontMatter = $this->parseFrontMatter($content);
                         
-                        // 提取修改时间（优先从内容中提取）
-                        $mtime = $this->extractModificationTime($content, $walkthroughFile);
+                        // 使用实际文件修改时间
+                        $mtime = filemtime($walkthroughFile);
                         
                         $allReports[] = [
                             'slug' => 'htb-' . $dirName,

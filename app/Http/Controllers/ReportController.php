@@ -291,7 +291,7 @@ class ReportController extends Controller
             if (File::exists($walkthroughFile)) {
                 $content = File::get($walkthroughFile);
                 $excerpt = $this->extractExcerpt($content);
-                $mtime = $this->extractModificationTime($content, $walkthroughFile);
+                $mtime = File::lastModified($walkthroughFile); // Use actual file modification time
                 $size = File::size($walkthroughFile);
                 
                 // Count images
@@ -1035,9 +1035,8 @@ class ReportController extends Controller
             $walkthroughFile = storage_path("reports/Hackthebox-Walkthrough/{$folderName}/Walkthrough.md");
             
             if (File::exists($walkthroughFile)) {
-                $content = File::get($walkthroughFile);
-                // Use extractModificationTime to get the actual creation time from content
-                return $this->extractModificationTime($content, $walkthroughFile);
+                // Use actual file modification time for accuracy
+                return File::lastModified($walkthroughFile);
             }
         } else {
             // Regular report - use file modification time
