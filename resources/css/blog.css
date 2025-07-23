@@ -541,7 +541,7 @@
 
 /* 博客文章详情页 */
 .blog-post {
-    max-width: 800px;
+    max-width: 950px;  /* 再稍微增加容器宽度 */
     margin: 0 auto;
     padding: 2rem;
 }
@@ -628,7 +628,9 @@
 .prose {
     max-width: none;
     color: #374151;
-    line-height: 1.7;
+    font-size: 18px;  /* 再稍微增加字体大小 */
+    line-height: 1.8;  /* 保持舒适的行高 */
+    letter-spacing: 0.01em;  /* 添加字符间距 */
 }
 
 .prose h1,
@@ -644,19 +646,23 @@
 }
 
 .prose h1 {
-    font-size: 2rem;
+    font-size: 2.2rem;  /* 增加标题大小 */
+    line-height: 1.3;
 }
 
 .prose h2 {
-    font-size: 1.5rem;
+    font-size: 1.7rem;  /* 增加标题大小 */
+    line-height: 1.3;
 }
 
 .prose h3 {
-    font-size: 1.25rem;
+    font-size: 1.4rem;  /* 增加标题大小 */
+    line-height: 1.3;
 }
 
 .prose p {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;  /* 保持段落间距 */
+    font-size: 18px;  /* 与基础字体大小保持一致 */
 }
 
 .prose ul,
@@ -689,9 +695,9 @@
 .prose code {
     background: #f3f4f6;
     color: #ef4444;
-    padding: 0.25rem 0.5rem;
+    padding: 0.3rem 0.6rem;  /* 增加内边距 */
     border-radius: 0.25rem;
-    font-size: 0.875rem;
+    font-size: 0.95rem;  /* 增加行内代码字体大小 */
 }
 
 .prose pre code {
@@ -1134,12 +1140,13 @@
     /* 文章内容优化 */
     .post-content {
         padding: 1.5rem 0;
-        font-size: 16px;
-        line-height: 1.7;
+        font-size: 18px;  /* 移动端也保持一致的字体大小 */
+        line-height: 1.8;  /* 保持移动端行高 */
     }
     
     .prose {
-        font-size: inherit;
+        font-size: 18px;  /* 移动端字体大小保持一致 */
+        letter-spacing: 0.01em;
     }
     
     .prose h1 {
@@ -1164,8 +1171,9 @@
     }
     
     .prose p {
-        margin-bottom: 1.25rem;
-        line-height: 1.7;
+        margin-bottom: 1.5rem;  /* 保持移动端段落间距 */
+        line-height: 1.8;  /* 保持移动端行高 */
+        font-size: 18px;  /* 移动端段落字体大小保持一致 */
     }
     
     .prose pre {
