@@ -1,7 +1,7 @@
 @extends('admin.layout')
 
-@section('title', '数据分析')
-@section('page-title', '数据分析')
+@section('title', 'Analytics')
+@section('page-title', 'Analytics')
 
 @push('styles')
 @vite(['resources/css/admin/analytics.css'])
@@ -16,20 +16,20 @@
 
     <!-- 控制面板 -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 1rem; background: var(--bg-primary); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);">
-        <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600;">数据统计</h2>
+        <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600;">Data Analytics</h2>
         <div style="display: flex; gap: 1rem; align-items: center;">
             <div class="period-selector">
-                <label style="margin-right: 0.5rem; font-size: 0.875rem; color: var(--gray-600);">时间周期：</label>
+                <label style="margin-right: 0.5rem; font-size: 0.875rem; color: var(--gray-600);">Time Period:</label>
                 <select id="period-select" class="form-select" style="width: auto;" onchange="changePeriod(this.value)">
-                    <option value="today" {{ $period === 'today' ? 'selected' : '' }}>今天</option>
-                    <option value="yesterday" {{ $period === 'yesterday' ? 'selected' : '' }}>昨天</option>
-                    <option value="7days" {{ $period === '7days' ? 'selected' : '' }}>最近7天</option>
-                    <option value="30days" {{ $period === '30days' ? 'selected' : '' }}>最近30天</option>
-                    <option value="90days" {{ $period === '90days' ? 'selected' : '' }}>最近90天</option>
+                    <option value="today" {{ $period === 'today' ? 'selected' : '' }}>Today</option>
+                    <option value="yesterday" {{ $period === 'yesterday' ? 'selected' : '' }}>Yesterday</option>
+                    <option value="7days" {{ $period === '7days' ? 'selected' : '' }}>Last 7 days</option>
+                    <option value="30days" {{ $period === '30days' ? 'selected' : '' }}>Last 30 days</option>
+                    <option value="90days" {{ $period === '90days' ? 'selected' : '' }}>Last 90 days</option>
                 </select>
             </div>
             <a href="{{ route('admin.analytics.realtime') }}" class="btn btn-primary">
-                <i class="fas fa-eye"></i> 实时数据
+                <i class="fas fa-eye"></i> Real-time
             </a>
         </div>
     </div>
@@ -39,7 +39,7 @@
         <div class="stat-card">
             <div class="stat-icon">👁️</div>
             <div class="stat-content">
-                <h3>页面访问量 (PV)</h3>
+                <h3>Page Views (PV)</h3>
                 <div class="stat-number">{{ number_format($basicStats['total_pv']) }}</div>
                 @if(isset($basicStats['previous']['total_pv']))
                     @php
@@ -57,7 +57,7 @@
         <div class="stat-card">
             <div class="stat-icon">👥</div>
             <div class="stat-content">
-                <h3>独立访客 (UV)</h3>
+                <h3>Unique Visitors (UV)</h3>
                 <div class="stat-number">{{ number_format($basicStats['total_uv']) }}</div>
                 @if(isset($basicStats['previous']['total_uv']))
                     @php
@@ -75,18 +75,18 @@
         <div class="stat-card">
             <div class="stat-icon">🔄</div>
             <div class="stat-content">
-                <h3>会话数</h3>
+                <h3>Sessions</h3>
                 <div class="stat-number">{{ number_format($basicStats['total_sessions']) }}</div>
-                <div class="stat-sub">平均 {{ $basicStats['avg_pages_per_session'] }} 页/会话</div>
+                <div class="stat-sub">Avg {{ $basicStats['avg_pages_per_session'] }} pages/session</div>
             </div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">📊</div>
             <div class="stat-content">
-                <h3>跳出率</h3>
+                <h3>Bounce Rate</h3>
                 <div class="stat-number">{{ $basicStats['bounce_rate'] }}%</div>
-                <div class="stat-sub">新访客 {{ number_format($basicStats['new_visitors']) }}</div>
+                <div class="stat-sub">New visitors {{ number_format($basicStats['new_visitors']) }}</div>
             </div>
         </div>
     </div>
@@ -95,9 +95,9 @@
     <div class="chart-section">
         <div class="chart-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3>访问趋势</h3>
+                <h3>Traffic Trend</h3>
                 @if(config('app.debug'))
-                    <button onclick="showDebugInfo()" class="btn btn-sm btn-outline-secondary">调试信息</button>
+                    <button onclick="showDebugInfo()" class="btn btn-sm btn-outline-secondary">Debug Info</button>
                 @endif
             </div>
             <canvas id="trendChart"></canvas>
@@ -112,20 +112,20 @@
         const data = element ? element.textContent : 'Element not found';
         
         const debugInfo = `
-调试信息:
-数据长度: ${data.length}
-前100个字符: ${data.substring(0, 100)}
-数据类型: ${typeof data}
-开始字符编码: ${data.charCodeAt(0)}
-第二个字符编码: ${data.charCodeAt(1)}
-第三个字符编码: ${data.charCodeAt(2)}
+Debug Information:
+Data length: ${data.length}
+First 100 characters: ${data.substring(0, 100)}
+Data type: ${typeof data}
+First character code: ${data.charCodeAt(0)}
+Second character code: ${data.charCodeAt(1)}
+Third character code: ${data.charCodeAt(2)}
 
-完整数据:
+Complete data:
 ${data}
         `;
         
         alert(debugInfo);
-        console.log('趋势数据调试:', {
+        console.log('Trend data debug:', {
             length: data.length,
             first100: data.substring(0, 100),
             fullData: data,
@@ -138,14 +138,14 @@ ${data}
     <!-- 详细统计 -->
     <div class="details-section">
         <div class="detail-card">
-            <h3>热门页面</h3>
+            <h3>Top Pages</h3>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>页面</th>
-                            <th>访问量</th>
-                            <th>独立访客</th>
+                            <th>Page</th>
+                            <th>Page Views</th>
+                            <th>Unique Visitors</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -166,7 +166,7 @@ ${data}
         </div>
 
         <div class="detail-card">
-            <h3>设备统计</h3>
+            <h3>Device Statistics</h3>
             <div class="device-stats">
                 @foreach($deviceStats as $device)
                     <div class="device-item">
@@ -185,7 +185,7 @@ ${data}
         </div>
 
         <div class="detail-card">
-            <h3>浏览器统计</h3>
+            <h3>Browser Statistics</h3>
             <div class="browser-stats">
                 @foreach($browserStats as $browser)
                     <div class="browser-item">
@@ -196,30 +196,16 @@ ${data}
             </div>
         </div>
 
-        <div class="detail-card">
-            <h3>来源统计</h3>
-            <div class="referer-stats">
-                @if($refererStats->isEmpty())
-                    <p class="text-muted">暂无来源数据</p>
-                @else
-                    @foreach($refererStats as $referer)
-                        <div class="referer-item">
-                            <span class="referer-name">{{ parse_url($referer->referer, PHP_URL_HOST) ?: '直接访问' }}</span>
-                            <span class="referer-count">{{ number_format($referer->count) }}</span>
-                        </div>
-                    @endforeach
-                @endif
-            </div>
-        </div>
+
     </div>
 
     <!-- 导出功能 -->
     <div class="export-section">
-        <h3>数据导出</h3>
+        <h3>Data Export</h3>
         <div class="export-buttons">
-            <button onclick="exportData('visits')" class="btn btn-outline-primary">导出访问数据</button>
-            <button onclick="exportData('daily_stats')" class="btn btn-outline-primary">导出统计数据</button>
-            <button onclick="exportData('pages')" class="btn btn-outline-primary">导出页面数据</button>
+            <button onclick="exportData('visits')" class="btn btn-outline-primary">Export Visit Data</button>
+            <button onclick="exportData('daily_stats')" class="btn btn-outline-primary">Export Statistics</button>
+            <button onclick="exportData('pages')" class="btn btn-outline-primary">Export Page Data</button>
         </div>
     </div>
 </div>

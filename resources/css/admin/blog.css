@@ -50,14 +50,98 @@
     border-radius: 0.25rem;
 }
 
-/* 标签颜色 */
+/* 标签颜色 - 优化性能 */
 .tag-name {
     font-weight: 500;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.15s ease;
+    /* 使用GPU加速 */
+    will-change: opacity;
+    /* 避免重绘 */
+    backface-visibility: hidden;
 }
 
 .tag-name:hover {
     opacity: 0.8;
+}
+
+/* 标签项优化 */
+.tag-item {
+    /* 使用contain优化渲染 */
+    contain: layout style;
+    /* 避免不必要的重排 */
+    transform: translateZ(0);
+}
+
+/* 标签搜索框优化 */
+#tag-search {
+    /* GPU加速 */
+    will-change: transform;
+    /* 减少重绘 */
+    backface-visibility: hidden;
+}
+
+/* 标签容器滚动优化 */
+#tags-container {
+    /* 开启硬件加速 */
+    transform: translateZ(0);
+    /* 优化滚动性能 */
+    overflow-scrolling: touch;
+    /* 减少重绘区域 */
+    contain: layout style;
+}
+
+/* 搜索结果信息 */
+.search-result-info {
+    /* 避免布局抖动 */
+    contain: layout;
+}
+
+/* 分类选择器优化 */
+.form-select {
+    /* GPU加速 */
+    will-change: transform;
+    /* 避免重绘 */
+    backface-visibility: hidden;
+    /* 优化渲染 */
+    contain: layout style;
+}
+
+/* 表单元素通用优化 */
+.form-input,
+.form-textarea {
+    /* GPU加速 */
+    will-change: transform;
+    /* 避免重绘 */
+    backface-visibility: hidden;
+    /* 减少重排 */
+    contain: layout style;
+}
+
+/* 卡片容器优化 */
+.card {
+    /* 使用contain优化 */
+    contain: layout style;
+    /* GPU加速 */
+    transform: translateZ(0);
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+    /* 移动端标签容器优化 */
+    #tags-container {
+        /* 减少移动端滚动重绘 */
+        -webkit-overflow-scrolling: touch;
+        /* 优化移动端性能 */
+        transform: translate3d(0, 0, 0);
+    }
+    
+    /* 移动端表单优化 */
+    .form-input,
+    .form-textarea,
+    .form-select {
+        /* 避免移动端输入缩放 */
+        transform: translateZ(0);
+    }
 }
 
 /* 批量操作 */

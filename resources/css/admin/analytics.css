@@ -156,18 +156,16 @@
     text-decoration: underline;
 }
 
-/* 设备、浏览器、来源统计 */
+/* 设备、浏览器统计 */
 .device-stats,
-.browser-stats,
-.referer-stats {
+.browser-stats {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
 .device-item,
-.browser-item,
-.referer-item {
+.browser-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -176,8 +174,7 @@
 }
 
 .device-item:last-child,
-.browser-item:last-child,
-.referer-item:last-child {
+.browser-item:last-child {
     border-bottom: none;
 }
 

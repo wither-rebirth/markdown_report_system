@@ -18,13 +18,13 @@ class AdminAuth
     {
         // 检查用户是否已登录
         if (!Auth::check()) {
-            return redirect()->route('admin.login')->with('error', '请先登录');
+            return redirect()->route('admin.login');
         }
 
         // 检查用户是否为管理员
         if (!Auth::user()->isAdmin()) {
             Auth::logout();
-            return redirect()->route('admin.login')->with('error', '您没有管理员权限');
+            return redirect()->route('admin.login')->with('error', 'You do not have administrator privileges');
         }
 
         return $next($request);

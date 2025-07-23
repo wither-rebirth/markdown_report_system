@@ -35,9 +35,6 @@ class AnalyticsController extends Controller
             // 获取浏览器统计
             $browserStats = $this->getBrowserStats($period);
             
-            // 获取来源统计
-            $refererStats = $this->getRefererStats($period);
-            
         } catch (\Exception $e) {
             // 如果发生错误，使用默认值
             Log::error('Analytics data error: ' . $e->getMessage());
@@ -55,7 +52,6 @@ class AnalyticsController extends Controller
             $topPages = collect([]);
             $deviceStats = collect([]);
             $browserStats = collect([]);
-            $refererStats = collect([]);
         }
         
         return view('admin.analytics.index', compact(
@@ -64,7 +60,6 @@ class AnalyticsController extends Controller
             'topPages',
             'deviceStats',
             'browserStats',
-            'refererStats',
             'period'
         ));
     }
@@ -297,23 +292,7 @@ class AnalyticsController extends Controller
             ->get();
     }
 
-    /**
-     * 获取来源统计
-     */
-    private function getRefererStats($period)
-    {
-        $query = PageVisit::query();
-        $this->applyPeriodFilter($query, $period);
-        
-        return $query->whereNotNull('referer')
-            ->select('referer')
-            ->selectRaw('COUNT(*) as count')
-            ->selectRaw('COUNT(DISTINCT ip_address) as unique_users')
-            ->groupBy('referer')
-            ->orderBy('count', 'desc')
-            ->limit(10)
-            ->get();
-    }
+
 
     /**
      * 获取实时数据

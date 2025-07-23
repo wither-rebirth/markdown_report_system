@@ -1,7 +1,7 @@
 @extends('admin.layout')
 
-@section('title', '评论管理')
-@section('page-title', '评论管理')
+@section('title', 'Comment Management')
+@section('page-title', 'Comment Management')
 
 @push('styles')
 @vite(['resources/css/admin/comments.css'])
@@ -15,38 +15,38 @@
 <div class="card" style="margin: 1.5rem;">
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
-            <h3 class="card-title">评论列表</h3>
+            <h3 class="card-title">Comments List</h3>
             <div class="d-flex gap-2">
                 <button type="button" class="btn btn-success" id="batch-approve" style="display: none;">
-                    <i class="fas fa-check"></i> 批量通过
+                    <i class="fas fa-check"></i> Bulk Approve
                 </button>
                 <button type="button" class="btn btn-warning" id="batch-spam" style="display: none;">
-                    <i class="fas fa-ban"></i> 标记垃圾
+                    <i class="fas fa-ban"></i> Mark as Spam
                 </button>
                 <button type="button" class="btn btn-danger" id="batch-delete" style="display: none;">
-                    <i class="fas fa-trash"></i> 批量删除
+                    <i class="fas fa-trash"></i> Bulk Delete
                 </button>
                 <form method="GET" class="d-flex gap-2">
                     <select name="status" class="form-select" style="width: 120px;">
-                        <option value="">全部状态</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>待审核</option>
-                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>已通过</option>
-                        <option value="spam" {{ request('status') == 'spam' ? 'selected' : '' }}>垃圾评论</option>
+                        <option value="">All Status</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="spam" {{ request('status') == 'spam' ? 'selected' : '' }}>Spam</option>
                     </select>
                     <input 
                         type="text" 
                         name="search" 
                         class="form-input" 
                         style="width: 200px;" 
-                        placeholder="搜索内容、作者..." 
+                        placeholder="Search content, author..." 
                         value="{{ request('search') }}"
                     >
                     <button type="submit" class="btn btn-secondary">
-                        <i class="fas fa-search"></i> 搜索
+                        <i class="fas fa-search"></i> Search
                     </button>
                     @if(request('search') || request('status'))
                         <a href="{{ route('admin.comments.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> 清除
+                            <i class="fas fa-times"></i> Clear
                         </a>
                     @endif
                 </form>
@@ -63,12 +63,12 @@
                             <th style="width: 5%;">
                                 <input type="checkbox" id="select-all" style="margin: 0;">
                             </th>
-                            <th style="width: 20%;">评论者</th>
-                            <th style="width: 30%;">评论内容</th>
-                            <th style="width: 15%;">文章</th>
-                            <th style="width: 10%;">提交时间</th>
-                            <th style="width: 8%;">状态</th>
-                            <th style="width: 12%;">操作</th>
+                            <th style="width: 20%;">Commenter</th>
+                            <th style="width: 30%;">Comment Content</th>
+                            <th style="width: 15%;">Post</th>
+                            <th style="width: 10%;">Submitted</th>
+                            <th style="width: 8%;">Status</th>
+                            <th style="width: 12%;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -94,7 +94,7 @@
                                                 <a href="{{ $comment->author_website }}" 
                                                    target="_blank" 
                                                    style="color: #667eea; text-decoration: none;">
-                                                    <i class="fas fa-external-link-alt"></i> 网站
+                                                    <i class="fas fa-external-link-alt"></i> Website
                                                 </a>
                                             </small>
                                         @endif
@@ -106,7 +106,7 @@
                                     </div>
                                     @if($comment->parent_id)
                                         <small class="text-muted">
-                                            <i class="fas fa-reply"></i> 回复评论
+                                            <i class="fas fa-reply"></i> Reply to comment
                                         </small>
                                     @endif
                                 </td>
@@ -123,13 +123,13 @@
                                 </td>
                                 <td>
                                     @if($comment->status === 'pending')
-                                        <span class="status-badge warning">待审核</span>
+                                        <span class="status-badge warning">Pending</span>
                                     @elseif($comment->status === 'approved')
-                                        <span class="status-badge active">已通过</span>
+                                        <span class="status-badge active">Approved</span>
                                     @elseif($comment->status === 'spam')
-                                        <span class="status-badge danger">垃圾</span>
+                                        <span class="status-badge danger">Spam</span>
                                     @else
-                                        <span class="status-badge inactive">未知</span>
+                                        <span class="status-badge inactive">Unknown</span>
                                     @endif
                                 </td>
                                 <td>
@@ -138,14 +138,14 @@
                                             <button type="button" 
                                                     class="btn btn-sm btn-success approve-btn" 
                                                     data-id="{{ $comment->id }}"
-                                                    title="通过">
+                                                    title="Approve">
                                                 <i class="fas fa-check"></i>
                                             </button>
                                         @endif
                                         
                                         <a href="{{ route('admin.comments.edit', $comment) }}" 
                                            class="btn btn-sm btn-primary" 
-                                           title="编辑">
+                                           title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         
@@ -153,7 +153,7 @@
                                             <button type="button" 
                                                     class="btn btn-sm btn-warning spam-btn" 
                                                     data-id="{{ $comment->id }}"
-                                                    title="标记垃圾">
+                                                    title="Mark as Spam">
                                                 <i class="fas fa-ban"></i>
                                             </button>
                                         @endif
@@ -165,8 +165,8 @@
                                             @method('DELETE')
                                             <button type="submit" 
                                                     class="btn btn-sm btn-danger" 
-                                                    data-confirm="确定要删除这条评论吗？"
-                                                    title="删除">
+                                                    data-confirm="Are you sure you want to delete this comment?"
+                                                    title="Delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
@@ -186,12 +186,12 @@
         @else
             <div class="empty-state" style="padding: 3rem; text-align: center;">
                 <i class="fas fa-comments" style="font-size: 3rem; color: #9ca3af; margin-bottom: 1rem;"></i>
-                <h3 style="color: #6b7280; margin-bottom: 0.5rem;">暂无评论</h3>
+                <h3 style="color: #6b7280; margin-bottom: 0.5rem;">No Comments</h3>
                 <p style="color: #9ca3af; margin-bottom: 1.5rem;">
                     @if(request('search'))
-                        没有找到匹配"{{ request('search') }}"的评论
+                        No comments found matching "{{ request('search') }}"
                     @else
-                        还没有收到任何评论
+                        No comments received yet
                     @endif
                 </p>
             </div>

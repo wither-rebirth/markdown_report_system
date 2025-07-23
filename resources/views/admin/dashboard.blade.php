@@ -1,7 +1,7 @@
 @extends('admin.layout')
 
-@section('title', '仪表板')
-@section('page-title', '仪表板')
+@section('title', 'Dashboard')
+@section('page-title', 'Dashboard')
 
 @push('styles')
 @vite(['resources/css/admin/dashboard.css'])
@@ -15,16 +15,16 @@
             <div class="welcome-text">
                 <h2 class="welcome-title">
                     <span class="greeting-icon">👋</span>
-                    欢迎回来，{{ Auth::user()->name }}
+                    Welcome back, {{ Auth::user()->name }}
                 </h2>
                 <p class="welcome-subtitle">
-                    今天是 {{ date('Y年m月d日') }}，{{ ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date('w')] }}
+                    Today is {{ date('F j, Y') }}, {{ date('l') }}
                 </p>
             </div>
             <div class="welcome-actions">
                 <a href="{{ route('admin.blog.create') }}" class="btn btn-primary">
                     <i class="fas fa-plus"></i>
-                    <span>写新文章</span>
+                    <span>Write New Post</span>
                 </a>
             </div>
         </div>
@@ -46,17 +46,17 @@
                 </div>
                 <div class="stat-card-body">
                     <div class="stat-number">{{ $blogStats['total'] }}</div>
-                    <div class="stat-label">博客文章</div>
+                    <div class="stat-label">Blog Posts</div>
                     <div class="stat-detail">
                         <span class="stat-detail-item success">
                             <i class="fas fa-check"></i>
-                            已发布 {{ $blogStats['published'] }}
+                            Published {{ $blogStats['published'] }}
                         </span>
                     </div>
                 </div>
                 <div class="stat-card-footer">
                     <a href="{{ route('admin.blog.index') }}" class="stat-link">
-                        查看全部 <i class="fas fa-arrow-right"></i>
+                        View All <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -74,17 +74,17 @@
                 </div>
                 <div class="stat-card-body">
                     <div class="stat-number">{{ $commentStats['total'] }}</div>
-                    <div class="stat-label">评论总数</div>
+                    <div class="stat-label">Total Comments</div>
                     <div class="stat-detail">
                         <span class="stat-detail-item info">
                             <i class="fas fa-calendar-day"></i>
-                            今日 {{ $commentStats['today'] }}
+                            Today {{ $commentStats['today'] }}
                         </span>
                     </div>
                 </div>
                 <div class="stat-card-footer">
                     <a href="{{ route('admin.comments.index') }}" class="stat-link">
-                        管理评论 <i class="fas fa-arrow-right"></i>
+                        Manage Comments <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -102,17 +102,17 @@
                 </div>
                 <div class="stat-card-body">
                     <div class="stat-number">{{ $categoryCount }}</div>
-                    <div class="stat-label">分类数量</div>
+                    <div class="stat-label">Categories</div>
                     <div class="stat-detail">
                         <span class="stat-detail-item success">
                             <i class="fas fa-check-circle"></i>
-                            已激活
+                            Active
                         </span>
                     </div>
                 </div>
                 <div class="stat-card-footer">
                     <a href="{{ route('admin.categories.index') }}" class="stat-link">
-                        管理分类 <i class="fas fa-arrow-right"></i>
+                        Manage Categories <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -130,76 +130,22 @@
                 </div>
                 <div class="stat-card-body">
                     <div class="stat-number">{{ $tagCount }}</div>
-                    <div class="stat-label">标签数量</div>
+                    <div class="stat-label">Tags</div>
                     <div class="stat-detail">
                         <span class="stat-detail-item info">
                             <i class="fas fa-tag"></i>
-                            可使用
+                            Available
                         </span>
                     </div>
                 </div>
                 <div class="stat-card-footer">
                     <a href="{{ route('admin.tags.index') }}" class="stat-link">
-                        管理标签 <i class="fas fa-arrow-right"></i>
+                        Manage Tags <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
 
-            <div class="stat-card report-locks-stat">
-                <div class="stat-card-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-lock"></i>
-                    </div>
-                    <div class="stat-menu">
-                        <button class="stat-menu-btn">
-                            <i class="fas fa-ellipsis-h"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="stat-card-body">
-                    <div class="stat-number">{{ $reportLockStats['total'] }}</div>
-                    <div class="stat-label">报告锁定</div>
-                    <div class="stat-detail">
-                        <span class="stat-detail-item success">
-                            <i class="fas fa-check"></i>
-                            启用 {{ $reportLockStats['enabled'] }}
-                        </span>
-                    </div>
-                </div>
-                <div class="stat-card-footer">
-                    <a href="{{ route('admin.report-locks.index') }}" class="stat-link">
-                        管理锁定 <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
 
-            <div class="stat-card analytics-stat">
-                <div class="stat-card-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="stat-menu">
-                        <button class="stat-menu-btn">
-                            <i class="fas fa-ellipsis-h"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="stat-card-body">
-                    <div class="stat-number">{{ $analyticsStats['pageviews'] }}</div>
-                    <div class="stat-label">页面浏览量</div>
-                    <div class="stat-detail">
-                        <span class="stat-detail-item warning">
-                            <i class="fas fa-users"></i>
-                            访客 {{ $analyticsStats['visitors'] }}
-                        </span>
-                    </div>
-                </div>
-                <div class="stat-card-footer">
-                    <a href="{{ route('admin.analytics.index') }}" class="stat-link">
-                        查看分析 <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -211,11 +157,11 @@
                 <div class="widget-header">
                     <div class="widget-title">
                         <i class="fas fa-comment-dots"></i>
-                        <span>最新评论</span>
+                        <span>Latest Comments</span>
                     </div>
                     <div class="widget-actions">
                         <a href="{{ route('admin.comments.index') }}" class="widget-link">
-                            查看全部
+                            View All
                         </a>
                     </div>
                 </div>
@@ -231,7 +177,7 @@
                                         <div class="comment-header">
                                             <div class="comment-author">{{ $comment->author_name }}</div>
                                             <div class="comment-status {{ $comment->is_approved ? 'approved' : 'pending' }}">
-                                                {{ $comment->is_approved ? '已审核' : '待审核' }}
+                                                {{ $comment->is_approved ? 'Approved' : 'Pending' }}
                                             </div>
                                         </div>
                                         <div class="comment-text">
@@ -246,15 +192,15 @@
                             @endforeach
                         </div>
                     @else
-                        <div class="widget-empty">
-                            <div class="empty-icon">
-                                <i class="fas fa-comment-slash"></i>
-                            </div>
-                            <div class="empty-text">
-                                <h4>暂无评论</h4>
-                                <p>还没有收到任何评论</p>
-                            </div>
+                                            <div class="widget-empty">
+                        <div class="empty-icon">
+                            <i class="fas fa-comment-slash"></i>
                         </div>
+                        <div class="empty-text">
+                            <h4>No Comments</h4>
+                            <p>No comments have been received yet</p>
+                        </div>
+                    </div>
                     @endif
                 </div>
             </div>
@@ -266,12 +212,12 @@
                 <div class="widget-header">
                     <div class="widget-title">
                         <i class="fas fa-server"></i>
-                        <span>系统状态</span>
+                        <span>System Status</span>
                     </div>
                     <div class="widget-actions">
                         <div class="status-indicator online">
                             <i class="fas fa-circle"></i>
-                            <span>运行正常</span>
+                            <span>Running</span>
                         </div>
                     </div>
                 </div>
@@ -282,7 +228,7 @@
                                 <i class="fas fa-user"></i>
                             </div>
                             <div class="info-content">
-                                <div class="info-label">当前用户</div>
+                                <div class="info-label">Current User</div>
                                 <div class="info-value">{{ Auth::user()->name }}</div>
                             </div>
                         </div>
@@ -292,7 +238,7 @@
                                 <i class="fas fa-clock"></i>
                             </div>
                             <div class="info-content">
-                                <div class="info-label">登录时间</div>
+                                <div class="info-label">Login Time</div>
                                 <div class="info-value">{{ now()->format('H:i') }}</div>
                             </div>
                         </div>

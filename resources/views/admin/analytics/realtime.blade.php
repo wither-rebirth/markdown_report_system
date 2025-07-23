@@ -1,7 +1,7 @@
 @extends('admin.layout')
 
-@section('title', '实时数据')
-@section('page-title', '实时数据')
+@section('title', 'Real-time Analytics')
+@section('page-title', 'Real-time Analytics')
 
 @push('styles')
 @vite(['resources/css/admin/analytics.css'])
@@ -16,14 +16,14 @@
 
     <!-- 控制面板 -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 1rem; background: var(--bg-primary); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);">
-        <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600;">实时数据监控</h2>
+        <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600;">Real-time Data Monitor</h2>
         <div style="display: flex; gap: 1rem; align-items: center;">
             <div class="realtime-indicator">
                 <span style="display: inline-block; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; margin-right: 0.5rem; animation: pulse 2s infinite;"></span>
-                <span style="font-size: 0.875rem; color: var(--gray-600);">实时更新</span>
+                <span style="font-size: 0.875rem; color: var(--gray-600);">Live Updates</span>
             </div>
             <a href="{{ route('admin.analytics.index') }}" class="btn btn-secondary">
-                <i class="fas fa-chart-bar"></i> 返回统计
+                <i class="fas fa-chart-bar"></i> Back to Analytics
             </a>
         </div>
     </div>
@@ -33,36 +33,36 @@
         <div class="stat-card">
             <div class="stat-icon">🟢</div>
             <div class="stat-content">
-                <h3>在线用户</h3>
+                <h3>Online Users</h3>
                 <div class="stat-number" id="online-users">{{ $onlineUsers }}</div>
-                <div class="stat-sub">当前活跃</div>
+                <div class="stat-sub">Currently Active</div>
             </div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">📈</div>
             <div class="stat-content">
-                <h3>24小时访问</h3>
+                <h3>24-Hour Views</h3>
                 <div class="stat-number">{{ number_format($realtimeData['total_24h'] ?? 0) }}</div>
-                <div class="stat-sub">最近24小时</div>
+                <div class="stat-sub">Last 24 hours</div>
             </div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">⏱️</div>
             <div class="stat-content">
-                <h3>每分钟访问</h3>
+                <h3>Views Per Minute</h3>
                 <div class="stat-number" id="current-ppm">{{ $realtimeData['current_ppm'] ?? 0 }}</div>
-                <div class="stat-sub">过去1分钟</div>
+                <div class="stat-sub">Last 1 minute</div>
             </div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">🔄</div>
             <div class="stat-content">
-                <h3>每小时访问</h3>
+                <h3>Views Per Hour</h3>
                 <div class="stat-number">{{ number_format($realtimeData['current_pph'] ?? 0) }}</div>
-                <div class="stat-sub">过去1小时</div>
+                <div class="stat-sub">Last 1 hour</div>
             </div>
         </div>
     </div>
@@ -71,9 +71,9 @@
     <div class="realtime-visits">
         <div class="detail-card">
             <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 1rem;">
-                <h3>最新访问记录</h3>
+                <h3>Latest Visits</h3>
                 <button id="refresh-btn" class="btn btn-sm btn-outline-primary" onclick="refreshRealtimeData()">
-                    <i class="fas fa-sync"></i> 刷新
+                    <i class="fas fa-sync"></i> Refresh
                 </button>
             </div>
             
@@ -81,12 +81,12 @@
                 <table class="table" id="realtime-visits-table">
                     <thead>
                         <tr>
-                            <th>时间</th>
-                            <th>页面</th>
-                            <th>IP地址</th>
-                            <th>设备</th>
-                            <th>浏览器</th>
-                            <th>来源</th>
+                            <th>Time</th>
+                            <th>Page</th>
+                            <th>IP Address</th>
+                            <th>Device</th>
+                            <th>Browser</th>
+                            <th>Referrer</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -116,14 +116,14 @@
                                         @if($visit->referer)
                                             {{ parse_url($visit->referer, PHP_URL_HOST) }}
                                         @else
-                                            直接访问
+                                            Direct
                                         @endif
                                     </span>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted">暂无实时访问数据</td>
+                                <td colspan="6" class="text-center text-muted">No real-time visit data</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -135,7 +135,7 @@
     <!-- 24小时趋势图 -->
     <div class="chart-section">
         <div class="chart-container">
-            <h3>24小时访问趋势</h3>
+            <h3>24-Hour Traffic Trend</h3>
             <canvas id="realtimeTrendChart" height="300"></canvas>
             <script type="application/json" id="realtime-trend-data">{!! json_encode($realtimeData['hourly_trend'] ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
         </div>
@@ -282,13 +282,13 @@ function updateTimeAgo() {
             
             let timeText;
             if (diff < 60) {
-                timeText = diff + '秒前';
+                timeText = diff + ' seconds ago';
             } else if (diff < 3600) {
-                timeText = Math.floor(diff / 60) + '分钟前';
+                timeText = Math.floor(diff / 60) + ' minutes ago';
             } else if (diff < 86400) {
-                timeText = Math.floor(diff / 3600) + '小时前';
+                timeText = Math.floor(diff / 3600) + ' hours ago';
             } else {
-                timeText = Math.floor(diff / 86400) + '天前';
+                timeText = Math.floor(diff / 86400) + ' days ago';
             }
             
             element.textContent = timeText;

@@ -28,20 +28,47 @@ function generateSlug(text) {
         .replace(/^-+|-+$/g, '');
 }
 
-// 设置标签颜色
+// 设置标签颜色 - 优化版本
 export function initTagColors() {
-    document.querySelectorAll('.tag-name').forEach(function(span) {
-        const color = span.dataset.color;
-        if (color) {
-            span.style.color = color;
-        }
-    });
+    // 使用更精确的选择器，只在需要的容器内查找
+    const tagContainer = document.querySelector('.card-body');
+    if (!tagContainer) return;
+    
+    const tagElements = tagContainer.querySelectorAll('.tag-name[data-color]');
+    
+    // 使用 requestAnimationFrame 来避免阻塞UI
+    if (tagElements.length > 0) {
+        requestAnimationFrame(() => {
+            tagElements.forEach(function(span) {
+                const color = span.dataset.color;
+                if (color && color !== span.style.color) {
+                    span.style.color = color;
+                }
+            });
+        });
+    }
 }
 
-// 博客表单初始化
+// 博客表单初始化 - 添加防抖
 export function initBlogForms() {
-    initSlugGeneration();
-    initTagColors();
+    // 使用防抖来避免频繁初始化
+    debounce(() => {
+        initSlugGeneration();
+        initTagColors();
+    }, 100)();
+}
+
+// 防抖函数
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
 // 文本区域字符计数
@@ -74,15 +101,15 @@ export function initCharacterCount() {
     });
 }
 
-// 图片预览功能
+// 图片预览功能 - 使用事件委托和缓存
 export function initImagePreview() {
-    const imageInputs = document.querySelectorAll('input[type="url"][name="image"]');
-    
-    imageInputs.forEach(function(input) {
-        input.addEventListener('blur', function() {
-            showImagePreview(this);
-        });
-    });
+    // 使用事件委托减少事件监听器数量
+    document.addEventListener('blur', function(e) {
+        if (e.target.type === 'url' && e.target.name === 'image') {
+            // 添加延迟加载避免频繁处理
+            setTimeout(() => showImagePreview(e.target), 100);
+        }
+    }, true);
 }
 
 function showImagePreview(input) {
@@ -111,28 +138,33 @@ function showImagePreview(input) {
     `;
 }
 
-// 确认删除功能
+// 确认删除功能 - 使用事件委托优化
 export function initDeleteConfirmation() {
-    const deleteButtons = document.querySelectorAll('.btn-delete, [data-action="delete"]');
-    
-    deleteButtons.forEach(function(button) {
-        button.addEventListener('click', function(e) {
-            const title = this.dataset.title || '此项目';
+    // 使用事件委托，避免为每个按钮单独绑定事件
+    document.addEventListener('click', function(e) {
+        const deleteButton = e.target.closest('.btn-delete, [data-action="delete"]');
+        if (deleteButton) {
+            const title = deleteButton.dataset.title || '此项目';
             if (!confirm(`确定要删除 "${title}" 吗？此操作不可撤销。`)) {
                 e.preventDefault();
                 return false;
             }
-        });
+        }
     });
 }
 
-// 批量选择功能
+// 批量选择功能 - 优化版本
 export function initBatchSelection() {
     const selectAll = document.getElementById('select-all');
-    const checkboxes = document.querySelectorAll('input[name="selected[]"]');
     const batchActions = document.querySelector('.batch-actions');
     
-    if (!selectAll || checkboxes.length === 0) return;
+    if (!selectAll) return;
+    
+    // 使用更精确的查询，缓存结果
+    const checkboxContainer = selectAll.closest('form') || document;
+    const checkboxes = checkboxContainer.querySelectorAll('input[name="selected[]"]');
+    
+    if (checkboxes.length === 0) return;
     
     // 全选/取消全选
     selectAll.addEventListener('change', function() {
@@ -187,6 +219,78 @@ export function initSearchEnhancement() {
     });
 }
 
+// 标签搜索和选择优化
+export function initTagsOptimization() {
+    const tagSearch = document.getElementById('tag-search');
+    const tagsContainer = document.getElementById('tags-container');
+    const selectedCount = document.getElementById('selected-count');
+    
+    if (!tagsContainer) return;
+    
+    // 缓存所有标签元素
+    const tagItems = Array.from(tagsContainer.querySelectorAll('.tag-item'));
+    
+    // 标签搜索功能（防抖）
+    if (tagSearch) {
+        let searchTimeout;
+        tagSearch.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                filterTags(this.value.toLowerCase(), tagItems);
+            }, 150);
+        });
+    }
+    
+    // 优化标签选择计数
+    if (selectedCount) {
+        const checkboxes = tagsContainer.querySelectorAll('input[type="checkbox"]');
+        
+        // 使用事件委托优化性能
+        tagsContainer.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox') {
+                requestAnimationFrame(() => {
+                    const checked = tagsContainer.querySelectorAll('input[type="checkbox"]:checked').length;
+                    selectedCount.textContent = checked;
+                });
+            }
+        });
+    }
+}
+
+// 标签过滤函数
+function filterTags(searchTerm, tagItems) {
+    let visibleCount = 0;
+    
+    tagItems.forEach(item => {
+        const tagName = item.dataset.tagName || '';
+        const isVisible = tagName.includes(searchTerm);
+        
+        if (isVisible) {
+            item.style.display = 'block';
+            visibleCount++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    // 显示搜索结果统计
+    const container = document.getElementById('tags-container');
+    if (container) {
+        let resultInfo = container.querySelector('.search-result-info');
+        if (searchTerm) {
+            if (!resultInfo) {
+                resultInfo = document.createElement('div');
+                resultInfo.className = 'search-result-info';
+                resultInfo.style.cssText = 'font-size: 0.75rem; color: #6b7280; margin-bottom: 0.5rem; padding: 0.5rem; background: #f9fafb; border-radius: 0.25rem;';
+                container.insertBefore(resultInfo, container.firstChild);
+            }
+            resultInfo.textContent = `找到 ${visibleCount} 个匹配的标签`;
+        } else if (resultInfo) {
+            resultInfo.remove();
+        }
+    }
+}
+
 // 初始化所有blog功能
 export function initBlogModule() {
     initBlogForms();
@@ -195,6 +299,7 @@ export function initBlogModule() {
     initDeleteConfirmation();
     initBatchSelection();
     initSearchEnhancement();
+    initTagsOptimization();
 }
 
 // 页面加载完成后自动初始化

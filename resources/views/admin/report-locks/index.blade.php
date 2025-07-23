@@ -1,7 +1,7 @@
 @extends('admin.layout')
 
-@section('title', 'Report锁定管理')
-@section('page-title', 'Report锁定管理')
+@section('title', 'Report Lock Management')
+@section('page-title', 'Report Lock Management')
 
 @push('styles')
     @vite(['resources/css/admin/report-locks.css'])
@@ -11,11 +11,11 @@
 <div class="container">
     <div class="header-row">
         <div>
-            <h1>🔒 Report锁定管理</h1>
-            <p>管理报告的密码锁定设置</p>
+            <h1>🔒 Report Lock Management</h1>
+            <p>Manage password protection settings for reports</p>
         </div>
         <a href="{{ route('admin.report-locks.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> 添加新锁定
+            <i class="fas fa-plus"></i> Add New Lock
         </a>
     </div>
 
@@ -35,9 +35,9 @@
     <div class="filters-section">
         <form method="GET" action="{{ route('admin.report-locks.index') }}" class="filters-row">
             <div class="filter-group">
-                <label class="filter-label">标签筛选</label>
+                <label class="filter-label">Filter by Label</label>
                 <select name="label" class="filter-select">
-                    <option value="">所有标签</option>
+                    <option value="">All Labels</option>
                     @foreach($labels as $labelOption)
                         <option value="{{ $labelOption }}" {{ $label == $labelOption ? 'selected' : '' }}>
                             {{ ucfirst($labelOption) }}
@@ -47,14 +47,14 @@
             </div>
             
             <div class="filter-group">
-                <label class="filter-label">搜索</label>
-                <input type="text" name="search" value="{{ $search }}" placeholder="搜索标题、slug或描述..." class="filter-input">
+                <label class="filter-label">Search</label>
+                <input type="text" name="search" value="{{ $search }}" placeholder="Search title, slug or description..." class="filter-input">
             </div>
             
             <div class="filter-group">
-                <button type="submit" class="btn btn-secondary">筛选</button>
+                <button type="submit" class="btn btn-secondary">Filter</button>
                 @if($label || $search)
-                    <a href="{{ route('admin.report-locks.index') }}" class="btn btn-outline" style="margin-top: 0.5rem;">清除</a>
+                    <a href="{{ route('admin.report-locks.index') }}" class="btn btn-outline" style="margin-top: 0.5rem;">Clear</a>
                 @endif
             </div>
         </form>
@@ -64,15 +64,15 @@
         <!-- 批量操作 -->
         <div class="bulk-actions">
             <label>
-                <input type="checkbox" id="select-all"> 全选
+                <input type="checkbox" id="select-all"> Select All
             </label>
             <select id="bulk-action" class="filter-select" style="width: auto;">
-                <option value="">批量操作...</option>
-                <option value="enable">启用锁定</option>
-                <option value="disable">禁用锁定</option>
-                <option value="delete">删除锁定</option>
+                <option value="">Bulk Actions...</option>
+                <option value="enable">Enable Lock</option>
+                <option value="disable">Disable Lock</option>
+                <option value="delete">Delete Lock</option>
             </select>
-            <button type="button" id="apply-bulk-action" class="btn btn-secondary">应用</button>
+            <button type="button" id="apply-bulk-action" class="btn btn-secondary">Apply</button>
         </div>
 
         <!-- 锁定列表 -->
@@ -83,12 +83,11 @@
                         <th width="40">
                             <input type="checkbox" id="select-all-header">
                         </th>
-                        <th>报告</th>
-                        <th>标签</th>
-                        <th>密码</th>
-                        <th>状态</th>
-                        <th>锁定时间</th>
-                        <th width="120">操作</th>
+                        <th>Report</th>
+                        <th>Label</th>
+                        <th>Status</th>
+                        <th>Locked At</th>
+                        <th width="120">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -112,13 +111,12 @@
                                 <span class="label-badge">{{ $lock->label }}</span>
                             </td>
                             <td>
-                                <div class="password-preview" title="{{ $lock->password }}">
-                                    {{ Str::limit($lock->password, 20) }}
-                                </div>
-                            </td>
-                            <td>
                                 <span class="status-badge {{ $lock->is_enabled ? 'status-enabled' : 'status-disabled' }}">
-                                    {{ $lock->is_enabled ? '✅ 启用' : '❌ 禁用' }}
+                                    @if($lock->is_enabled)
+                                        🔒 <strong>Locked</strong>
+                                    @else
+                                        🔓 Unlocked
+                                    @endif
                                 </span>
                             </td>
                             <td style="color: #6b7280; font-size: 0.875rem;">
@@ -126,13 +124,13 @@
                             </td>
                             <td>
                                 <div class="actions-group">
-                                    <a href="{{ route('admin.report-locks.edit', $lock) }}" class="btn-small btn-edit" title="编辑">
+                                    <a href="{{ route('admin.report-locks.edit', $lock) }}" class="btn-small btn-edit" title="Edit">
                                         ✏️
                                     </a>
-                                    <button type="button" class="btn-small btn-toggle" data-lock-id="{{ $lock->id }}" title="切换状态">
+                                    <button type="button" class="btn-small btn-toggle" data-lock-id="{{ $lock->id }}" title="Toggle Status">
                                         {{ $lock->is_enabled ? '🔓' : '🔒' }}
                                     </button>
-                                    <button type="button" class="btn-small btn-delete" data-lock-id="{{ $lock->id }}" data-lock-title="{{ $lock->title }}" title="删除">
+                                    <button type="button" class="btn-small btn-delete" data-lock-id="{{ $lock->id }}" data-lock-title="{{ $lock->title }}" title="Delete">
                                         🗑️
                                     </button>
                                 </div>
@@ -209,9 +207,9 @@
         
     @else
         <div class="no-results">
-            <h3>😔 没有找到锁定记录</h3>
-            <p>目前没有设置任何报告锁定，或搜索条件没有匹配的结果。</p>
-            <a href="{{ route('admin.report-locks.create') }}" class="btn btn-primary">添加第一个锁定</a>
+            <h3>😔 No Lock Records Found</h3>
+            <p>No report locks have been configured, or no results match your search criteria.</p>
+            <a href="{{ route('admin.report-locks.create') }}" class="btn btn-primary">Add First Lock</a>
         </div>
     @endif
 </div>

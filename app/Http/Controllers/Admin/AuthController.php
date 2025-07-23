@@ -33,7 +33,7 @@ class AuthController extends Controller
         $ipAddress = request()->ip();
         if (LoginAttempt::isIpLocked($ipAddress, self::MAX_LOGIN_ATTEMPTS, self::LOCKOUT_MINUTES)) {
             $remainingTime = LoginAttempt::getIpLockoutTime($ipAddress, self::MAX_LOGIN_ATTEMPTS, self::LOCKOUT_MINUTES);
-            session()->flash('error', "由于多次登录失败，您的IP已被锁定。请等待 {$remainingTime} 分钟后再试。");
+            session()->flash('error', "Your IP has been locked due to multiple failed login attempts. Please wait {$remainingTime} minutes before trying again.");
         }
         
         return view('admin.auth.login');
@@ -51,7 +51,7 @@ class AuthController extends Controller
         if (LoginAttempt::isIpLocked($ipAddress, self::MAX_LOGIN_ATTEMPTS, self::LOCKOUT_MINUTES)) {
             $remainingTime = LoginAttempt::getIpLockoutTime($ipAddress, self::MAX_LOGIN_ATTEMPTS, self::LOCKOUT_MINUTES);
             return back()->withErrors([
-                'email' => "由于多次登录失败，您的IP已被锁定。请等待 {$remainingTime} 分钟后再试。"
+                'email' => "Your IP has been locked due to multiple failed login attempts. Please wait {$remainingTime} minutes before trying again."
             ])->withInput();
         }
 
@@ -60,7 +60,7 @@ class AuthController extends Controller
         if (RateLimiter::tooManyAttempts($key, 10)) {
             $seconds = RateLimiter::availableIn($key);
             return back()->withErrors([
-                'email' => "请求过于频繁，请等待 {$seconds} 秒后再试。"
+                'email' => "Too many requests. Please wait {$seconds} seconds before trying again."
             ])->withInput();
         }
 
@@ -69,13 +69,13 @@ class AuthController extends Controller
             'email' => 'required|email|max:191|regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
             'password' => 'required|string|min:6|max:255',
         ], [
-            'email.required' => '邮箱地址不能为空',
-            'email.email' => '邮箱地址格式不正确',
-            'email.max' => '邮箱地址过长',
-            'email.regex' => '邮箱地址格式不正确',
-            'password.required' => '密码不能为空',
-            'password.min' => '密码至少需要6个字符',
-            'password.max' => '密码过长',
+            'email.required' => 'Email address is required',
+            'email.email' => 'Invalid email address format',
+            'email.max' => 'Email address is too long',
+            'email.regex' => 'Invalid email address format',
+            'password.required' => 'Password is required',
+            'password.min' => 'Password must be at least 6 characters',
+            'password.max' => 'Password is too long',
         ]);
 
         if ($validator->fails()) {
@@ -89,7 +89,7 @@ class AuthController extends Controller
         if (LoginAttempt::isEmailLocked($email, self::MAX_LOGIN_ATTEMPTS, self::LOCKOUT_MINUTES)) {
             LoginAttempt::record($ipAddress, $email, false, $userAgent);
             return back()->withErrors([
-                'email' => '该邮箱由于多次登录失败已被锁定，请稍后再试。'
+                'email' => 'This email has been locked due to multiple failed login attempts. Please try again later.'
             ])->withInput();
         }
 
@@ -106,7 +106,7 @@ class AuthController extends Controller
                 LoginAttempt::record($ipAddress, $email, false, $userAgent);
                 RateLimiter::hit($key);
                 return back()->withErrors([
-                    'email' => '您没有管理员权限'
+                    'email' => 'You do not have administrator privileges'
                 ])->withInput();
             }
 
@@ -118,7 +118,7 @@ class AuthController extends Controller
             
             $request->session()->regenerate();
             
-            return redirect()->intended(route('admin.dashboard'))->with('success', '登录成功！');
+            return redirect()->intended(route('admin.dashboard'))->with('success', 'Login successful!');
         }
 
         // 记录失败的登录尝试
@@ -129,9 +129,9 @@ class AuthController extends Controller
         $failedAttempts = LoginAttempt::getFailedAttempts($ipAddress, self::LOCKOUT_MINUTES);
         $remainingAttempts = self::MAX_LOGIN_ATTEMPTS - $failedAttempts;
 
-        $errorMessage = '邮箱地址或密码不正确';
+        $errorMessage = 'Invalid email address or password';
         if ($remainingAttempts <= 2 && $remainingAttempts > 0) {
-            $errorMessage .= "，您还有 {$remainingAttempts} 次尝试机会";
+            $errorMessage .= ". You have {$remainingAttempts} attempts remaining";
         }
 
         return back()->withErrors([
@@ -149,6 +149,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
-        return redirect()->route('admin.login')->with('success', '已成功退出登录');
+        return redirect()->route('admin.login')->with('success', 'Successfully logged out');
     }
 }

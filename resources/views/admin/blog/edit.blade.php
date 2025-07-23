@@ -165,9 +165,24 @@
                 </div>
                 <div class="card-body">
                     @if($tags->count() > 0)
-                        <div style="max-height: 200px; overflow-y: auto;">
+                        <!-- 搜索框 -->
+                        @if($tags->count() > 10)
+                        <div style="margin-bottom: 1rem;">
+                            <input 
+                                type="text" 
+                                id="tag-search" 
+                                class="form-input" 
+                                placeholder="搜索标签..." 
+                                style="font-size: 0.875rem; padding: 0.5rem;"
+                                autocomplete="off"
+                            >
+                        </div>
+                        @endif
+                        
+                        <!-- 标签列表容器 -->
+                        <div id="tags-container" style="max-height: 200px; overflow-y: auto;">
                             @foreach($tags as $tag)
-                                <label style="display: block; margin-bottom: 0.5rem;">
+                                <label class="tag-item" data-tag-name="{{ strtolower($tag->name) }}" style="display: block; margin-bottom: 0.5rem;">
                                     <input 
                                         type="checkbox" 
                                         name="tags[]" 
@@ -178,6 +193,11 @@
                                     <span class="tag-name" data-color="{{ $tag->display_color }}">{{ $tag->name }}</span>
                                 </label>
                             @endforeach
+                        </div>
+                        
+                        <!-- 标签统计 -->
+                        <div style="margin-top: 1rem; font-size: 0.75rem; color: #6b7280;">
+                            <span id="selected-count">{{ count($postTags) }}</span> / {{ $tags->count() }} 标签已选择
                         </div>
                     @else
                         <div class="form-help">

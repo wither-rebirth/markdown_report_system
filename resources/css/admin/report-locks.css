@@ -1,5 +1,7 @@
 /* Report Locks Admin Pages Styles */
 
+
+
 /* Form Container Styles (for create and edit pages) */
 .form-container {
     max-width: 800px;
@@ -390,6 +392,8 @@
 .table-container tr:hover {
     background: #f9fafb;
 }
+
+
 
 /* Status Badges */
 .status-badge {

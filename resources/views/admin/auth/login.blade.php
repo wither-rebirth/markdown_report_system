@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>管理员登录 - {{ config('app.name', 'Laravel') }}</title>
+    <title>Admin Login - {{ config('app.name', 'Laravel') }}</title>
     
     @vite(['resources/css/admin/auth.css'])
     
@@ -25,8 +25,8 @@
                 <div class="login-icon">
                     <i class="fas fa-shield-alt"></i>
                 </div>
-                <h1>管理员登录</h1>
-                <p>请输入您的登录凭据以访问管理后台</p>
+                <h1>Admin Login</h1>
+                <p>Please enter your credentials to access the admin dashboard</p>
             </div>
             
             @if(session('success'))
@@ -49,7 +49,7 @@
                 <div class="form-group">
                     <label for="email" class="form-label">
                         <i class="fas fa-envelope"></i>
-                        邮箱地址
+                        Email Address
                     </label>
                     <div class="input-wrapper">
                         <input 
@@ -58,7 +58,7 @@
                             name="email" 
                             class="form-input {{ $errors->has('email') ? 'error' : '' }}"
                             value="{{ old('email') }}"
-                            placeholder="请输入邮箱地址"
+                            placeholder="Enter your email address"
                             required
                             autocomplete="username"
                         >
@@ -75,7 +75,7 @@
                 <div class="form-group">
                     <label for="password" class="form-label">
                         <i class="fas fa-lock"></i>
-                        密码
+                        Password
                     </label>
                     <div class="input-wrapper">
                         <input 
@@ -83,7 +83,7 @@
                             id="password" 
                             name="password" 
                             class="form-input {{ $errors->has('password') ? 'error' : '' }}"
-                            placeholder="请输入密码"
+                            placeholder="Enter your password"
                             required
                             autocomplete="current-password"
                         >
@@ -106,12 +106,12 @@
                         <span class="checkmark">
                             <i class="fas fa-check"></i>
                         </span>
-                        记住我的登录状态
+                        Remember my login
                     </label>
                 </div>
                 
                 <button type="submit" class="login-btn">
-                    <span class="btn-text">登录管理后台</span>
+                    <span class="btn-text">Login to Dashboard</span>
                     <i class="fas fa-arrow-right btn-icon"></i>
                 </button>
             </form>
@@ -119,15 +119,15 @@
             <div class="security-info">
                 <div class="security-item">
                     <i class="fas fa-shield-check"></i>
-                    <span>安全连接已启用</span>
+                    <span>Secure connection enabled</span>
                 </div>
                 <div class="security-item">
                     <i class="fas fa-clock"></i>
-                    <span>最多5次登录尝试</span>
+                    <span>Maximum 5 login attempts</span>
                 </div>
                 <div class="security-item">
                     <i class="fas fa-ban"></i>
-                    <span>失败后锁定15分钟</span>
+                    <span>Locked for 15 minutes after failure</span>
                 </div>
             </div>
         </div>

@@ -1,7 +1,7 @@
 @extends('admin.layout')
 
-@section('title', '标签管理')
-@section('page-title', '标签管理')
+@section('title', 'Tag Management')
+@section('page-title', 'Tag Management')
 
 @push('styles')
 @vite(['resources/css/admin/tags.css'])
@@ -15,31 +15,31 @@
 <div class="card" style="margin: 1.5rem;">
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
-            <h3 class="card-title">标签列表</h3>
+            <h3 class="card-title">Tags List</h3>
             <div class="d-flex gap-2">
                 <a href="{{ route('admin.tags.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> 新建标签
+                    <i class="fas fa-plus"></i> New Tag
                 </a>
                 <form method="GET" class="d-flex gap-2">
                     <select name="status" class="form-select" style="width: 120px;">
-                        <option value="">全部状态</option>
-                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>启用</option>
-                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>禁用</option>
+                        <option value="">All Status</option>
+                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                     </select>
                     <input 
                         type="text" 
                         name="search" 
                         class="form-input" 
                         style="width: 200px;" 
-                        placeholder="搜索标签名称..." 
+                        placeholder="Search tag name..." 
                         value="{{ request('search') }}"
                     >
                     <button type="submit" class="btn btn-secondary">
-                        <i class="fas fa-search"></i> 搜索
+                        <i class="fas fa-search"></i> Search
                     </button>
                     @if(request('search') || request('status'))
                         <a href="{{ route('admin.tags.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> 清除
+                            <i class="fas fa-times"></i> Clear
                         </a>
                     @endif
                 </form>
@@ -56,11 +56,11 @@
                             <th style="width: 5%;">
                                 <input type="checkbox" id="select-all" style="margin: 0;">
                             </th>
-                            <th style="width: 35%;">标签名称</th>
-                            <th style="width: 25%;">别名</th>
-                            <th style="width: 20%;">颜色</th>
-                            <th style="width: 8%;">状态</th>
-                            <th style="width: 7%;">操作</th>
+                            <th style="width: 35%;">Tag Name</th>
+                            <th style="width: 25%;">Slug</th>
+                            <th style="width: 20%;">Color</th>
+                            <th style="width: 8%;">Status</th>
+                            <th style="width: 7%;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -82,7 +82,7 @@
                                             <strong class="tag-name-display">{{ $tag->name }}</strong>
                                         </div>
                                         <small class="tag-meta">
-                                            创建：{{ $tag->created_at->format('Y-m-d') }}
+                                            Created: {{ $tag->created_at->format('Y-m-d') }}
                                         </small>
                                     </div>
                                 </td>
@@ -92,11 +92,11 @@
                                 <td>
                                     <div class="tag-color-display">
                                         <div class="tag-color-swatch" data-bg-color="{{ $tag->display_color }}"></div>
-                                        <code class="color-code">{{ $tag->color ?: '默认' }}</code>
+                                        <code class="color-code">{{ $tag->color ?: 'Default' }}</code>
                                     </div>
                                 </td>
                                 <td>
-                                    <label class="toggle-switch" title="点击切换状态">
+                                    <label class="toggle-switch" title="Click to toggle status">
                                         <input type="checkbox" 
                                                data-id="{{ $tag->id }}"
                                                {{ $tag->is_active ? 'checked' : '' }}
@@ -108,7 +108,7 @@
                                     <div class="d-flex gap-1">
                                         <a href="{{ route('admin.tags.edit', $tag) }}" 
                                            class="btn btn-sm btn-primary" 
-                                           title="编辑">
+                                           title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <form action="{{ route('admin.tags.destroy', $tag) }}" 
@@ -118,8 +118,8 @@
                                             @method('DELETE')
                                             <button type="submit" 
                                                     class="btn btn-sm btn-danger" 
-                                                    data-confirm="确定要删除标签「{{ $tag->name }}」吗？"
-                                                    title="删除">
+                                                    data-confirm="Are you sure you want to delete tag '{{ $tag->name }}'?"
+                                                    title="Delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
@@ -136,17 +136,17 @@
                 <div class="bulk-actions-content">
                     <div class="bulk-actions-info">
                         <i class="fas fa-check-square"></i>
-                        <span id="selected-count">已选择 0 个标签</span>
+                        <span id="selected-count">0 tags selected</span>
                     </div>
                     <div class="bulk-actions-buttons">
                         <button type="button" class="bulk-action-btn bulk-action-enable" id="bulk-enable">
-                            <i class="fas fa-check"></i> 启用
+                            <i class="fas fa-check"></i> Enable
                         </button>
                         <button type="button" class="bulk-action-btn bulk-action-disable" id="bulk-disable">
-                            <i class="fas fa-ban"></i> 禁用
+                            <i class="fas fa-ban"></i> Disable
                         </button>
                         <button type="button" class="bulk-action-btn bulk-action-delete" id="bulk-delete">
-                            <i class="fas fa-trash"></i> 删除
+                            <i class="fas fa-trash"></i> Delete
                         </button>
                     </div>
                 </div>
@@ -160,12 +160,12 @@
         @else
             <div class="empty-state" style="padding: 3rem; text-align: center;">
                 <i class="fas fa-tags" style="font-size: 3rem; color: #9ca3af; margin-bottom: 1rem;"></i>
-                <h3 style="color: #6b7280; margin-bottom: 0.5rem;">暂无标签</h3>
+                <h3 style="color: #6b7280; margin-bottom: 0.5rem;">No Tags</h3>
                 <p style="color: #9ca3af; margin-bottom: 1.5rem;">
                     @if(request('search'))
-                        没有找到匹配"{{ request('search') }}"的标签
+                        No tags found matching "{{ request('search') }}"
                     @else
-                        还没有创建任何标签，<a href="{{ route('admin.tags.create') }}">立即创建第一个标签</a>
+                        No tags created yet, <a href="{{ route('admin.tags.create') }}">create your first tag now</a>
                     @endif
                 </p>
             </div>

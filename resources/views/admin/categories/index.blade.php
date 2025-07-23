@@ -1,7 +1,7 @@
 @extends('admin.layout')
 
-@section('title', '分类管理')
-@section('page-title', '分类管理')
+@section('title', 'Category Management')
+@section('page-title', 'Category Management')
 
 @push('styles')
 @vite(['resources/css/admin/categories.css'])
@@ -15,31 +15,31 @@
 <div class="card" style="margin: 1.5rem;">
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
-            <h3 class="card-title">分类列表</h3>
+            <h3 class="card-title">Categories List</h3>
             <div class="d-flex gap-2">
                 <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> 新建分类
+                    <i class="fas fa-plus"></i> New Category
                 </a>
                 <form method="GET" class="d-flex gap-2">
                     <select name="status" class="form-select" style="width: 120px;">
-                        <option value="">全部状态</option>
-                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>启用</option>
-                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>禁用</option>
+                        <option value="">All Status</option>
+                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                     </select>
                     <input 
                         type="text" 
                         name="search" 
                         class="form-input" 
                         style="width: 200px;" 
-                        placeholder="搜索分类名称..." 
+                        placeholder="Search category name..." 
                         value="{{ request('search') }}"
                     >
                     <button type="submit" class="btn btn-secondary">
-                        <i class="fas fa-search"></i> 搜索
+                        <i class="fas fa-search"></i> Search
                     </button>
                     @if(request('search') || request('status'))
                         <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> 清除
+                            <i class="fas fa-times"></i> Clear
                         </a>
                     @endif
                 </form>
@@ -53,12 +53,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 30%;">分类名称</th>
-                            <th style="width: 20%;">别名</th>
-                            <th style="width: 25%;">描述</th>
-                            <th style="width: 10%;">排序</th>
-                            <th style="width: 8%;">状态</th>
-                            <th style="width: 7%;">操作</th>
+                            <th style="width: 30%;">Category Name</th>
+                            <th style="width: 20%;">Slug</th>
+                            <th style="width: 25%;">Description</th>
+                            <th style="width: 10%;">Sort</th>
+                            <th style="width: 8%;">Status</th>
+                            <th style="width: 7%;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="categories-tbody">
@@ -69,7 +69,7 @@
                                         <strong>{{ $category->name }}</strong>
                                         <br>
                                         <small class="text-muted">
-                                            创建时间：{{ $category->created_at->format('Y-m-d') }}
+                                            Created: {{ $category->created_at->format('Y-m-d') }}
                                         </small>
                                     </div>
                                 </td>
@@ -82,7 +82,7 @@
                                             {{ Str::limit($category->description, 50) }}
                                         </span>
                                     @else
-                                        <span class="text-muted">未填写</span>
+                                        <span class="text-muted">No description</span>
                                     @endif
                                 </td>
                                 <td>
@@ -90,7 +90,7 @@
                                         <button type="button" 
                                                 class="btn btn-sm btn-outline move-up" 
                                                 data-id="{{ $category->id }}"
-                                                title="上移">
+                                                title="Move Up">
                                             <i class="fas fa-chevron-up"></i>
                                         </button>
                                         <span style="font-weight: 600; min-width: 30px; text-align: center;">
@@ -99,13 +99,13 @@
                                         <button type="button" 
                                                 class="btn btn-sm btn-outline move-down" 
                                                 data-id="{{ $category->id }}"
-                                                title="下移">
+                                                title="Move Down">
                                             <i class="fas fa-chevron-down"></i>
                                         </button>
                                     </div>
                                 </td>
                                 <td>
-                                    <label class="toggle-switch" title="点击切换状态">
+                                    <label class="toggle-switch" title="Click to toggle status">
                                         <input type="checkbox" 
                                                data-id="{{ $category->id }}"
                                                {{ $category->is_active ? 'checked' : '' }}
@@ -117,7 +117,7 @@
                                     <div class="d-flex gap-1">
                                         <a href="{{ route('admin.categories.edit', $category) }}" 
                                            class="btn btn-sm btn-primary" 
-                                           title="编辑">
+                                           title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <form action="{{ route('admin.categories.destroy', $category) }}" 
@@ -127,8 +127,8 @@
                                             @method('DELETE')
                                             <button type="submit" 
                                                     class="btn btn-sm btn-danger" 
-                                                    data-confirm="确定要删除分类「{{ $category->name }}」吗？"
-                                                    title="删除">
+                                                    data-confirm="Are you sure you want to delete category '{{ $category->name }}'?"
+                                                    title="Delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
@@ -148,12 +148,12 @@
         @else
             <div class="empty-state" style="padding: 3rem; text-align: center;">
                 <i class="fas fa-folder-open" style="font-size: 3rem; color: #9ca3af; margin-bottom: 1rem;"></i>
-                <h3 style="color: #6b7280; margin-bottom: 0.5rem;">暂无分类</h3>
+                <h3 style="color: #6b7280; margin-bottom: 0.5rem;">No Categories</h3>
                 <p style="color: #9ca3af; margin-bottom: 1.5rem;">
                     @if(request('search'))
-                        没有找到匹配"{{ request('search') }}"的分类
+                        No categories found matching "{{ request('search') }}"
                     @else
-                        还没有创建任何分类，<a href="{{ route('admin.categories.create') }}">立即创建第一个分类</a>
+                        No categories created yet, <a href="{{ route('admin.categories.create') }}">create your first category now</a>
                     @endif
                 </p>
             </div>

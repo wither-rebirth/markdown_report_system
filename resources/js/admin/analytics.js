@@ -33,14 +33,14 @@ export function initTrendChart() {
         
         if (!trendDataText) {
             console.warn('No trend data found');
-            ctx.parentElement.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">暂无趋势数据</p>';
+            ctx.parentElement.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">No trend data available</p>';
             return;
         }
         
         // 验证JSON格式
         if (!trendDataText.startsWith('[') && !trendDataText.startsWith('{')) {
             console.error('Invalid JSON format:', trendDataText.substring(0, 50));
-            ctx.parentElement.innerHTML = '<p style="text-align: center; color: #e74c3c; margin: 2rem 0;">数据格式错误</p>';
+            ctx.parentElement.innerHTML = '<p style="text-align: center; color: #e74c3c; margin: 2rem 0;">Data format error</p>';
             return;
         }
         
@@ -56,8 +56,8 @@ export function initTrendChart() {
         // 显示友好的错误信息
         ctx.parentElement.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: #e74c3c;">
-                <p>图表加载失败</p>
-                <p style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;">请刷新页面重试</p>
+                <p>Chart loading failed</p>
+                <p style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;">Please refresh the page and try again</p>
             </div>
         `;
     }
@@ -66,7 +66,7 @@ export function initTrendChart() {
 // 创建简单的HTML/CSS图表
 function createSimpleChart(container, data) {
     if (!data || !Array.isArray(data) || data.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">暂无数据</p>';
+        container.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">No data available</p>';
         return;
     }
     
@@ -76,16 +76,16 @@ function createSimpleChart(container, data) {
     const maxValue = Math.max(maxPv, maxUv);
     
     if (maxValue === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">暂无访问数据</p>';
+        container.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">No visit data available</p>';
         return;
     }
     
     let chartHtml = `
         <div class="simple-chart" style="padding: 1rem; background: white; border-radius: 8px;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.875rem;">
-                <div><span style="color: #3498db;">■</span> PV (页面访问量)</div>
-                <div><span style="color: #e74c3c;">■</span> UV (独立访客)</div>
-                <div style="color: #666;">最大值: ${maxValue.toLocaleString()}</div>
+                <div><span style="color: #3498db;">■</span> PV (Page Views)</div>
+                <div><span style="color: #e74c3c;">■</span> UV (Unique Visitors)</div>
+                <div style="color: #666;">Max value: ${maxValue.toLocaleString()}</div>
             </div>
             <div class="chart-bars" style="display: flex; align-items: end; gap: 2px; height: 200px; border-left: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 0 0 0 0;">
     `;
@@ -110,7 +110,7 @@ function createSimpleChart(container, data) {
     chartHtml += `
             </div>
             <div style="margin-top: 1rem; text-align: center; font-size: 0.875rem; color: #666;">
-                访问趋势图 (最近${data.length}天)
+                Traffic Trend (Last ${data.length} days)
             </div>
         </div>
     `;
@@ -169,7 +169,7 @@ export function initTableSorting() {
         
         headers.forEach(function(header, index) {
             // 跳过操作列
-            if (header.textContent.includes('操作')) return;
+            if (header.textContent.includes('Actions') || header.textContent.includes('操作')) return;
             
             header.style.cursor = 'pointer';
             header.style.position = 'relative';
@@ -211,7 +211,7 @@ export function enhanceExportButtons() {
     exportButtons.forEach(function(button) {
         button.addEventListener('click', function(e) {
             const originalText = this.textContent;
-            this.textContent = '导出中...';
+            this.textContent = 'Exporting...';
             this.disabled = true;
             
             // 模拟导出过程
@@ -241,14 +241,14 @@ export function initRealtimeChart() {
         
         if (!dataText) {
             console.warn('No realtime trend data found');
-            ctx.parentElement.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">暂无实时数据</p>';
+            ctx.parentElement.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">No real-time data available</p>';
             return;
         }
         
         // 验证JSON格式
         if (!dataText.startsWith('[') && !dataText.startsWith('{')) {
             console.error('Invalid realtime JSON format:', dataText.substring(0, 50));
-            ctx.parentElement.innerHTML = '<p style="text-align: center; color: #e74c3c; margin: 2rem 0;">实时数据格式错误</p>';
+            ctx.parentElement.innerHTML = '<p style="text-align: center; color: #e74c3c; margin: 2rem 0;">Real-time data format error</p>';
             return;
         }
         
@@ -263,8 +263,8 @@ export function initRealtimeChart() {
         
         ctx.parentElement.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: #e74c3c;">
-                <p>实时图表加载失败</p>
-                <p style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;">请刷新页面重试</p>
+                <p>Real-time chart loading failed</p>
+                <p style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;">Please refresh the page and try again</p>
             </div>
         `;
     }
@@ -273,14 +273,14 @@ export function initRealtimeChart() {
 // 创建实时图表
 function createRealtimeChart(container, data) {
     if (!data || !Array.isArray(data) || data.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">暂无实时数据</p>';
+        container.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">No real-time data available</p>';
         return;
     }
     
     const maxValue = Math.max(...data.map(d => Math.max(d.pv || 0, d.uv || 0)));
     
     if (maxValue === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">暂无实时访问数据</p>';
+        container.innerHTML = '<p style="text-align: center; color: #666; margin: 2rem 0;">No real-time visit data available</p>';
         return;
     }
     
@@ -289,7 +289,7 @@ function createRealtimeChart(container, data) {
             <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.875rem;">
                 <div><span style="color: #3498db;">■</span> PV</div>
                 <div><span style="color: #e74c3c;">■</span> UV</div>
-                <div style="color: #666;">24小时趋势</div>
+                <div style="color: #666;">24-hour trend</div>
             </div>
             <div class="realtime-bars" style="display: flex; align-items: end; gap: 1px; height: 150px; border-left: 1px solid #ddd; border-bottom: 1px solid #ddd;">
     `;

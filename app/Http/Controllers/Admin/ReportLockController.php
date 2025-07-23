@@ -34,7 +34,9 @@ class ReportLockController extends Controller
             });
         }
         
-        $reportLocks = $query->orderBy('locked_at', 'desc')->paginate(20);
+        $reportLocks = $query->orderBy('is_enabled', 'desc')
+                              ->orderBy('locked_at', 'desc')
+                              ->paginate(20);
         $labels = ReportLock::getLabels();
         
         // 获取可用的报告列表（用于创建新锁定）
