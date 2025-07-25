@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
 use League\CommonMark\CommonMarkConverter;
 use App\Models\Category;
 use App\Models\Tag;
+use Illuminate\Support\Facades\Cache; // Added this import for Cache::forget
+use Illuminate\Support\Facades\Log;
 
 class BlogController extends Controller
 {
@@ -99,6 +101,9 @@ class BlogController extends Controller
             $this->syncBlogTags($slug, $request->input('tags'));
         }
 
+        // 清除blog缓存 - 触碰blog目录更新修改时间
+        $this->clearBlogCache($blogDir, $slug);
+
         return redirect()->route('admin.blog.index')->with('success', '博客文章创建成功！');
     }
 
@@ -172,6 +177,11 @@ class BlogController extends Controller
         // 处理标签关联
         $this->syncBlogTags($slug, $request->input('tags', []));
 
+        // 清除blog缓存 - 触碰blog目录更新修改时间
+        $blogDir = storage_path('blog');
+        touch($blogDir);
+        $this->clearBlogCache($blogDir, $slug);
+
         return redirect()->route('admin.blog.index')->with('success', '博客文章更新成功！');
     }
 
@@ -201,6 +211,10 @@ class BlogController extends Controller
 
         // 删除标签关联
         $this->syncBlogTags($slug, []);
+
+        // 清除blog缓存 - 触碰blog目录更新修改时间
+        touch($blogDir);
+        $this->clearBlogCache($blogDir, $slug);
 
         return redirect()->route('admin.blog.index')->with('success', '博客文章删除成功！');
     }
@@ -474,5 +488,40 @@ class BlogController extends Controller
         
         // 清理开头的多余空行和空格
         return ltrim($cleaned, "\r\n\t ");
+    }
+
+    /**
+     * 清除博客缓存
+     */
+    private function clearBlogCache($blogDir, $slug)
+    {
+        try {
+            // 获取最新的目录修改时间
+            clearstatcache(); // 清除文件状态缓存，确保获取最新的filemtime
+            
+            // 尝试清除可能存在的blog_posts_缓存键
+            // 由于缓存键基于目录修改时间，我们需要清除可能的旧键
+            $possibleKeys = [
+                'blog_posts_' . (filemtime($blogDir) - 1), // 可能的旧时间戳
+                'blog_posts_' . filemtime($blogDir),       // 当前时间戳
+                'blog_post_' . $slug,                      // 单篇文章缓存
+            ];
+            
+            foreach ($possibleKeys as $key) {
+                Cache::forget($key);
+            }
+            
+            // 如果使用文件缓存，可以清除所有blog相关缓存
+            if (config('cache.default') === 'file') {
+                // 在生产环境中，你可能想要更精确的缓存清除策略
+                // Cache::flush(); // 注意：这会清除所有缓存
+            }
+            
+            Log::info("Blog cache cleared for slug: {$slug}");
+            
+        } catch (\Exception $e) {
+            // 缓存清除失败不影响正常流程
+            Log::warning('Failed to clear blog cache: ' . $e->getMessage());
+        }
     }
 }
