@@ -519,7 +519,7 @@ const app = createApp({
             document.body.appendChild(particlesContainer);
             
             // 初始化各种特效
-            this.initPageLoader();
+            // this.initPageLoader(); // 已注释掉加载动画
             this.initParticles();
             this.init3DCards();
             this.initTypewriter();
