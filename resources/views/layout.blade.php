@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>{{ $title ?? "wither's blog" }}</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
     <meta name="description" content="wither's blog - Personal tech blog and lab report display system, focusing on cybersecurity, penetration testing, HackTheBox and other technical sharing">
     <meta name="keywords" content="wither,blog,cybersecurity,penetration testing,HackTheBox,CTF,tech sharing,lab reports,writeup">
     <meta name="author" content="Wither">
