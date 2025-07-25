@@ -236,40 +236,160 @@ class ReportController extends Controller
      */
     private function filterReportsBySearch($reports, $searchQuery)
     {
-        $searchQuery = mb_strtolower(trim($searchQuery));
+        $searchQuery = trim($searchQuery);
         if (empty($searchQuery)) {
             return $reports;
         }
         
-        return collect($reports)->filter(function ($report) use ($searchQuery) {
-            // Search title
-            $title = mb_strtolower($report['title']);
-            if (mb_strpos($title, $searchQuery) !== false) {
-                return true;
+        // 解析搜索查询
+        $searchTerms = $this->parseSearchQuery($searchQuery);
+        
+        $searchResults = collect($reports)->map(function ($report) use ($searchTerms) {
+            $score = $this->calculateRelevanceScore($report, $searchTerms);
+            
+            if ($score > 0) {
+                $report['relevance_score'] = $score;
+                return $report;
             }
             
-            // Search excerpt
-            $excerpt = mb_strtolower($report['excerpt'] ?? '');
-            if (mb_strpos($excerpt, $searchQuery) !== false) {
-                return true;
+            return null;
+        })->filter()->sortByDesc('relevance_score')->values()->toArray();
+        
+        return $searchResults;
+    }
+    
+    /**
+     * Parse search query into terms and phrases
+     */
+    private function parseSearchQuery($query)
+    {
+        $query = mb_strtolower($query);
+        
+        // 提取引号内的短语
+        $phrases = [];
+        if (preg_match_all('/"([^"]+)"/', $query, $matches)) {
+            $phrases = $matches[1];
+            $query = preg_replace('/"[^"]+"/', '', $query);
+        }
+        
+        // 分割剩余的单词
+        $words = array_filter(explode(' ', $query), function($word) {
+            return strlen(trim($word)) > 0;
+        });
+        
+        return [
+            'words' => array_map('trim', $words),
+            'phrases' => $phrases,
+            'original' => mb_strtolower(trim($query))
+        ];
+    }
+    
+    /**
+     * Calculate relevance score for a report (simplified - title and folder only)
+     */
+    private function calculateRelevanceScore($report, $searchTerms)
+    {
+        $score = 0;
+        
+        // 只搜索标题和文件夹名称
+        $title = mb_strtolower($report['title'] ?? '');
+        $folderName = mb_strtolower($report['folder_name'] ?? '');
+        
+        // 权重配置（简化）
+        $weights = [
+            'title_exact' => 100,
+            'title_fuzzy' => 40,
+            'folder_exact' => 50,
+            'folder_fuzzy' => 20
+        ];
+        
+        // 搜索短语（精确匹配）
+        foreach ($searchTerms['phrases'] as $phrase) {
+            if (mb_strpos($title, $phrase) !== false) {
+                $score += $weights['title_exact'];
+            }
+            if (mb_strpos($folderName, $phrase) !== false) {
+                $score += $weights['folder_exact'];
+            }
+        }
+        
+        // 搜索单词
+        foreach ($searchTerms['words'] as $word) {
+            if (strlen($word) < 2) continue;
+            
+            // 精确匹配
+            if (mb_strpos($title, $word) !== false) {
+                $score += $weights['title_exact'];
+            }
+            if (mb_strpos($folderName, $word) !== false) {
+                $score += $weights['folder_exact'];
             }
             
-            // Search content (if available)
-            $content = mb_strtolower($report['content'] ?? '');
-            if (mb_strpos($content, $searchQuery) !== false) {
-                return true;
-            }
+            // 模糊匹配（相似度搜索）
+            $score += $this->fuzzyMatch($word, $title) * $weights['title_fuzzy'];
+            $score += $this->fuzzyMatch($word, $folderName) * $weights['folder_fuzzy'];
+        }
+        
+        // 如果原始查询作为整体在标题中出现，给予额外加分
+        if (!empty($searchTerms['original']) && mb_strpos($title, $searchTerms['original']) !== false) {
+            $score += $weights['title_exact'] * 0.5;
+        }
+        
+        return $score;
+    }
+    
+    /**
+     * Simple fuzzy matching using similarity calculation
+     */
+    private function fuzzyMatch($needle, $haystack)
+    {
+        if (empty($needle) || empty($haystack)) {
+            return 0;
+        }
+        
+        $needle = mb_strtolower($needle);
+        $haystack = mb_strtolower($haystack);
+        
+        // 如果完全匹配，返回最高分
+        if (mb_strpos($haystack, $needle) !== false) {
+            return 1;
+        }
+        
+        // 分词匹配
+        $words = explode(' ', $haystack);
+        $maxSimilarity = 0;
+        
+        foreach ($words as $word) {
+            if (strlen($word) < 2) continue;
             
-            // Search folder name (for Hackthebox reports)
-            if (isset($report['folder_name'])) {
-                $folderName = mb_strtolower($report['folder_name']);
-                if (mb_strpos($folderName, $searchQuery) !== false) {
-                    return true;
+            $similarity = 0;
+            
+            // 计算相似度
+            if (function_exists('similar_text')) {
+                similar_text($needle, $word, $similarity);
+                $similarity = $similarity / 100; // 转换为0-1范围
+            } else {
+                // 简单的字符匹配
+                $common = 0;
+                $needleLen = mb_strlen($needle);
+                $wordLen = mb_strlen($word);
+                
+                for ($i = 0; $i < min($needleLen, $wordLen); $i++) {
+                    if (mb_substr($needle, $i, 1) === mb_substr($word, $i, 1)) {
+                        $common++;
+                    }
                 }
+                
+                $similarity = $common / max($needleLen, $wordLen);
             }
             
-            return false;
-        })->values()->toArray();
+            // 只考虑相似度较高的匹配
+            if ($similarity > 0.7) { // 提高阈值，减少误匹配
+                $maxSimilarity = max($maxSimilarity, $similarity);
+            }
+        }
+        
+        return $maxSimilarity;
     }
 
     /**

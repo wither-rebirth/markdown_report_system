@@ -50,7 +50,7 @@
         </div>
     </div>
     
-    <!-- 搜索栏 -->
+    <!-- 搜索区域 -->
     <div class="search-container">
         <form method="GET" action="{{ route('reports.index') }}" class="search-form">
             <div class="search-input-group">
@@ -62,7 +62,7 @@
                 <input type="text" 
                        name="search" 
                        id="report-search" 
-                       placeholder="Search report titles, content..." 
+                       placeholder="Search report titles..." 
                        value="{{ request('search') }}"
                        class="search-input"
                        autocomplete="off">
@@ -77,11 +77,24 @@
             <button type="submit" class="search-btn">Search</button>
         </form>
         
-        <!-- 搜索提示 -->
+        <!-- 搜索提示和功能说明 -->
         <div class="search-tips">
-            <span class="search-tip">💡 Tip: Press <kbd>Ctrl</kbd> + <kbd>K</kbd> to quickly focus search box</span>
+            <div class="search-tip-row">
+                <span class="search-tip">💡 <kbd>Ctrl</kbd> + <kbd>K</kbd> to quickly focus search box</span>
+                @if(request('search'))
+                    <a href="{{ route('reports.index') }}" class="clear-search-link">Clear Search</a>
+                @endif
+            </div>
+            
             @if(request('search'))
-                <a href="{{ route('reports.index') }}" class="clear-search-link">Clear Search</a>
+                <div class="search-results-info">
+                    <span class="results-count">
+                        Found <strong>{{ count($reports) }}</strong> relevant reports
+                        @if(count($reports) > 0)
+                            (sorted by relevance)
+                        @endif
+                    </span>
+                </div>
             @endif
         </div>
     </div>
