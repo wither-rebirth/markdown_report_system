@@ -62,13 +62,13 @@ class BlogController extends Controller
             'image' => 'nullable|url',
             'published' => 'boolean',
         ], [
-            'title.required' => '文章标题不能为空',
-            'slug.required' => '文章别名不能为空',
-            'slug.regex' => '文章别名只能包含小写字母、数字和连字符',
-            'content.required' => '文章内容不能为空',
-            'author.required' => '作者不能为空',
-            'category_id.exists' => '选择的分类不存在',
-            'tags.*.exists' => '选择的标签不存在',
+            'title.required' => 'Article title is required',
+            'slug.required' => 'Article slug is required',
+            'slug.regex' => 'Article slug can only contain lowercase letters, numbers and hyphens',
+            'content.required' => 'Article content is required',
+            'author.required' => 'Author is required',
+            'category_id.exists' => 'Selected category does not exist',
+            'tags.*.exists' => 'Selected tag does not exist',
         ]);
 
         if ($validator->fails()) {
@@ -85,7 +85,7 @@ class BlogController extends Controller
 
         // 检查slug是否已存在
         if ($this->slugExists($slug)) {
-            return back()->withErrors(['slug' => '文章别名已存在'])->withInput();
+            return back()->withErrors(['slug' => 'Article slug already exists'])->withInput();
         }
 
         // 准备文章内容
@@ -104,7 +104,7 @@ class BlogController extends Controller
         // 清除blog缓存 - 触碰blog目录更新修改时间
         $this->clearBlogCache($blogDir, $slug);
 
-        return redirect()->route('admin.blog.index')->with('success', '博客文章创建成功！');
+        return redirect()->route('admin.blog.index')->with('success', 'Blog article created successfully!');
     }
 
     /**
@@ -182,7 +182,7 @@ class BlogController extends Controller
         touch($blogDir);
         $this->clearBlogCache($blogDir, $slug);
 
-        return redirect()->route('admin.blog.index')->with('success', '博客文章更新成功！');
+        return redirect()->route('admin.blog.index')->with('success', 'Blog article updated successfully!');
     }
 
     /**
@@ -216,7 +216,7 @@ class BlogController extends Controller
         touch($blogDir);
         $this->clearBlogCache($blogDir, $slug);
 
-        return redirect()->route('admin.blog.index')->with('success', '博客文章删除成功！');
+        return redirect()->route('admin.blog.index')->with('success', 'Blog article deleted successfully!');
     }
 
     /**
