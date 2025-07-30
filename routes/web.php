@@ -137,3 +137,8 @@ Route::get('/sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap
 Route::get('/rss.xml', [SitemapController::class, 'rss'])->name('sitemap.rss');
 Route::get('/feed.xml', [SitemapController::class, 'rss'])->name('sitemap.feed');
 Route::get('/atom.xml', [SitemapController::class, 'atom'])->name('sitemap.atom');
+
+// API路由 - CSRF token刷新
+Route::get('/csrf-token', function () {
+    return response()->json(['csrf_token' => csrf_token()]);
+})->name('csrf-token');

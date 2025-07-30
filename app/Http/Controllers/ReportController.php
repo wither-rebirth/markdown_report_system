@@ -1264,7 +1264,8 @@ class ReportController extends Controller
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
-                ->withInput();
+                ->withInput()
+                ->with('error', 'Please enter a password.');
         }
         
         // Get lock info from database
@@ -1273,7 +1274,8 @@ class ReportController extends Controller
         if (!$lockInfo) {
             return redirect()->back()
                 ->withErrors(['password' => 'Report lock configuration not found.'])
-                ->withInput();
+                ->withInput()
+                ->with('error', 'Configuration error. Please try again.');
         }
         
         // Verify password using model method (raw comparison, no escaping)
@@ -1281,11 +1283,14 @@ class ReportController extends Controller
             // Store in session that this report is unlocked
             session()->put("report_unlocked_{$slug}", true);
             
-            return redirect()->route('reports.show', $slug);
+            // 成功解锁后直接跳转，并显示成功消息
+            return redirect()->route('reports.show', $slug)
+                ->with('success', 'Report unlocked successfully!');
         } else {
             return redirect()->back()
                 ->withErrors(['password' => 'Incorrect password. Please try again.'])
-                ->withInput();
+                ->withInput()
+                ->with('error', 'Password verification failed.');
         }
     }
 } 
