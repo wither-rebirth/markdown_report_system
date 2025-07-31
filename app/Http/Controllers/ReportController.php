@@ -517,7 +517,7 @@ class ReportController extends Controller
         }
         
         // Use cache for performance
-        $cacheKey = "htb.report.{$slug}." . File::lastModified($walkthroughFile) . '.v2';
+        $cacheKey = "htb.report.{$slug}." . File::lastModified($walkthroughFile) . '.v5';
         
         $data = Cache::remember($cacheKey, 3600, function () use ($walkthroughFile, $slug, $folderName, $reportDir) {
             $content = File::get($walkthroughFile);
@@ -527,6 +527,9 @@ class ReportController extends Controller
             
             // Convert Markdown to HTML
             $html = $this->markdownConverter->convert($content);
+            
+            // Escape Vue.js template syntax in the final HTML to prevent compilation errors
+            $html = $this->escapeVueTemplateSyntaxInHtml($html);
             
             // Count images
             $imagesDir = $reportDir . '/images';
@@ -590,6 +593,30 @@ class ReportController extends Controller
         );
         
         return $content;
+    }
+    
+    /**
+     * Escape Vue.js template syntax in HTML to prevent compilation errors
+     * This method processes the final HTML output for better display
+     */
+    private function escapeVueTemplateSyntaxInHtml($html)
+    {
+        // Escape double curly braces {{ }} which Vue.js interprets as template syntax
+        // Use zero-width space (&#8203;) to break Vue.js parsing without affecting display
+        $html = str_replace('{{', '{&#8203;{', $html);
+        $html = str_replace('}}', '}&#8203;}', $html);
+        
+        // Escape HTML tags that might be misinterpreted as Vue.js directives
+        // Especially problematic tags in network interface output like <LOOPBACK,UP,LOWER_UP>
+        // Only process text content, not HTML tags
+        $html = preg_replace_callback('/>([^<]*)</ms', function($matches) {
+            $textContent = $matches[1];
+            // Only escape uppercase letter combinations that look like network interface tags
+            $textContent = preg_replace('/<([A-Z_,]+)>/', '&lt;$1&gt;', $textContent);
+            return '>' . $textContent . '<';
+        }, $html);
+        
+        return $html;
     }
     
     /**
