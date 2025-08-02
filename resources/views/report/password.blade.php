@@ -86,7 +86,7 @@
             </button>
         </form>
         
-        <a href="{{ route('reports.index') }}" class="back-link">
+                    <a href="{{ route('reports.categories') }}" class="back-link">
             ← Back to Report List
         </a>
     </div>

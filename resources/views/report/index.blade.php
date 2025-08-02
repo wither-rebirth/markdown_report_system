@@ -1,4 +1,4 @@
-@extends('layout', ['title' => 'Lab Reports', 'hasCanonical' => true])
+@extends('layout', ['title' => isset($categoryInfo) ? $categoryInfo['title'] : 'Lab Reports', 'hasCanonical' => true])
 
 @push('meta')
     <!-- SEO Meta Tags -->
@@ -6,13 +6,13 @@
     <meta name="keywords" content="HackTheBox,TryHackMe,CTF,Writeup,Walkthrough,Lab Reports,Penetration Testing,Cybersecurity,Wither,Tech Sharing">
     <meta name="author" content="Wither">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="{{ route('reports.index') }}">
+    <link rel="canonical" href="{{ isset($category) ? route('reports.index', $category) : route('reports.categories') }}">
     
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Lab Reports | Wither's Blog">
     <meta property="og:description" content="Wither's Blog Lab Reports section, featuring detailed Writeups and walkthrough insights for HackTheBox, TryHackMe, and various penetration testing labs.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ route('reports.index') }}">
+    <meta property="og:url" content="{{ isset($category) ? route('reports.index', $category) : route('reports.categories') }}">
     <meta property="og:site_name" content="Wither's Blog">
     <meta property="og:image" content="{{ asset('images/reports-og.jpg') }}">
     
@@ -29,10 +29,64 @@
 
 @section('content')
 <div class="report-index">
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb-nav">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ route('reports.categories') }}">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Lab Reports
+                    </a>
+                </li>
+                @if(isset($categoryInfo))
+                <li class="breadcrumb-item active" aria-current="page">
+                    {{ $categoryInfo['title'] }}
+                </li>
+                @endif
+            </ol>
+        </nav>
+    </div>
+
     <!-- 页面头部 -->
     <div class="page-header">
         <div class="page-info">
+            @if(isset($categoryInfo))
+            <div class="category-header">
+                <div class="category-icon-small">
+                    @switch($categoryInfo['icon'])
+                        @case('htb-machines')
+                            <img src="{{ asset('images/machines.png') }}" alt="HackTheBox Machines" class="category-image-small">
+                            @break
+                        @case('htb-fortresses')
+                            <img src="{{ asset('images/fortresses.png') }}" alt="HackTheBox Fortresses" class="category-image-small">
+                            @break
+                        @case('htb-endgames')
+                            <img src="{{ asset('images/insane.png') }}" alt="HackTheBox EndGames" class="category-image-small">
+                            @break
+                        @case('htb-insane')
+                            <img src="{{ asset('images/insane.png') }}" alt="HackTheBox Insane" class="category-image-small">
+                            @break
+                        @case('vulnhub')
+                            <img src="{{ asset('images/vulnhub.png') }}" alt="VulnHub Machines" class="category-image-small">
+                            @break
+                        @default
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                    @endswitch
+                </div>
+                <div class="category-header-text">
+                    <h2>{{ $categoryInfo['title'] }}</h2>
+                    <p class="category-subtitle">{{ $categoryInfo['description'] }}</p>
+                </div>
+            </div>
+            @else
             <h2>📊 Report List</h2>
+            @endif
+            
             @if($reports->total() > 0)
             <p class="total-info">
                 @if(request('search'))
@@ -52,7 +106,7 @@
     
     <!-- 搜索区域 -->
     <div class="search-container">
-        <form method="GET" action="{{ route('reports.index') }}" class="search-form">
+        <form method="GET" action="{{ isset($category) ? route('reports.index', $category) : route('reports.categories') }}" class="search-form">
             <div class="search-input-group">
                 <div class="search-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -82,7 +136,7 @@
             <div class="search-tip-row">
                 <span class="search-tip">💡 <kbd>Ctrl</kbd> + <kbd>K</kbd> to quickly focus search box</span>
                 @if(request('search'))
-                    <a href="{{ route('reports.index') }}" class="clear-search-link">Clear Search</a>
+                    <a href="{{ isset($category) ? route('reports.index', $category) : route('reports.categories') }}" class="clear-search-link">Clear Search</a>
                 @endif
             </div>
             
@@ -172,6 +226,11 @@
                                 </svg>
                                 HTB
                             </span>
+                            @if(isset($report['difficulty']))
+                            <span class="meta-item">
+                                <span class="difficulty-tag difficulty-{{ strtolower($report['difficulty']) }}">{{ $report['difficulty'] }}</span>
+                            </span>
+                            @endif
                             @endif
                             @if($report['is_locked'] ?? false)
                             <span class="meta-item locked-badge">

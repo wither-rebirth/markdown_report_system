@@ -388,13 +388,14 @@ class HomeController extends Controller
             if ($type === 'report') {
                 // 对于报告，优先从路径中提取有意义的名称
                 if (strpos($relativePath, 'Hackthebox-Walkthrough') !== false) {
-                    // HackTheBox报告: Hackthebox-Walkthrough/MachineName/Walkthrough.md
+                    // HackTheBox报告: Hackthebox-Walkthrough/Difficulty/MachineName/Walkthrough.md
                     // 使用正斜杠来分割路径，因为relativePath已经标准化了
                     $pathParts = explode('/', str_replace('\\', '/', $relativePath));
-                    if (count($pathParts) >= 3) {
-                        $machineName = $pathParts[1]; // Hackthebox-Walkthrough后面的机器名
-                        if ($machineName && $machineName !== 'Walkthrough.md') {
-                            return 'HackTheBox - ' . $machineName;
+                    if (count($pathParts) >= 4) {
+                        $difficulty = $pathParts[1]; // Hackthebox-Walkthrough后面的难度
+                        $machineName = $pathParts[2]; // 难度后面的机器名
+                        if ($machineName && $machineName !== 'Walkthrough.md' && $difficulty) {
+                            return 'HackTheBox ' . $difficulty . ' - ' . $machineName;
                         }
                     }
                 } else {

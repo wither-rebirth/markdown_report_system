@@ -113,7 +113,7 @@
                         </svg>
                         Browse Blog
                     </a>
-                    <a href="{{ route('reports.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('reports.categories') }}" class="btn btn-secondary">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                         </svg>
@@ -299,7 +299,7 @@
                         
                         @if(count($latestReports) > 0)
                             <div class="section-footer">
-                                <a href="{{ route('reports.index') }}" class="btn btn-outline">
+                                <a href="{{ route('reports.categories') }}" class="btn btn-outline">
                                     View All Reports
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>

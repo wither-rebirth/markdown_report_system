@@ -36,8 +36,11 @@ Route::get('/aboutme', [AboutMeController::class, 'index'])->name('aboutme.index
 
 // 靶场报告路由组
 Route::prefix('reports')->group(function () {
-    // 显示报告列表
-    Route::get('/', [ReportController::class, 'index'])->name('reports.index');
+    // 显示报告分类页面
+    Route::get('/', [ReportController::class, 'categories'])->name('reports.categories');
+    
+    // 显示特定分类的报告列表
+    Route::get('/category/{category}', [ReportController::class, 'index'])->name('reports.index');
     
     // 密码验证路由 - 放在 show 路由之前
     Route::post('/{slug}/verify-password', [ReportController::class, 'verifyPassword'])->name('reports.verify-password');

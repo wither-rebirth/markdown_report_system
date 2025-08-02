@@ -106,19 +106,33 @@ function initKeyboardShortcuts() {
     });
 }
 
-// 页面加载动画
+// 页面加载动画 - 性能优化版本
 function initLoadAnimation() {
-    const cards = document.querySelectorAll('.report-card');
-    cards.forEach((card, index) => {
-        // 移除内联样式，使用 CSS 动画
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        
-        setTimeout(() => {
-            card.style.transition = 'all 0.6s ease';
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        }, index * 100);
+    const cards = document.querySelectorAll('.report-card, .category-card');
+    
+    if (cards.length === 0) return;
+    
+    // 使用 requestAnimationFrame 优化性能
+    requestAnimationFrame(() => {
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.willChange = 'opacity, transform';
+            
+            // 限制最大延迟，避免过长的动画
+            const delay = Math.min(index * 50, 300);
+            
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+                
+                // 动画完成后移除 will-change
+                setTimeout(() => {
+                    card.style.willChange = 'auto';
+                }, 400);
+            }, delay);
+        });
     });
 }
 
@@ -170,12 +184,48 @@ function initVisibilityAPI() {
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
             // 页面不可见时暂停某些操作
-            console.log('页面隐藏，暂停动画');
+            document.documentElement.style.animationPlayState = 'paused';
         } else {
             // 页面可见时恢复操作
-            console.log('页面可见，恢复动画');
+            document.documentElement.style.animationPlayState = 'running';
         }
     });
+}
+
+// 滚动性能优化
+function initScrollOptimization() {
+    let ticking = false;
+    
+    // 节流滚动事件
+    function updateOnScroll() {
+        // 检查元素可见性，优化动画
+        const cards = document.querySelectorAll('.category-card, .report-card');
+        const viewportHeight = window.innerHeight;
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            const isVisible = rect.top < viewportHeight && rect.bottom > 0;
+            
+            if (isVisible) {
+                card.style.willChange = 'transform';
+            } else {
+                card.style.willChange = 'auto';
+            }
+        });
+        
+        ticking = false;
+    }
+    
+    function onScroll() {
+        if (!ticking) {
+            requestAnimationFrame(updateOnScroll);
+            ticking = true;
+        }
+    }
+    
+    // 使用被动监听器提升性能
+    window.addEventListener('scroll', onScroll, { passive: true });
 }
 
 // 搜索历史记录
@@ -254,9 +304,10 @@ document.addEventListener('DOMContentLoaded', function() {
     initVisibilityAPI();
     initSearchHistory();
     initPagination(); // 新增分页初始化
+    initScrollOptimization(); // 滚动性能优化
     
     // 页面加载完成提示
-    console.log('Index 页面初始化完成');
+    console.log('Index 页面初始化完成 - 已启用滚动优化');
 });
 
 // 导出函数供其他脚本使用（全局函数）

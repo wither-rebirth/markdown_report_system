@@ -33,10 +33,25 @@ class ReportController extends Controller
     }
     
     /**
+     * Display report categories
+     */
+    public function categories()
+    {
+        $categories = $this->getReportCategories();
+        
+        return view('report.categories', compact('categories'));
+    }
+
+    /**
      * Display report list - support pagination and search
      */
-    public function index(Request $request)
+    public function index(Request $request, $category = null)
     {
+        // If no category specified, redirect to categories page
+        if (!$category) {
+            return redirect()->route('reports.categories');
+        }
+
         $reportsDir = storage_path('reports');
         $hacktheboxDir = storage_path('reports/Hackthebox-Walkthrough');
         
@@ -47,49 +62,80 @@ class ReportController extends Controller
         // Get search query parameter
         $searchQuery = $request->input('search');
         
-        // Use more precise cache key with latest modification time of all related files
-        $cacheKey = 'all_reports_' . $this->generateReportsCacheKey($reportsDir, $hacktheboxDir);
-        $allReports = Cache::remember($cacheKey, 600, function () use ($reportsDir, $hacktheboxDir) {
+        // Use more precise cache key with latest modification time of all related files  
+        $cacheKey = 'category_reports_' . $category . '_' . $this->generateReportsCacheKey($reportsDir, $hacktheboxDir);
+        $allReports = Cache::remember($cacheKey, 600, function () use ($reportsDir, $hacktheboxDir, $category) {
             $reports = collect();
             
-            // Process traditional single .md files
-            $mdFiles = collect(File::glob($reportsDir . '/*.md'))
-                ->map(function ($file) {
-                    $filename = pathinfo($file, PATHINFO_FILENAME);
-                    $content = File::get($file);
-                    
-                    // Extract title (first # heading or filename)
-                    $title = $filename;
-                    if (preg_match('/^#\s+(.+)$/m', $content, $matches)) {
-                        $title = trim($matches[1]);
+            // Filter reports based on category
+            switch ($category) {
+                case 'hackthebox-machines':
+                    if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
+                        $hacktheboxReports = $this->getHacktheboxReports($hacktheboxDir, ['Easy', 'Medium', 'Hard']);
+                        $reports = $reports->merge($hacktheboxReports);
                     }
+                    break;
                     
-                    // Extract excerpt (first paragraph or first 100 characters)
-                    $excerpt = $this->extractExcerpt($content);
+                case 'hackthebox-fortresses':
+                    if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
+                        $hacktheboxReports = $this->getHacktheboxReports($hacktheboxDir, ['Fortresses']);
+                        $reports = $reports->merge($hacktheboxReports);
+                    }
+                    break;
                     
-                    return [
-                        'slug' => $filename,
-                        'title' => $title,
-                        'excerpt' => $excerpt,
-                        'content' => $content, // Save full content for search
-                        'mtime' => File::lastModified($file),
-                        'size' => File::size($file),
-                        'status' => 'active',
-                        'type' => 'file'
-                    ];
-                });
-            
-            // Process Hackthebox-Walkthrough folder
-            if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
-                $hacktheboxReports = $this->getHacktheboxReports($hacktheboxDir);
-                $reports = $reports->merge($hacktheboxReports);
+                case 'hackthebox-insane':
+                    if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
+                        $hacktheboxReports = $this->getHacktheboxReports($hacktheboxDir, ['Insane']);
+                        $reports = $reports->merge($hacktheboxReports);
+                    }
+                    break;
+                    
+                case 'tryhackme':
+                    // Process TryHackMe reports (for future use)
+                    break;
+                    
+                case 'vulnhub':
+                    // Process VulnHub reports
+                    $vulnhubDir = storage_path('reports/Vulnerhub');
+                    if (File::exists($vulnhubDir) && File::isDirectory($vulnhubDir)) {
+                        $vulnhubReports = $this->getVulnhubReports($vulnhubDir);
+                        $reports = $reports->merge($vulnhubReports);
+                    }
+                    break;
+                    
+                default:
+                    // Process traditional single .md files for "other" category
+                    $mdFiles = collect(File::glob($reportsDir . '/*.md'))
+                        ->map(function ($file) {
+                            $filename = pathinfo($file, PATHINFO_FILENAME);
+                            $content = File::get($file);
+                            
+                            // Extract title (first # heading or filename)
+                            $title = $filename;
+                            if (preg_match('/^#\s+(.+)$/m', $content, $matches)) {
+                                $title = trim($matches[1]);
+                            }
+                            
+                            // Extract excerpt (first paragraph or first 100 characters)
+                            $excerpt = $this->extractExcerpt($content);
+                            
+                            return [
+                                'slug' => $filename,
+                                'title' => $title,
+                                'excerpt' => $excerpt,
+                                'content' => $content, // Save full content for search
+                                'mtime' => File::lastModified($file),
+                                'size' => File::size($file),
+                                'status' => 'active',
+                                'type' => 'file'
+                            ];
+                        });
+                    $reports = $reports->merge($mdFiles);
+                    break;
             }
             
-            // Merge and sort
-            return $reports->merge($mdFiles)
-                ->sortByDesc('mtime')
-                ->values()
-                ->toArray();
+            // Sort by modification time
+            return $reports->sortByDesc('mtime')->values()->toArray();
         });
         
         // Apply search filter
@@ -120,7 +166,10 @@ class ReportController extends Controller
         // Preserve query parameters
         $reports->appends($request->query());
         
-        return view('report.index', compact('reports'));
+        // Get category info for breadcrumb and page title
+        $categoryInfo = $this->getCategoryInfo($category);
+        
+        return view('report.index', compact('reports', 'category', 'categoryInfo'));
     }
     
     /**
@@ -395,45 +444,52 @@ class ReportController extends Controller
     /**
      * Get reports from Hackthebox-Walkthrough folder
      */
-    private function getHacktheboxReports($hacktheboxDir)
+    private function getHacktheboxReports($hacktheboxDir, $includeDifficulties = null)
     {
         $reports = collect();
+        $difficulties = $includeDifficulties ?: ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses'];
         
-        // Read all subfolders
-        $directories = File::directories($hacktheboxDir);
-        
-        foreach ($directories as $dir) {
-            $dirName = basename($dir);
-            $walkthroughFile = $dir . '/Walkthrough.md';
-            $imagesDir = $dir . '/images';
-            
-            // Check if Walkthrough.md file exists
-            if (File::exists($walkthroughFile)) {
-                $content = File::get($walkthroughFile);
-                $excerpt = $this->extractExcerpt($content);
-                $mtime = File::lastModified($walkthroughFile); // Use actual file modification time
-                $size = File::size($walkthroughFile);
+        // Read all difficulty subdirectories
+        foreach ($difficulties as $difficulty) {
+            $difficultyDir = $hacktheboxDir . '/' . $difficulty;
+            if (File::exists($difficultyDir) && File::isDirectory($difficultyDir)) {
+                $machineDirectories = File::directories($difficultyDir);
                 
-                // Count images
-                $imageCount = 0;
-                if (File::exists($imagesDir) && File::isDirectory($imagesDir)) {
-                    $imageFiles = File::glob($imagesDir . '/*.{jpg,jpeg,png,gif,bmp,webp}', GLOB_BRACE);
-                    $imageCount = count($imageFiles);
+                foreach ($machineDirectories as $dir) {
+                    $machineName = basename($dir);
+                    $walkthroughFile = $dir . '/Walkthrough.md';
+                    $imagesDir = $dir . '/images';
+                    
+                    // Check if Walkthrough.md file exists
+                    if (File::exists($walkthroughFile)) {
+                        $content = File::get($walkthroughFile);
+                        $excerpt = $this->extractExcerpt($content);
+                        $mtime = File::lastModified($walkthroughFile); // Use actual file modification time
+                        $size = File::size($walkthroughFile);
+                        
+                        // Count images
+                        $imageCount = 0;
+                        if (File::exists($imagesDir) && File::isDirectory($imagesDir)) {
+                            $imageFiles = File::glob($imagesDir . '/*.{jpg,jpeg,png,gif,bmp,webp}', GLOB_BRACE);
+                            $imageCount = count($imageFiles);
+                        }
+                        
+                        $reports->push([
+                            'slug' => 'htb-' . $machineName,
+                            'title' => $machineName,
+                            'excerpt' => $excerpt,
+                            'content' => $content, // Save full content for search
+                            'mtime' => $mtime,
+                            'size' => $size,
+                            'status' => 'active',
+                            'type' => 'hackthebox',
+                            'folder_name' => $machineName,
+                            'difficulty' => $difficulty,
+                            'image_count' => $imageCount,
+                            'has_images' => $imageCount > 0
+                        ]);
+                    }
                 }
-                
-                $reports->push([
-                    'slug' => 'htb-' . $dirName,
-                    'title' => $dirName,
-                    'excerpt' => $excerpt,
-                    'content' => $content, // Save full content for search
-                    'mtime' => $mtime,
-                    'size' => $size,
-                    'status' => 'active',
-                    'type' => 'hackthebox',
-                    'folder_name' => $dirName,
-                    'image_count' => $imageCount,
-                    'has_images' => $imageCount > 0
-                ]);
             }
         }
         
@@ -455,6 +511,11 @@ class ReportController extends Controller
         // Check if it's a Hackthebox report
         if (str_starts_with($slug, 'htb-')) {
             return $this->showHacktheboxReport($slug);
+        }
+        
+        // Check if it's a VulnHub report
+        if (str_starts_with($slug, 'vulnhub-')) {
+            return $this->showVulnhubReport($slug);
         }
         
         $filePath = storage_path("reports/{$slug}.md");
@@ -509,17 +570,21 @@ class ReportController extends Controller
     {
         // Extract folder name (remove htb- prefix)
         $folderName = substr($slug, 4);
-        $reportDir = storage_path("reports/Hackthebox-Walkthrough/{$folderName}");
-        $walkthroughFile = $reportDir . '/Walkthrough.md';
         
-        if (!File::exists($walkthroughFile)) {
+        // Find the machine in the new difficulty-based directory structure
+        $machineInfo = $this->findHacktheboxMachine($folderName);
+        if (!$machineInfo) {
             abort(404, 'Report not found');
         }
+        
+        $reportDir = $machineInfo['path'];
+        $walkthroughFile = $reportDir . '/Walkthrough.md';
+        $difficulty = $machineInfo['difficulty'];
         
         // Use cache for performance
         $cacheKey = "htb.report.{$slug}." . File::lastModified($walkthroughFile) . '.v5';
         
-        $data = Cache::remember($cacheKey, 3600, function () use ($walkthroughFile, $slug, $folderName, $reportDir) {
+        $data = Cache::remember($cacheKey, 3600, function () use ($walkthroughFile, $slug, $folderName, $reportDir, $difficulty) {
             $content = File::get($walkthroughFile);
             
             // Process image links - convert relative paths to accessible URLs
@@ -551,15 +616,115 @@ class ReportController extends Controller
                 'size' => File::size($walkthroughFile),
                 'type' => 'hackthebox',
                 'folder_name' => $folderName,
+                'difficulty' => $difficulty,
                 'image_count' => $imageCount,
                 'excerpt' => $excerpt,
                 'keywords' => $keywords,
-                'full_title' => $folderName . ' - HackTheBox Writeup',
+                'full_title' => $folderName . ' - HackTheBox ' . $difficulty . ' Writeup',
                 'canonical_url' => route('reports.show', $slug),
             ];
         });
         
         return view('report.show', $data);
+    }
+    
+    /**
+     * Display VulnHub report
+     */
+    private function showVulnhubReport($slug)
+    {
+        // Extract folder name (remove vulnhub- prefix)
+        $machineName = substr($slug, 8);
+        
+        // Find the machine in the VulnHub directory structure
+        $machineInfo = $this->findVulnhubMachine($machineName);
+        if (!$machineInfo) {
+            abort(404, 'Report not found');
+        }
+        
+        $walkthroughFile = $machineInfo['walkthrough_file'];
+        
+        // Use cache for performance
+        $cacheKey = "vulnhub.report.{$slug}." . File::lastModified($walkthroughFile) . '.v1';
+        
+        $data = Cache::remember($cacheKey, 3600, function () use ($walkthroughFile, $slug, $machineName, $machineInfo) {
+            $content = File::get($walkthroughFile);
+            
+            // Process image links if it's a directory-based machine
+            if ($machineInfo['type'] === 'directory') {
+                $content = $this->processVulnhubImages($content, $machineName);
+            }
+            
+            // Convert Markdown to HTML
+            $html = $this->markdownConverter->convert($content);
+            
+            // Escape Vue.js template syntax in the final HTML to prevent compilation errors
+            $html = $this->escapeVueTemplateSyntaxInHtml($html);
+            
+            // Count images if directory-based
+            $imageCount = 0;
+            if ($machineInfo['type'] === 'directory') {
+                $imagesDir = $machineInfo['path'] . '/images';
+                if (File::exists($imagesDir) && File::isDirectory($imagesDir)) {
+                    $imageFiles = File::glob($imagesDir . '/*.{jpg,jpeg,png,gif,bmp,webp}', GLOB_BRACE);
+                    $imageCount = count($imageFiles);
+                }
+            }
+            
+            // Extract SEO data
+            $excerpt = $this->extractExcerpt($content);
+            $keywords = $this->extractKeywords($content, $machineName);
+            
+            return [
+                'title' => $machineName,
+                'html' => $html,
+                'slug' => $slug,
+                'mtime' => File::lastModified($walkthroughFile),
+                'size' => File::size($walkthroughFile),
+                'type' => 'vulnhub',
+                'folder_name' => $machineName,
+                'image_count' => $imageCount,
+                'excerpt' => $excerpt,
+                'keywords' => $keywords,
+                'full_title' => $machineName . ' - VulnHub Writeup',
+                'canonical_url' => route('reports.show', $slug),
+            ];
+        });
+        
+        return view('report.show', $data);
+    }
+    
+    /**
+     * Process image links in VulnHub reports
+     */
+    private function processVulnhubImages($content, $machineName)
+    {
+        // Process Markdown image syntax ![alt](images/filename.ext)
+        $content = preg_replace_callback(
+            '/!\[([^\]]*)\]\(images\/([^)]+)\)/',
+            function ($matches) use ($machineName) {
+                $alt = $matches[1];
+                $filename = $matches[2];
+                $url = route('reports.vulnhub-image', ['machine' => $machineName, 'filename' => $filename]);
+                return "![{$alt}]({$url})";
+            },
+            $content
+        );
+        
+        // Process HTML img tags <img src="images/filename.ext">
+        $content = preg_replace_callback(
+            '/<img([^>]*?)src=["\']images\/([^"\']+)["\']([^>]*?)>/i',
+            function ($matches) use ($machineName) {
+                $before = $matches[1];
+                $filename = $matches[2];
+                $after = $matches[3];
+                $url = route('reports.vulnhub-image', ['machine' => $machineName, 'filename' => $filename]);
+                return "<img{$before}src=\"{$url}\"{$after}>";
+            },
+            $content
+        );
+        
+        return $content;
     }
     
     /**
@@ -626,7 +791,14 @@ class ReportController extends Controller
     {
         // URL decode filename
         $decodedFilename = urldecode($filename);
-        $imagePath = storage_path("reports/Hackthebox-Walkthrough/{$folder}/images/{$decodedFilename}");
+        
+        // Find the machine in the new difficulty-based directory structure
+        $machineInfo = $this->findHacktheboxMachine($folder);
+        if (!$machineInfo) {
+            abort(404, 'Machine not found');
+        }
+        
+        $imagePath = $machineInfo['path'] . "/images/{$decodedFilename}";
         
         if (!File::exists($imagePath)) {
             abort(404, 'Image not found');
@@ -1082,7 +1254,7 @@ class ReportController extends Controller
         
         // Add report list page
         $xml .= '  <url>' . "\n";
-        $xml .= '    <loc>' . route('reports.index') . '</loc>' . "\n";
+        $xml .= '    <loc>' . route('reports.categories') . '</loc>' . "\n";
         $xml .= '    <lastmod>' . date('Y-m-d\TH:i:s\Z') . '</lastmod>' . "\n";
         $xml .= '    <changefreq>weekly</changefreq>' . "\n";
         $xml .= '    <priority>0.9</priority>' . "\n";
@@ -1179,9 +1351,10 @@ class ReportController extends Controller
         if (str_starts_with($slug, 'htb-')) {
             // HackTheBox report - extract creation time from content
             $folderName = substr($slug, 4);
-            $walkthroughFile = storage_path("reports/Hackthebox-Walkthrough/{$folderName}/Walkthrough.md");
+            $machineInfo = $this->findHacktheboxMachine($folderName);
             
-            if (File::exists($walkthroughFile)) {
+            if ($machineInfo) {
+                $walkthroughFile = $machineInfo['walkthrough_file'];
                 // Use actual file modification time for accuracy
                 return File::lastModified($walkthroughFile);
             }
@@ -1236,13 +1409,14 @@ class ReportController extends Controller
         if (str_starts_with($slug, 'htb-')) {
             // HackTheBox report
             $folderName = substr($slug, 4);
-            $walkthroughFile = storage_path("reports/Hackthebox-Walkthrough/{$folderName}/Walkthrough.md");
+            $machineInfo = $this->findHacktheboxMachine($folderName);
             
-            if (File::exists($walkthroughFile)) {
+            if ($machineInfo) {
+                $walkthroughFile = $machineInfo['walkthrough_file'];
                 $content = File::get($walkthroughFile);
                 
-                // For HTB reports, format as "Machine - HackTheBox Writeup"
-                $title = $folderName . ' - HackTheBox Writeup';
+                // For HTB reports, format as "Machine - HackTheBox Difficulty Writeup"
+                $title = $folderName . ' - HackTheBox ' . $machineInfo['difficulty'] . ' Writeup';
                 
                 // Extract excerpt from content
                 $excerpt = $this->extractExcerpt($content);
@@ -1251,7 +1425,30 @@ class ReportController extends Controller
                     'title' => $title,
                     'excerpt' => $excerpt,
                     'mtime' => File::lastModified($walkthroughFile),
-                    'type' => 'hackthebox'
+                    'type' => 'hackthebox',
+                    'difficulty' => $machineInfo['difficulty']
+                ];
+            }
+        } elseif (str_starts_with($slug, 'vulnhub-')) {
+            // VulnHub report
+            $machineName = substr($slug, 8);
+            $machineInfo = $this->findVulnhubMachine($machineName);
+            
+            if ($machineInfo) {
+                $walkthroughFile = $machineInfo['walkthrough_file'];
+                $content = File::get($walkthroughFile);
+                
+                // For VulnHub reports, format as "Machine - VulnHub Writeup"
+                $title = $machineName . ' - VulnHub Writeup';
+                
+                // Extract excerpt from content
+                $excerpt = $this->extractExcerpt($content);
+                
+                return [
+                    'title' => $title,
+                    'excerpt' => $excerpt,
+                    'mtime' => File::lastModified($walkthroughFile),
+                    'type' => 'vulnhub'
                 ];
             }
         } else {
@@ -1319,5 +1516,237 @@ class ReportController extends Controller
                 ->withInput()
                 ->with('error', 'Password verification failed.');
         }
+    }
+    
+    /**
+     * Find HackTheBox machine in the new difficulty-based directory structure
+     */
+    private function findHacktheboxMachine($machineName)
+    {
+        $difficulties = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses'];
+        $hacktheboxDir = storage_path('reports/Hackthebox-Walkthrough');
+        
+        foreach ($difficulties as $difficulty) {
+            $machineDir = $hacktheboxDir . '/' . $difficulty . '/' . $machineName;
+            $walkthroughFile = $machineDir . '/Walkthrough.md';
+            
+            if (File::exists($walkthroughFile)) {
+                return [
+                    'path' => $machineDir,
+                    'difficulty' => $difficulty,
+                    'walkthrough_file' => $walkthroughFile
+                ];
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Get available report categories
+     */
+    private function getReportCategories()
+    {
+        $categories = [];
+        
+        // HackTheBox categories
+        $hacktheboxDir = storage_path('reports/Hackthebox-Walkthrough');
+        if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
+            $difficulties = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses'];
+            
+            foreach ($difficulties as $difficulty) {
+                $difficultyDir = $hacktheboxDir . '/' . $difficulty;
+                if (File::exists($difficultyDir) && File::isDirectory($difficultyDir)) {
+                    $machineCount = count(File::directories($difficultyDir));
+                    if ($machineCount > 0) {
+                        if (in_array($difficulty, ['Easy', 'Medium', 'Hard'])) {
+                            if (!isset($categories['hackthebox-machines'])) {
+                                $categories['hackthebox-machines'] = [
+                                    'key' => 'hackthebox-machines',
+                                    'title' => 'HackTheBox - Machines',
+                                    'description' => 'Resolución de máquinas de la plataforma de HackTheBox',
+                                    'count' => 0,
+                                    'icon' => 'htb-machines'
+                                ];
+                            }
+                            $categories['hackthebox-machines']['count'] += $machineCount;
+                        } elseif ($difficulty === 'Fortresses') {
+                            $categories['hackthebox-fortresses'] = [
+                                'key' => 'hackthebox-fortresses',
+                                'title' => 'HackTheBox - Fortresses',
+                                'description' => 'Resolución de fortresses de la plataforma de HackTheBox',
+                                'count' => $machineCount,
+                                'icon' => 'htb-fortresses'
+                            ];
+                        } elseif ($difficulty === 'Insane') {
+                            $categories['hackthebox-insane'] = [
+                                'key' => 'hackthebox-insane',
+                                'title' => 'HackTheBox - Insane',
+                                'description' => 'Resolución de máquinas de dificultad Insane',
+                                'count' => $machineCount,
+                                'icon' => 'htb-insane'
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+        
+        // TryHackMe (for future use)
+        $tryhackmeDir = storage_path('reports/TryHackMe');
+        if (File::exists($tryhackmeDir) && File::isDirectory($tryhackmeDir)) {
+            $roomCount = count(File::directories($tryhackmeDir));
+            if ($roomCount > 0) {
+                $categories['tryhackme'] = [
+                    'key' => 'tryhackme',
+                    'title' => 'TryHackMe - Rooms',
+                    'description' => 'Resolución de rooms de la plataforma de TryHackMe',
+                    'count' => $roomCount,
+                    'icon' => 'tryhackme'
+                ];
+            }
+        }
+        
+        // VulnHub
+        $vulnhubDir = storage_path('reports/Vulnerhub');
+        if (File::exists($vulnhubDir) && File::isDirectory($vulnhubDir)) {
+            $machineCount = count(File::directories($vulnhubDir));
+            // 也检查是否有直接的 .md 文件
+            $mdFiles = File::glob($vulnhubDir . '/*.md');
+            $totalCount = $machineCount + count($mdFiles);
+            
+            if ($totalCount > 0) {
+                $categories['vulnhub'] = [
+                    'key' => 'vulnhub',
+                    'title' => 'VulnHub - Machines',
+                    'description' => 'Resolución de máquinas de la plataforma de VulnHub',
+                    'count' => $totalCount,
+                    'icon' => 'vulnhub'
+                ];
+            }
+        }
+        
+        return $categories;
+    }
+    
+    /**
+     * Get category information
+     */
+    private function getCategoryInfo($category)
+    {
+        $categories = $this->getReportCategories();
+        return $categories[$category] ?? [
+            'key' => $category,
+            'title' => ucfirst(str_replace('-', ' ', $category)),
+            'description' => 'Reports in this category',
+            'count' => 0,
+            'icon' => 'default'
+        ];
+    }
+    
+    /**
+     * Get reports from VulnHub folder
+     */
+    private function getVulnhubReports($vulnhubDir)
+    {
+        $reports = collect();
+        
+        // Process directories (machines in subfolders)
+        $machineDirectories = File::directories($vulnhubDir);
+        foreach ($machineDirectories as $dir) {
+            $machineName = basename($dir);
+            $walkthroughFile = $dir . '/Walkthrough.md';
+            $imagesDir = $dir . '/images';
+            
+            // Check if Walkthrough.md file exists
+            if (File::exists($walkthroughFile)) {
+                $content = File::get($walkthroughFile);
+                $excerpt = $this->extractExcerpt($content);
+                $mtime = File::lastModified($walkthroughFile);
+                $size = File::size($walkthroughFile);
+                
+                // Count images
+                $imageCount = 0;
+                if (File::exists($imagesDir) && File::isDirectory($imagesDir)) {
+                    $imageFiles = File::glob($imagesDir . '/*.{jpg,jpeg,png,gif,bmp,webp}', GLOB_BRACE);
+                    $imageCount = count($imageFiles);
+                }
+                
+                $reports->push([
+                    'slug' => 'vulnhub-' . $machineName,
+                    'title' => $machineName,
+                    'excerpt' => $excerpt,
+                    'content' => $content,
+                    'mtime' => $mtime,
+                    'size' => $size,
+                    'status' => 'active',
+                    'type' => 'vulnhub',
+                    'folder_name' => $machineName,
+                    'image_count' => $imageCount,
+                    'has_images' => $imageCount > 0
+                ]);
+            }
+        }
+        
+        // Process direct .md files
+        $mdFiles = collect(File::glob($vulnhubDir . '/*.md'))
+            ->map(function ($file) {
+                $filename = pathinfo($file, PATHINFO_FILENAME);
+                $content = File::get($file);
+                
+                // Extract title (first # heading or filename)
+                $title = $filename;
+                if (preg_match('/^#\s+(.+)$/m', $content, $matches)) {
+                    $title = trim($matches[1]);
+                }
+                
+                // Extract excerpt
+                $excerpt = $this->extractExcerpt($content);
+                
+                return [
+                    'slug' => 'vulnhub-' . $filename,
+                    'title' => $title,
+                    'excerpt' => $excerpt,
+                    'content' => $content,
+                    'mtime' => File::lastModified($file),
+                    'size' => File::size($file),
+                    'status' => 'active',
+                    'type' => 'vulnhub'
+                ];
+            });
+        
+        return $reports->merge($mdFiles);
+    }
+    
+    /**
+     * Find VulnHub machine in directory structure
+     */
+    private function findVulnhubMachine($machineName)
+    {
+        $vulnhubDir = storage_path('reports/Vulnerhub');
+        
+        // Check if it's a directory-based machine
+        $machineDir = $vulnhubDir . '/' . $machineName;
+        $walkthroughFile = $machineDir . '/Walkthrough.md';
+        
+        if (File::exists($walkthroughFile)) {
+            return [
+                'path' => $machineDir,
+                'walkthrough_file' => $walkthroughFile,
+                'type' => 'directory'
+            ];
+        }
+        
+        // Check if it's a direct .md file
+        $mdFile = $vulnhubDir . '/' . $machineName . '.md';
+        if (File::exists($mdFile)) {
+            return [
+                'path' => $vulnhubDir,
+                'walkthrough_file' => $mdFile,
+                'type' => 'file'
+            ];
+        }
+        
+        return null;
     }
 } 

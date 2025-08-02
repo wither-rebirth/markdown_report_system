@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\ReportLock;
+use Illuminate\Support\Facades\File;
 
 class TestReportLock extends Command
 {
@@ -47,10 +48,10 @@ class TestReportLock extends Command
             $slug = $lock->slug;
             if (str_starts_with($slug, 'htb-')) {
                 $machineName = substr($slug, 4);
-                $filePath = storage_path("reports/Hackthebox-Walkthrough/{$machineName}/Walkthrough.md");
+                $machineInfo = $this->findHacktheboxMachine($machineName);
                 
-                if (file_exists($filePath)) {
-                    $this->line("  ✅ {$slug} → File exists");
+                if ($machineInfo) {
+                    $this->line("  ✅ {$slug} → File exists ({$machineInfo['difficulty']})");
                 } else {
                     $this->error("  ❌ {$slug} → File missing");
                 }
@@ -61,5 +62,29 @@ class TestReportLock extends Command
         $this->info('🎯 Test completed! The report lock system is working with actual files.');
         
         return 0;
+    }
+    
+    /**
+     * Find HackTheBox machine in the new difficulty-based directory structure
+     */
+    private function findHacktheboxMachine($machineName)
+    {
+        $difficulties = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses'];
+        $hacktheboxDir = storage_path('reports/Hackthebox-Walkthrough');
+        
+        foreach ($difficulties as $difficulty) {
+            $machineDir = $hacktheboxDir . '/' . $difficulty . '/' . $machineName;
+            $walkthroughFile = $machineDir . '/Walkthrough.md';
+            
+            if (File::exists($walkthroughFile)) {
+                return [
+                    'path' => $machineDir,
+                    'difficulty' => $difficulty,
+                    'walkthrough_file' => $walkthroughFile
+                ];
+            }
+        }
+        
+        return null;
     }
 }

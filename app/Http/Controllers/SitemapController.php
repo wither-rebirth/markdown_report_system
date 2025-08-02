@@ -19,7 +19,7 @@ class SitemapController extends Controller
         $staticPages = [
             ['url' => route('home.index'), 'priority' => 1.0, 'changefreq' => 'daily'],
             ['url' => route('blog.index'), 'priority' => 0.9, 'changefreq' => 'daily'],
-            ['url' => route('reports.index'), 'priority' => 0.9, 'changefreq' => 'daily'],
+            ['url' => route('reports.categories'), 'priority' => 0.9, 'changefreq' => 'daily'],
             ['url' => route('aboutme.index'), 'priority' => 0.8, 'changefreq' => 'monthly'],
         ];
         
@@ -247,33 +247,43 @@ class SitemapController extends Controller
                 ];
             }
             
-            // 处理 Hackthebox-Walkthrough 文件夹
+            // 处理 Hackthebox-Walkthrough 文件夹 - 支持新的难度分类结构
             $hacktheboxDir = storage_path('reports/Hackthebox-Walkthrough');
             if (is_dir($hacktheboxDir)) {
-                $directories = glob($hacktheboxDir . '/*', GLOB_ONLYDIR);
+                $difficulties = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses'];
                 
-                foreach ($directories as $dir) {
-                    $dirName = basename($dir);
-                    $walkthroughFile = $dir . '/Walkthrough.md';
-                    
-                    // 检查是否存在 Walkthrough.md 文件
-                    if (file_exists($walkthroughFile)) {
-                        $stat = stat($walkthroughFile);
-                        $content = file_get_contents($walkthroughFile);
+                foreach ($difficulties as $difficulty) {
+                    $difficultyDir = $hacktheboxDir . '/' . $difficulty;
+                    if (is_dir($difficultyDir)) {
+                        $machineDirectories = glob($difficultyDir . '/*', GLOB_ONLYDIR);
                         
-                        // 解析front matter
-                        $frontMatter = $this->parseFrontMatter($content);
-                        
-                        // 使用实际文件修改时间
-                        $mtime = filemtime($walkthroughFile);
-                        
-                        $allReports[] = [
-                            'slug' => 'htb-' . $dirName,
-                            'title' => $frontMatter['title'] ?? $dirName,
-                            'excerpt' => $frontMatter['excerpt'] ?? $this->extractExcerpt($content),
-                            'mtime' => $mtime,
-                            'size' => $stat['size']
-                        ];
+                        foreach ($machineDirectories as $dir) {
+                            $machineName = basename($dir);
+                            $walkthroughFile = $dir . '/Walkthrough.md';
+                            
+                            // 检查是否存在 Walkthrough.md 文件
+                            if (file_exists($walkthroughFile)) {
+                                $stat = stat($walkthroughFile);
+                                $content = file_get_contents($walkthroughFile);
+                                
+                                // 解析front matter
+                                $frontMatter = $this->parseFrontMatter($content);
+                                
+                                // 使用实际文件修改时间
+                                $mtime = filemtime($walkthroughFile);
+                                
+                                $title = $frontMatter['title'] ?? ($machineName . ' - HackTheBox ' . $difficulty . ' Writeup');
+                                
+                                $allReports[] = [
+                                    'slug' => 'htb-' . $machineName,
+                                    'title' => $title,
+                                    'excerpt' => $frontMatter['excerpt'] ?? $this->extractExcerpt($content),
+                                    'mtime' => $mtime,
+                                    'size' => $stat['size'],
+                                    'difficulty' => $difficulty
+                                ];
+                            }
+                        }
                     }
                 }
             }
@@ -306,15 +316,22 @@ class SitemapController extends Controller
             }
         }
         
-        // 检查 Hackthebox 报告文件
+        // 检查 Hackthebox 报告文件 - 支持新的难度分类结构
         $hacktheboxDir = $reportsPath . '/Hackthebox-Walkthrough';
         if (is_dir($hacktheboxDir)) {
-            $directories = glob($hacktheboxDir . '/*', GLOB_ONLYDIR);
-            foreach ($directories as $dir) {
-                $walkthroughFile = $dir . '/Walkthrough.md';
-                if (file_exists($walkthroughFile)) {
-                    $latestMtime = max($latestMtime, filemtime($walkthroughFile));
-                    $fileCount++;
+            $difficulties = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses'];
+            
+            foreach ($difficulties as $difficulty) {
+                $difficultyDir = $hacktheboxDir . '/' . $difficulty;
+                if (is_dir($difficultyDir)) {
+                    $machineDirectories = glob($difficultyDir . '/*', GLOB_ONLYDIR);
+                    foreach ($machineDirectories as $dir) {
+                        $walkthroughFile = $dir . '/Walkthrough.md';
+                        if (file_exists($walkthroughFile)) {
+                            $latestMtime = max($latestMtime, filemtime($walkthroughFile));
+                            $fileCount++;
+                        }
+                    }
                 }
             }
         }

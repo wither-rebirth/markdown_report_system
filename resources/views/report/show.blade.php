@@ -139,11 +139,15 @@
                     📅 Last Updated: {{ date('M d, Y H:i', $mtime) }} | 
                     📄 Size: {{ number_format($size / 1024, 1) }} KB | 
                     @if(($type ?? '') === 'hackthebox')
-                        🎯 Type: HackTheBox Writeup |
+                        🎯 Type: HackTheBox Writeup
+                        @if(isset($difficulty))
+                            | 🎚️ Difficulty: <span class="difficulty-tag difficulty-{{ strtolower($difficulty) }}">{{ $difficulty }}</span>
+                        @endif
+                        |
                     @else
                         🎯 Type: Security Research Report |
                     @endif
-                    🔗 <a href="{{ route('reports.index') }}">Back to List</a>
+                    🔗 <a href="{{ route('reports.categories') }}">Back to Categories</a>
                 </div>
             </div>
 

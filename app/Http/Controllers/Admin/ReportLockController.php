@@ -292,20 +292,28 @@ class ReportLockController extends Controller
             }
         }
         
-        // 获取 HackTheBox 报告
+        // 获取 HackTheBox 报告 - 支持新的难度分类结构
         if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
-            $directories = File::directories($hacktheboxDir);
-            foreach ($directories as $dir) {
-                $dirName = basename($dir);
-                $walkthroughFile = $dir . '/Walkthrough.md';
-                
-                if (File::exists($walkthroughFile)) {
-                    $reports[] = [
-                        'slug' => 'htb-' . $dirName,
-                        'title' => $dirName,
-                        'type' => 'hackthebox',
-                        'label' => 'hackthebox'
-                    ];
+            $difficulties = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses'];
+            
+            foreach ($difficulties as $difficulty) {
+                $difficultyDir = $hacktheboxDir . '/' . $difficulty;
+                if (File::exists($difficultyDir) && File::isDirectory($difficultyDir)) {
+                    $machineDirectories = File::directories($difficultyDir);
+                    foreach ($machineDirectories as $dir) {
+                        $machineName = basename($dir);
+                        $walkthroughFile = $dir . '/Walkthrough.md';
+                        
+                        if (File::exists($walkthroughFile)) {
+                            $reports[] = [
+                                'slug' => 'htb-' . $machineName,
+                                'title' => $machineName . ' (' . $difficulty . ')',
+                                'type' => 'hackthebox',
+                                'label' => 'hackthebox',
+                                'difficulty' => $difficulty
+                            ];
+                        }
+                    }
                 }
             }
         }
