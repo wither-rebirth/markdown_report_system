@@ -71,25 +71,54 @@ class HomeController extends Controller
             $reportsDir = storage_path('reports');
             if (File::exists($reportsDir)) {
                 $reportFiles = File::glob($reportsDir . '/*.md');
-                $hacktheboxDir = $reportsDir . '/Hackthebox-Walkthrough';
-                $htbReports = 0;
+                $totalReports = count($reportFiles);
                 
+                // 计算普通报告文件的大小
+                foreach ($reportFiles as $file) {
+                    $stats['total_size'] += File::size($file);
+                }
+                
+                // 统计 HackTheBox 报告（按难度分类的新结构）
+                $hacktheboxDir = $reportsDir . '/Hackthebox-Walkthrough';
                 if (File::exists($hacktheboxDir)) {
-                    $htbDirs = File::directories($hacktheboxDir);
-                    foreach ($htbDirs as $dir) {
-                        if (File::exists($dir . '/Walkthrough.md')) {
-                            $htbReports++;
-                            $stats['total_size'] += File::size($dir . '/Walkthrough.md');
+                    $difficulties = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses'];
+                    foreach ($difficulties as $difficulty) {
+                        $difficultyDir = $hacktheboxDir . '/' . $difficulty;
+                        if (File::exists($difficultyDir) && File::isDirectory($difficultyDir)) {
+                            $machineDirectories = File::directories($difficultyDir);
+                            foreach ($machineDirectories as $dir) {
+                                $walkthroughFile = $dir . '/Walkthrough.md';
+                                if (File::exists($walkthroughFile)) {
+                                    $totalReports++;
+                                    $stats['total_size'] += File::size($walkthroughFile);
+                                }
+                            }
                         }
                     }
                 }
                 
-                $stats['total_reports'] = count($reportFiles) + $htbReports;
-                
-                // 计算总大小
-                foreach ($reportFiles as $file) {
-                    $stats['total_size'] += File::size($file);
+                // 统计 VulnHub 报告
+                $vulnhubDir = $reportsDir . '/Vulnerhub';
+                if (File::exists($vulnhubDir) && File::isDirectory($vulnhubDir)) {
+                    // 统计目录类型的机器
+                    $machineDirectories = File::directories($vulnhubDir);
+                    foreach ($machineDirectories as $dir) {
+                        $walkthroughFile = $dir . '/Walkthrough.md';
+                        if (File::exists($walkthroughFile)) {
+                            $totalReports++;
+                            $stats['total_size'] += File::size($walkthroughFile);
+                        }
+                    }
+                    
+                    // 统计直接的 .md 文件
+                    $vulnhubFiles = File::glob($vulnhubDir . '/*.md');
+                    $totalReports += count($vulnhubFiles);
+                    foreach ($vulnhubFiles as $file) {
+                        $stats['total_size'] += File::size($file);
+                    }
                 }
+                
+                $stats['total_reports'] = $totalReports;
             }
             
             // 获取最后更新时间
@@ -210,20 +239,56 @@ class HomeController extends Controller
                 ];
             }
             
-            // 获取 Hackthebox 报告
+            // 获取 Hackthebox 报告（按难度分类的新结构）
             $hacktheboxDir = $reportsDir . '/Hackthebox-Walkthrough';
             if (File::exists($hacktheboxDir)) {
-                $directories = File::directories($hacktheboxDir);
-                foreach ($directories as $dir) {
+                $difficulties = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses'];
+                foreach ($difficulties as $difficulty) {
+                    $difficultyDir = $hacktheboxDir . '/' . $difficulty;
+                    if (File::exists($difficultyDir) && File::isDirectory($difficultyDir)) {
+                        $machineDirectories = File::directories($difficultyDir);
+                        foreach ($machineDirectories as $dir) {
+                            $walkthroughFile = $dir . '/Walkthrough.md';
+                            if (File::exists($walkthroughFile)) {
+                                $allFiles[] = [
+                                    'path' => $walkthroughFile,
+                                    'type' => 'hackthebox',
+                                    'folder' => basename($dir),
+                                    'difficulty' => $difficulty,
+                                    'modified' => File::lastModified($walkthroughFile)
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // 获取 VulnHub 报告
+            $vulnhubDir = $reportsDir . '/Vulnerhub';
+            if (File::exists($vulnhubDir) && File::isDirectory($vulnhubDir)) {
+                // 处理目录类型的机器
+                $machineDirectories = File::directories($vulnhubDir);
+                foreach ($machineDirectories as $dir) {
                     $walkthroughFile = $dir . '/Walkthrough.md';
                     if (File::exists($walkthroughFile)) {
                         $allFiles[] = [
                             'path' => $walkthroughFile,
-                            'type' => 'hackthebox',
+                            'type' => 'vulnhub',
                             'folder' => basename($dir),
                             'modified' => File::lastModified($walkthroughFile)
                         ];
                     }
+                }
+                
+                // 处理直接的 .md 文件
+                $vulnhubFiles = File::glob($vulnhubDir . '/*.md');
+                foreach ($vulnhubFiles as $file) {
+                    $allFiles[] = [
+                        'path' => $file,
+                        'type' => 'vulnhub',
+                        'folder' => pathinfo($file, PATHINFO_FILENAME),
+                        'modified' => File::lastModified($file)
+                    ];
                 }
             }
             
@@ -245,7 +310,17 @@ class HomeController extends Controller
                         'excerpt' => $this->extractExcerpt($content),
                         'mtime' => $fileInfo['modified'],
                         'size' => File::size($fileInfo['path']),
-                        'type' => 'hackthebox'
+                        'type' => 'hackthebox',
+                        'difficulty' => $fileInfo['difficulty'] ?? null
+                    ];
+                } elseif ($fileInfo['type'] === 'vulnhub') {
+                    $reports[] = [
+                        'slug' => 'vulnhub-' . $fileInfo['folder'],
+                        'title' => $fileInfo['folder'],
+                        'excerpt' => $this->extractExcerpt($content),
+                        'mtime' => $fileInfo['modified'],
+                        'size' => File::size($fileInfo['path']),
+                        'type' => 'vulnhub'
                     ];
                 } else {
                     $filename = pathinfo($fileInfo['path'], PATHINFO_FILENAME);

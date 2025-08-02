@@ -268,6 +268,8 @@
                                         <div class="card-meta">
                                             @if(isset($report['type']) && $report['type'] === 'hackthebox')
                                                 <span class="card-category hackthebox">HackTheBox</span>
+                                            @elseif(isset($report['type']) && $report['type'] === 'vulnhub')
+                                                <span class="card-category vulnhub">VulnHub</span>
                                             @else
                                                 <span class="card-category">Report</span>
                                             @endif
