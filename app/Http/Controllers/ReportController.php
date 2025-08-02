@@ -1564,7 +1564,7 @@ class ReportController extends Controller
                                 $categories['hackthebox-machines'] = [
                                     'key' => 'hackthebox-machines',
                                     'title' => 'HackTheBox - Machines',
-                                    'description' => 'Resolución de máquinas de la plataforma de HackTheBox',
+                                    'description' => 'Comprehensive writeups for HackTheBox machines across Easy, Medium, and Hard difficulties',
                                     'count' => 0,
                                     'icon' => 'htb-machines'
                                 ];
@@ -1574,7 +1574,7 @@ class ReportController extends Controller
                             $categories['hackthebox-fortresses'] = [
                                 'key' => 'hackthebox-fortresses',
                                 'title' => 'HackTheBox - Fortresses',
-                                'description' => 'Resolución de fortresses de la plataforma de HackTheBox',
+                                'description' => 'Detailed walkthroughs for HackTheBox fortress challenges and complex scenarios',
                                 'count' => $machineCount,
                                 'icon' => 'htb-fortresses'
                             ];
@@ -1582,7 +1582,7 @@ class ReportController extends Controller
                             $categories['hackthebox-insane'] = [
                                 'key' => 'hackthebox-insane',
                                 'title' => 'HackTheBox - Insane',
-                                'description' => 'Resolución de máquinas de dificultad Insane',
+                                'description' => 'Advanced writeups for HackTheBox Insane difficulty machines and challenges',
                                 'count' => $machineCount,
                                 'icon' => 'htb-insane'
                             ];
@@ -1600,7 +1600,7 @@ class ReportController extends Controller
                 $categories['tryhackme'] = [
                     'key' => 'tryhackme',
                     'title' => 'TryHackMe - Rooms',
-                    'description' => 'Resolución de rooms de la plataforma de TryHackMe',
+                    'description' => 'Step-by-step solutions for TryHackMe rooms and learning paths',
                     'count' => $roomCount,
                     'icon' => 'tryhackme'
                 ];
@@ -1619,7 +1619,7 @@ class ReportController extends Controller
                 $categories['vulnhub'] = [
                     'key' => 'vulnhub',
                     'title' => 'VulnHub - Machines',
-                    'description' => 'Resolución de máquinas de la plataforma de VulnHub',
+                    'description' => 'Complete walkthroughs for VulnHub vulnerable machines and boot-to-root challenges',
                     'count' => $totalCount,
                     'icon' => 'vulnhub'
                 ];
