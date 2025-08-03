@@ -45,8 +45,8 @@ A comprehensive content publishing platform built with Laravel 11, integrating b
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/laravel_report_system.git
-cd laravel_report_system
+git clone https://github.com/wither-rebirth/markdown_report_system.git
+cd markdown_report_system
 
 # Install PHP dependencies
 composer install
@@ -472,14 +472,14 @@ We welcome contributions! Please follow these steps:
 
 ## 📝 Changelog
 
-### v2.0.0 - 2024-Latest
+### v2.0.0 - 2025-Latest
 - ✨ **Enhanced Report Lock System** - Advanced password protection with sync capabilities
 - 🎯 **Custom Artisan Commands** - Comprehensive CLI tools for report management
 - 📊 **Improved Analytics** - Enhanced dashboard with real-time statistics
 - 🔧 **Better Admin Tools** - Streamlined backend management interface
 - 🏗️ **Code Architecture** - Improved codebase structure and documentation
 
-### v1.0.0 - 2024-01-15
+### v1.0.0 - 2025-07-01
 - 🎉 **Initial Release**
 - 📝 Blog system with Markdown rendering
 - 🛡️ Penetration testing report module with HackTheBox structure  
