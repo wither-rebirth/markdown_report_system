@@ -129,23 +129,37 @@ class SyncReportLocks extends Command
             }
         }
         
-        // 获取HackTheBox报告
+        // 获取HackTheBox报告 (新的按难度分级的结构)
         if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
-            $directories = File::directories($hacktheboxDir);
+            $difficultyDirs = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses'];
             
-            foreach ($directories as $dir) {
-                $dirName = basename($dir);
-                $walkthroughFile = $dir . '/Walkthrough.md';
+            foreach ($difficultyDirs as $difficulty) {
+                $difficultyPath = $hacktheboxDir . '/' . $difficulty;
                 
-                if (File::exists($walkthroughFile)) {
-                    $reports[] = [
-                        'slug' => 'htb-' . $dirName,
-                        'title' => $dirName . ' - HackTheBox Writeup',
-                        'label' => 'hackthebox',
-                        'type' => 'hackthebox',
-                        'path' => $walkthroughFile,
-                        'machine_name' => $dirName
-                    ];
+                if (File::exists($difficultyPath) && File::isDirectory($difficultyPath)) {
+                    $machineDirectories = File::directories($difficultyPath);
+                    
+                    foreach ($machineDirectories as $machineDir) {
+                        $machineName = basename($machineDir);
+                        $walkthroughFile = $machineDir . '/Walkthrough.md';
+                        
+                        if (File::exists($walkthroughFile)) {
+                            // 对于Fortresses使用不同的标题格式
+                            $title = $difficulty === 'Fortresses' 
+                                ? $machineName . ' - HackTheBox Fortress'
+                                : $machineName . ' - HackTheBox Writeup (' . $difficulty . ')';
+                                
+                            $reports[] = [
+                                'slug' => 'htb-' . strtolower($difficulty) . '-' . $machineName,
+                                'title' => $title,
+                                'label' => 'hackthebox',
+                                'type' => 'hackthebox',
+                                'path' => $walkthroughFile,
+                                'machine_name' => $machineName,
+                                'difficulty' => $difficulty
+                            ];
+                        }
+                    }
                 }
             }
         }
@@ -159,8 +173,9 @@ class SyncReportLocks extends Command
     private function generateDefaultPassword($report): string
     {
         if ($report['type'] === 'hackthebox') {
-            // 为HTB机器生成提示性的默认密码
-            return 'change_me_' . strtolower($report['machine_name']) . '_hash';
+            // 为HTB机器生成提示性的默认密码，包含难度信息
+            $difficulty = isset($report['difficulty']) ? strtolower($report['difficulty']) : 'unknown';
+            return 'change_me_' . strtolower($report['machine_name']) . '_' . $difficulty . '_hash';
         }
         
         return 'change_me_default_password';
@@ -172,7 +187,11 @@ class SyncReportLocks extends Command
     private function generateDefaultDescription($report): string
     {
         if ($report['type'] === 'hackthebox') {
-            return "请设置 {$report['machine_name']} 机器的相应密码（如用户hash、root密码等）";
+            $difficulty = isset($report['difficulty']) ? $report['difficulty'] : 'Unknown';
+            if ($difficulty === 'Fortresses') {
+                return "请设置 {$report['machine_name']} Fortress 的相应密码";
+            }
+            return "请设置 {$report['machine_name']} 机器（{$difficulty}）的相应密码（如用户hash、root密码等）";
         }
         
         return '请设置此报告的访问密码';
