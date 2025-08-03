@@ -150,7 +150,7 @@ class SyncReportLocks extends Command
                                 : $machineName . ' - HackTheBox Writeup (' . $difficulty . ')';
                                 
                             $reports[] = [
-                                'slug' => 'htb-' . strtolower($difficulty) . '-' . $machineName,
+                                'slug' => 'htb-' . $machineName, // 使用旧格式，保持URL简洁
                                 'title' => $title,
                                 'label' => 'hackthebox',
                                 'type' => 'hackthebox',
@@ -173,9 +173,8 @@ class SyncReportLocks extends Command
     private function generateDefaultPassword($report): string
     {
         if ($report['type'] === 'hackthebox') {
-            // 为HTB机器生成提示性的默认密码，包含难度信息
-            $difficulty = isset($report['difficulty']) ? strtolower($report['difficulty']) : 'unknown';
-            return 'change_me_' . strtolower($report['machine_name']) . '_' . $difficulty . '_hash';
+            // 为HTB机器生成提示性的默认密码
+            return 'change_me_' . strtolower($report['machine_name']) . '_hash';
         }
         
         return 'change_me_default_password';
