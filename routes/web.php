@@ -136,6 +136,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('report-locks', App\Http\Controllers\Admin\ReportLockController::class);
         Route::post('report-locks/{reportLock}/toggle-status', [App\Http\Controllers\Admin\ReportLockController::class, 'toggleStatus'])->name('report-locks.toggle-status');
         Route::post('report-locks/bulk-action', [App\Http\Controllers\Admin\ReportLockController::class, 'bulkAction'])->name('report-locks.bulk-action');
+        
+        // 报告上传管理
+        Route::get('report-upload', [App\Http\Controllers\Admin\ReportUploadController::class, 'index'])->name('report-upload.index');
+        Route::post('report-upload/markdown', [App\Http\Controllers\Admin\ReportUploadController::class, 'uploadMarkdown'])->name('report-upload.markdown');
+        Route::post('report-upload/zip', [App\Http\Controllers\Admin\ReportUploadController::class, 'uploadZip'])->name('report-upload.zip');
     });
 });
 

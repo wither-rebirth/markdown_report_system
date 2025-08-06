@@ -37,6 +37,7 @@ export default defineConfig({
             'resources/css/admin/tags.css',
             'resources/css/admin/comments.css',
             'resources/css/admin/report-locks.css',
+            'resources/css/admin/report-upload.css',
             'resources/js/admin/blog.js',
             'resources/js/admin/analytics.js',
             'resources/js/admin/backup.js',

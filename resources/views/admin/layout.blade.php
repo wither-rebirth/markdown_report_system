@@ -94,6 +94,13 @@
                         </a>
                     </li>
                     
+                    <li class="menu-item">
+                        <a href="{{ route('admin.report-upload.index') }}" class="menu-link {{ request()->routeIs('admin.report-upload*') ? 'active' : '' }}">
+                            <i class="fas fa-upload"></i>
+                            <span class="menu-text">Report Upload</span>
+                        </a>
+                    </li>
+                    
                     <li class="menu-divider"></li>
                     
                     <li class="menu-section">
@@ -170,6 +177,9 @@
                                         break;
                                     case 'Report Lock Management':
                                         $pageIcon = 'fas fa-lock';
+                                        break;
+                                    case 'Report Upload':
+                                        $pageIcon = 'fas fa-upload';
                                         break;
                                     case 'Statistics':
                                         $pageIcon = 'fas fa-chart-line';
