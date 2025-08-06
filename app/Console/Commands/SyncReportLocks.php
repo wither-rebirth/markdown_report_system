@@ -131,7 +131,7 @@ class SyncReportLocks extends Command
         
         // 获取HackTheBox报告 (新的按难度分级的结构)
         if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
-            $difficultyDirs = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses'];
+            $difficultyDirs = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses', 'Prolabs'];
             
             foreach ($difficultyDirs as $difficulty) {
                 $difficultyPath = $hacktheboxDir . '/' . $difficulty;
@@ -144,10 +144,14 @@ class SyncReportLocks extends Command
                         $walkthroughFile = $machineDir . '/Walkthrough.md';
                         
                         if (File::exists($walkthroughFile)) {
-                            // 对于Fortresses使用不同的标题格式
-                            $title = $difficulty === 'Fortresses' 
-                                ? $machineName . ' - HackTheBox Fortress'
-                                : $machineName . ' - HackTheBox Writeup (' . $difficulty . ')';
+                            // 对于不同类型使用不同的标题格式
+                            if ($difficulty === 'Fortresses') {
+                                $title = $machineName . ' - HackTheBox Fortress';
+                            } elseif ($difficulty === 'Prolabs') {
+                                $title = $machineName . ' - HackTheBox EndGame/Prolab';
+                            } else {
+                                $title = $machineName . ' - HackTheBox Writeup (' . $difficulty . ')';
+                            }
                                 
                             $reports[] = [
                                 'slug' => 'htb-' . $machineName, // 使用旧格式，保持URL简洁
@@ -189,6 +193,8 @@ class SyncReportLocks extends Command
             $difficulty = isset($report['difficulty']) ? $report['difficulty'] : 'Unknown';
             if ($difficulty === 'Fortresses') {
                 return "请设置 {$report['machine_name']} Fortress 的相应密码";
+            } elseif ($difficulty === 'Prolabs') {
+                return "请设置 {$report['machine_name']} EndGame/Prolab 的相应密码";
             }
             return "请设置 {$report['machine_name']} 机器（{$difficulty}）的相应密码（如用户hash、root密码等）";
         }
