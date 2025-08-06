@@ -71,7 +71,7 @@ class ReportController extends Controller
             switch ($category) {
                 case 'hackthebox-machines':
                     if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
-                        $hacktheboxReports = $this->getHacktheboxReports($hacktheboxDir, ['Easy', 'Medium', 'Hard']);
+                        $hacktheboxReports = $this->getHacktheboxReports($hacktheboxDir, ['Easy', 'Medium', 'Hard', 'Insane']);
                         $reports = $reports->merge($hacktheboxReports);
                     }
                     break;
@@ -83,9 +83,9 @@ class ReportController extends Controller
                     }
                     break;
                     
-                case 'hackthebox-insane':
+                case 'hackthebox-endgames':
                     if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
-                        $hacktheboxReports = $this->getHacktheboxReports($hacktheboxDir, ['Insane']);
+                        $hacktheboxReports = $this->getHacktheboxReports($hacktheboxDir, ['Prolabs']);
                         $reports = $reports->merge($hacktheboxReports);
                     }
                     break;
@@ -794,6 +794,35 @@ class ReportController extends Controller
         
         // Find the machine in the new difficulty-based directory structure
         $machineInfo = $this->findHacktheboxMachine($folder);
+        if (!$machineInfo) {
+            abort(404, 'Machine not found');
+        }
+        
+        $imagePath = $machineInfo['path'] . "/images/{$decodedFilename}";
+        
+        if (!File::exists($imagePath)) {
+            abort(404, 'Image not found');
+        }
+        
+        // Check file type
+        $mimeType = mime_content_type($imagePath);
+        if (!str_starts_with($mimeType, 'image/')) {
+            abort(403, 'File type not supported');
+        }
+        
+        return response()->file($imagePath);
+    }
+    
+    /**
+     * Serve VulnHub report images
+     */
+    public function getVulnhubImage($machine, $filename)
+    {
+        // URL decode filename
+        $decodedFilename = urldecode($filename);
+        
+        // Find the machine in the VulnHub directory structure
+        $machineInfo = $this->findVulnhubMachine($machine);
         if (!$machineInfo) {
             abort(404, 'Machine not found');
         }
@@ -1523,7 +1552,7 @@ class ReportController extends Controller
      */
     private function findHacktheboxMachine($machineName)
     {
-        $difficulties = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses'];
+        $difficulties = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses', 'Prolabs'];
         $hacktheboxDir = storage_path('reports/Hackthebox-Walkthrough');
         
         foreach ($difficulties as $difficulty) {
@@ -1552,19 +1581,19 @@ class ReportController extends Controller
         // HackTheBox categories
         $hacktheboxDir = storage_path('reports/Hackthebox-Walkthrough');
         if (File::exists($hacktheboxDir) && File::isDirectory($hacktheboxDir)) {
-            $difficulties = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses'];
+            $difficulties = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortresses', 'Prolabs'];
             
             foreach ($difficulties as $difficulty) {
                 $difficultyDir = $hacktheboxDir . '/' . $difficulty;
                 if (File::exists($difficultyDir) && File::isDirectory($difficultyDir)) {
                     $machineCount = count(File::directories($difficultyDir));
                     if ($machineCount > 0) {
-                        if (in_array($difficulty, ['Easy', 'Medium', 'Hard'])) {
+                        if (in_array($difficulty, ['Easy', 'Medium', 'Hard', 'Insane'])) {
                             if (!isset($categories['hackthebox-machines'])) {
                                 $categories['hackthebox-machines'] = [
                                     'key' => 'hackthebox-machines',
                                     'title' => 'HackTheBox - Machines',
-                                    'description' => 'Comprehensive writeups for HackTheBox machines across Easy, Medium, and Hard difficulties',
+                                    'description' => 'Comprehensive writeups for HackTheBox machines across Easy, Medium, Hard, and Insane difficulties',
                                     'count' => 0,
                                     'icon' => 'htb-machines'
                                 ];
@@ -1578,13 +1607,13 @@ class ReportController extends Controller
                                 'count' => $machineCount,
                                 'icon' => 'htb-fortresses'
                             ];
-                        } elseif ($difficulty === 'Insane') {
-                            $categories['hackthebox-insane'] = [
-                                'key' => 'hackthebox-insane',
-                                'title' => 'HackTheBox - Insane',
-                                'description' => 'Advanced writeups for HackTheBox Insane difficulty machines and challenges',
+                        } elseif ($difficulty === 'Prolabs') {
+                            $categories['hackthebox-endgames'] = [
+                                'key' => 'hackthebox-endgames',
+                                'title' => 'HackTheBox - EndGames',
+                                'description' => 'Advanced multi-stage penetration testing labs and comprehensive enterprise scenarios',
                                 'count' => $machineCount,
-                                'icon' => 'htb-insane'
+                                'icon' => 'htb-endgames'
                             ];
                         }
                     }

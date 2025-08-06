@@ -64,11 +64,9 @@
                             <img src="{{ asset('images/fortresses.png') }}" alt="HackTheBox Fortresses" class="category-image-small">
                             @break
                         @case('htb-endgames')
-                            <img src="{{ asset('images/insane.png') }}" alt="HackTheBox EndGames" class="category-image-small">
+                            <img src="{{ asset('images/endgames.png') }}" alt="HackTheBox EndGames" class="category-image-small">
                             @break
-                        @case('htb-insane')
-                            <img src="{{ asset('images/insane.png') }}" alt="HackTheBox Insane" class="category-image-small">
-                            @break
+
                         @case('vulnhub')
                             <img src="{{ asset('images/vulnhub.png') }}" alt="VulnHub Machines" class="category-image-small">
                             @break

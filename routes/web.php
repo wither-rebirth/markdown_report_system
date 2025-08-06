@@ -67,6 +67,11 @@ Route::prefix('reports')->group(function () {
     Route::get('/htb-images/{folder}/{filename}', [ReportController::class, 'getHacktheboxImage'])
         ->name('reports.htb-image')
         ->where('filename', '.*'); // 允许文件名包含特殊字符
+    
+    // VulnHub 图片服务路由
+    Route::get('/vulnhub-images/{machine}/{filename}', [ReportController::class, 'getVulnhubImage'])
+        ->name('reports.vulnhub-image')
+        ->where('filename', '.*'); // 允许文件名包含特殊字符
 });
 
 // 兼容性路由 - 直接访问HTML文件

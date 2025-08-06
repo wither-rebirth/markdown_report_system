@@ -54,10 +54,7 @@
                             <img src="{{ asset('images/fortresses.png') }}" alt="HackTheBox Fortresses" class="category-image">
                             @break
                         @case('htb-endgames')
-                            <img src="{{ asset('images/insane.png') }}" alt="HackTheBox EndGames" class="category-image">
-                            @break
-                        @case('htb-insane')
-                            <img src="{{ asset('images/insane.png') }}" alt="HackTheBox Insane" class="category-image">
+                            <img src="{{ asset('images/endgames.png') }}" alt="HackTheBox EndGames" class="category-image">
                             @break
                         @case('tryhackme')
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
