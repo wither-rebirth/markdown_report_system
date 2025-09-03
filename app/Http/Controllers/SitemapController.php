@@ -272,7 +272,7 @@ class SitemapController extends Controller
                                 // 使用实际文件修改时间
                                 $mtime = filemtime($walkthroughFile);
                                 
-                                $title = $frontMatter['title'] ?? ($machineName . ' - HackTheBox ' . $difficulty . ' Writeup');
+                                $title = $frontMatter['title'] ?? ('HTB Writeup – ' . $machineName);
                                 
                                 $allReports[] = [
                                     'slug' => 'htb-' . $machineName,

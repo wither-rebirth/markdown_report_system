@@ -470,7 +470,7 @@ class HomeController extends Controller
                         $difficulty = $pathParts[1]; // Hackthebox-Walkthrough后面的难度
                         $machineName = $pathParts[2]; // 难度后面的机器名
                         if ($machineName && $machineName !== 'Walkthrough.md' && $difficulty) {
-                            return 'HackTheBox ' . $difficulty . ' - ' . $machineName;
+                            return 'HTB Writeup – ' . $machineName;
                         }
                     }
                 } else {

@@ -146,11 +146,11 @@ class SyncReportLocks extends Command
                         if (File::exists($walkthroughFile)) {
                             // 对于不同类型使用不同的标题格式
                             if ($difficulty === 'Fortresses') {
-                                $title = $machineName . ' - HackTheBox Fortress';
+                                $title = 'HTB Fortress – ' . $machineName;
                             } elseif ($difficulty === 'Prolabs') {
-                                $title = $machineName . ' - HackTheBox EndGame/Prolab';
+                                $title = 'HTB Prolab – ' . $machineName;
                             } else {
-                                $title = $machineName . ' - HackTheBox Writeup (' . $difficulty . ')';
+                                $title = 'HTB Writeup – ' . $machineName;
                             }
                                 
                             $reports[] = [

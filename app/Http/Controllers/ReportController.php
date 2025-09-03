@@ -620,7 +620,7 @@ class ReportController extends Controller
                 'image_count' => $imageCount,
                 'excerpt' => $excerpt,
                 'keywords' => $keywords,
-                'full_title' => $folderName . ' - HackTheBox ' . $difficulty . ' Writeup',
+                'full_title' => 'HTB Writeup – ' . $folderName,
                 'canonical_url' => route('reports.show', $slug),
             ];
         });
@@ -1444,8 +1444,8 @@ class ReportController extends Controller
                 $walkthroughFile = $machineInfo['walkthrough_file'];
                 $content = File::get($walkthroughFile);
                 
-                // For HTB reports, format as "Machine - HackTheBox Difficulty Writeup"
-                $title = $folderName . ' - HackTheBox ' . $machineInfo['difficulty'] . ' Writeup';
+                // For HTB reports, format as "HTB Writeup – Machine"
+                $title = 'HTB Writeup – ' . $folderName;
                 
                 // Extract excerpt from content
                 $excerpt = $this->extractExcerpt($content);
